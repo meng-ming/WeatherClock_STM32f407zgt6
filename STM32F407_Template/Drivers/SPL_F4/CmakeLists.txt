@@ -1,0 +1,28 @@
+file(GLOB SPL_SOURCES "src/*.c")
+
+# 删除这些垃圾文件，防止各种奇葩错误
+list(REMOVE_ITEM SPL_SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/stm32f4xx_fmc.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/stm32f4xx_fsmc.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/stm32f4xx_sdio.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/stm32f4xx_qspi.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/stm32f4xx_dcmi.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/stm32f4xx_dma2d.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/stm32f4xx_dsi.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/stm32f4xx_cryp*.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/stm32f4xx_hash*.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/stm32f4xx_dfsdm.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/stm32f4xx_it.c"      # 重点删除这个！
+)
+
+add_library(SPL_Target STATIC
+    "${CMAKE_SOURCE_DIR}/Drivers/CMSIS/system_stm32f4xx.c"
+    ${SPL_SOURCES}
+)
+
+target_include_directories(SPL_Target PUBLIC
+    inc
+    "${CMAKE_SOURCE_DIR}/Drivers/CMSIS"
+)
+
+# 这里不需要再加任何编译选项，全局已经强制了

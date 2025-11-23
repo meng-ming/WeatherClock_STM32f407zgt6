@@ -1,0 +1,61 @@
+cmake_minimum_required(VERSION 3.16)
+project(WeatherClock C ASM)
+
+# 强制工具链
+set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/arm-gcc.cmake" CACHE FILEPATH "Toolchain file")
+set(CMAKE_GENERATOR "Ninja" CACHE STRING "CMake Generator")
+
+include(Config.cmake)
+
+# 全局强制参数（最关键！！！所有目标都吃到）
+add_compile_options(
+    -mcpu=cortex-m4
+    -mthumb
+    -mfloat-abi=softfp
+    -mfpu=fpv4-sp-d16
+    -Wall
+    -g3
+    ${OPTIMIZATION_FLAGS}
+)
+
+add_link_options(
+    -mcpu=cortex-m4
+    -mthumb
+    -mfloat-abi=softfp
+    -mfpu=fpv4-sp-d16
+    -T${LINKER_SCRIPT_PATH}
+    -Wl,--gc-sections
+    -specs=nano.specs
+    -specs=nosys.specs
+)
+
+# 强制定义宏
+add_compile_definitions(
+    STM32F40_41xxx
+    USE_STDPERIPH_DRIVER
+    HSE_VALUE=8000000
+    USE_FULL_ASSERT=1
+)
+
+add_subdirectory(Drivers/SPL_F4)
+
+file(GLOB_RECURSE USER_SOURCES CONFIGURE_DEPENDS "User/Src/*.c")
+set(STARTUP_FILE "Core/startup/startup_stm32f407xx.s")
+
+add_executable(${PROJECT_NAME}.elf
+    ${USER_SOURCES}
+    ${STARTUP_FILE}
+)
+
+target_include_directories(${PROJECT_NAME}.elf PRIVATE
+    User/Inc
+    Drivers/CMSIS
+    Drivers/SPL_F4/inc
+)
+
+target_link_libraries(${PROJECT_NAME}.elf PRIVATE SPL_Target)
+
+add_custom_command(TARGET ${PROJECT_NAME}.elf POST_BUILD
+    COMMAND ${CMAKE_OBJCOPY} -O binary ${PROJECT_NAME}.elf ${PROJECT_NAME}.bin
+    COMMAND ${CMAKE_SIZE} ${PROJECT_NAME}.elf
+)
