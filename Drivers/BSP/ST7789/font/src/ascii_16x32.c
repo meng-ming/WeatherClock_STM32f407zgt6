@@ -1,8 +1,5 @@
-#ifndef __FONT_H
-#define __FONT_H
-
 #include <stdint.h>
-const uint8_t ASCII_16_32[] = {
+const uint8_t ASCII_16x32[] = {
     0x00,
     0x00,
     0x00,
@@ -6273,4 +6270,3 @@ const uint8_t ASCII_16_32[] = {
     0x00, /*"~",94*/
     /* (16 X 32 , 宋体 )*/
 };
-#endif

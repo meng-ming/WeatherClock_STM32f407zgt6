@@ -1,6 +1,5 @@
 #include "st7789.h"
 #include "BSP_Cortex_M4_Delay.h"
-#include "font.h"
 
 // ====================================================================
 // 汉字字模数据 (16x16)
@@ -313,79 +312,80 @@ void display_char16_16(unsigned int  x,
     LCD_CS_SET();
 }
 
-// ====================================================================
-// 显示 16x32 ASCII 字符 (大号字体) (适配二维数组字库)
-// 字符宽度: 16, 高度: 32
-// 字模占用: 64 字节/字符
-// ====================================================================
-void TFT_ShowChar_1632(uint16_t x, uint16_t y, char chr, uint16_t color, uint16_t bgcolor)
-{
-    if (chr < 32 || chr > 126)
-        return; // 超出范围直接返回，防崩溃
+// // ====================================================================
+// // 显示 16x32 ASCII 字符 (大号字体) (适配二维数组字库)
+// // 字符宽度: 16, 高度: 32
+// // 字模占用: 64 字节/字符
+// // ====================================================================
+// void TFT_ShowChar_1632(uint16_t x, uint16_t y, char chr, uint16_t color, uint16_t bgcolor)
+// {
+//     if (chr < 32 || chr > 126)
+//         return; // 超出范围直接返回，防崩溃
 
-    const uint8_t* dots = &ASCII_16_32[(chr - 32) * 64]; // 关键改这里！！！
+//     const uint8_t* dots = &ASCII_16x32[(chr - 32) * 64]; // 关键改这里！！！
 
-    TFT_SEND_CMD(0x2A);
-    TFT_SEND_DATA(x >> 8);
-    TFT_SEND_DATA(x & 0xFF);
-    TFT_SEND_DATA((x + 15) >> 8);
-    TFT_SEND_DATA(x + 15);
+//     TFT_SEND_CMD(0x2A);
+//     TFT_SEND_DATA(x >> 8);
+//     TFT_SEND_DATA(x & 0xFF);
+//     TFT_SEND_DATA((x + 15) >> 8);
+//     TFT_SEND_DATA(x + 15);
 
-    TFT_SEND_CMD(0x2B);
-    TFT_SEND_DATA(y >> 8);
-    TFT_SEND_DATA(y & 0xFF);
-    TFT_SEND_DATA((y + 31) >> 8);
-    TFT_SEND_DATA(y + 31);
+//     TFT_SEND_CMD(0x2B);
+//     TFT_SEND_DATA(y >> 8);
+//     TFT_SEND_DATA(y & 0xFF);
+//     TFT_SEND_DATA((y + 31) >> 8);
+//     TFT_SEND_DATA(y + 31);
 
-    TFT_SEND_CMD(0x2C);
+//     TFT_SEND_CMD(0x2C);
 
-    LCD_DC_SET();
-    LCD_CS_CLR();
+//     LCD_DC_SET();
+//     LCD_CS_CLR();
 
-    uint8_t color_h = color >> 8, color_l = color & 0xFF;
-    uint8_t bg_h = bgcolor >> 8, bg_l = bgcolor & 0xFF;
+//     uint8_t color_h = color >> 8, color_l = color & 0xFF;
+//     uint8_t bg_h = bgcolor >> 8, bg_l = bgcolor & 0xFF;
 
-    for (int i = 0; i < 64; i++)
-    {
-        uint8_t temp = dots[i];
-        for (int j = 0; j < 8; j++)
-        {
-            // 低位先行
-            if (temp & 0x01)
-            {
-                ST7789_SPI_SendByte(color_h);
-                ST7789_SPI_SendByte(color_l);
-            }
-            else
-            {
-                ST7789_SPI_SendByte(bg_h);
-                ST7789_SPI_SendByte(bg_l);
-            }
-            temp >>= 1;
-        }
-    }
-    LCD_CS_SET();
-}
+//     for (int i = 0; i < 64; i++)
+//     {
+//         uint8_t temp = dots[i];
+//         for (int j = 0; j < 8; j++)
+//         {
+//             // 低位先行
+//             if (temp & 0x01)
+//             {
+//                 ST7789_SPI_SendByte(color_h);
+//                 ST7789_SPI_SendByte(color_l);
+//             }
+//             else
+//             {
+//                 ST7789_SPI_SendByte(bg_h);
+//                 ST7789_SPI_SendByte(bg_l);
+//             }
+//             temp >>= 1;
+//         }
+//     }
+//     LCD_CS_SET();
+// }
 
-// ====================================================================
-// 显示 16x32 英文字符串
-// ====================================================================
-void TFT_ShowString_1632(uint16_t x, uint16_t y, const char* str, uint16_t color, uint16_t bgcolor)
-{
-    while (*str)
-    {
-        // 换行保护：如果这行放不下了 (屏幕宽240，字宽16)
-        if (x > (TFT_COLUMN_NUMBER - 16))
-        {
-            x = 0;
-            y += 32; // 换行高度 32
-        }
+// // ====================================================================
+// // 显示 16x32 英文字符串
+// // ====================================================================
+// void TFT_ShowString_1632(uint16_t x, uint16_t y, const char* str, uint16_t color, uint16_t
+// bgcolor)
+// {
+//     while (*str)
+//     {
+//         // 换行保护：如果这行放不下了 (屏幕宽240，字宽16)
+//         if (x > (TFT_COLUMN_NUMBER - 16))
+//         {
+//             x = 0;
+//             y += 32; // 换行高度 32
+//         }
 
-        if (y > (TFT_LINE_NUMBER - 32))
-            break; // 超出屏幕底边
+//         if (y > (TFT_LINE_NUMBER - 32))
+//             break; // 超出屏幕底边
 
-        TFT_ShowChar_1632(x, y, *str, color, bgcolor);
-        x += 16; // 字宽 16，光标右移
-        str++;
-    }
-}
+//         TFT_ShowChar_1632(x, y, *str, color, bgcolor);
+//         x += 16; // 字宽 16，光标右移
+//         str++;
+//     }
+// }

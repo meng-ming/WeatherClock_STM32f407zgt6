@@ -63,6 +63,7 @@ add_subdirectory(Drivers/SPL_F4)
 file(GLOB_RECURSE USER_SOURCES CONFIGURE_DEPENDS
     "User/src/*.c"
     "Drivers/BSP/ST7789/src/*.c"
+    "Drivers/BSP/ST7789/font/src/*.c"
     # CorteM4 适配的延时函数
     "Drivers/BSP/CortexM4Delay/src/*.c"
     # 新增的 FreeRTOS 源文件路径
@@ -70,8 +71,6 @@ file(GLOB_RECURSE USER_SOURCES CONFIGURE_DEPENDS
     "Middleware/FreeRTOS/portable/MemMang/*.c"
     "Middleware/FreeRTOS/portable/GCC/ARM_CM4F/*.c"
 )
-
-
 
 # 启动文件（GCC 版）
 set(STARTUP_FILE "Core/startup/startup_stm32f407xx.s")
@@ -88,6 +87,7 @@ target_include_directories(${PROJECT_NAME}.elf PRIVATE
     Drivers/CMSIS
     Drivers/SPL_F4/inc
     Drivers/BSP/ST7789/inc
+    Drivers/BSP/ST7789/font/inc
     Drivers/BSP/CortexM4Delay/inc
     # 新增的 FreeRTOS 头文件路径
     Middleware/FreeRTOS/include
