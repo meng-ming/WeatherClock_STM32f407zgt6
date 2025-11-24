@@ -62,7 +62,7 @@ add_subdirectory(Drivers/SPL_F4)
 # =======================================================
 file(GLOB_RECURSE USER_SOURCES CONFIGURE_DEPENDS
     "User/src/*.c"
-    "Drivers/BSP/**/*.c"  #<-- 【新增：扫描所有BSP子目录下的 .c 文件】
+    "Drivers/BSP/ST7789/src/*.c"  
     # 新增的 FreeRTOS 源文件路径
     "Middleware/FreeRTOS/*.c"
     "Middleware/FreeRTOS/portable/MemMang/*.c"
