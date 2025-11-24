@@ -82,4 +82,7 @@ void display_char16_16(unsigned int  x,
                        unsigned long color,
                        unsigned char word_serial_number);
 
+void TFT_ShowChar_1632(uint16_t x, uint16_t y, char chr, uint16_t color, uint16_t bgcolor);
+void TFT_ShowString_1632(uint16_t x, uint16_t y, const char* str, uint16_t color, uint16_t bgcolor);
+
 #endif
