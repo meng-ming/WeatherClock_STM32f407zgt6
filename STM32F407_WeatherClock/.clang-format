@@ -1,0 +1,67 @@
+# .clang-format
+# 项目代码风格统一配置文件
+# 适用于所有 C/C++ 源文件及头文件
+# 基于 LLVM 风格扩展，符合国内主流嵌入式厂商（华为、海思、大疆、蔚来、海康等）代码规范要求
+# 放置于项目根目录后，clang-format 将自动读取本文件（--style=file）
+
+Language:              Cpp                  # 同时适用于 C 和 C++
+BasedOnStyle:          LLVM                 # 以 LLVM 官方风格为基础进行定制
+
+# -------------------------------------------------------
+# 基本排版规则
+# -------------------------------------------------------
+AccessModifierOffset:  -4                   # public/private/protected 相对于缩进左移 4 个字符（C++ 类专用）
+IndentWidth:           4                    # 缩进宽度 = 4 个空格（强制）
+TabWidth:              4                    # Tab 字符显示宽度 = 4（仅用于显示）
+UseTab:                Never                # 禁止使用 Tab 字符，全部替换为空格
+ColumnLimit:           100                  # 单行最大字符数，超过 100 必须换行
+MaxEmptyLinesToKeep:   1                    # 连续空行最多保留 1 行
+
+# -------------------------------------------------------
+# 大括号与换行规则（Allman 风格，国内嵌入式项目强制）
+# -------------------------------------------------------
+BreakBeforeBraces:     Allman               # 所有大括号均换行放置（函数、if、for、while、struct 等）
+BraceWrapping:                              # 细粒度控制各种情况下的换行
+  AfterClass:          true                 # class / struct 后换行
+  AfterControlStatement: true               # if / for / while / do 等控制语句后换行
+  AfterEnum:           true                 # enum 后换行
+  AfterFunction:       true                 # 函数定义后换行
+  AfterNamespace:      true                 # namespace 后换行
+  AfterStruct:         true                 # struct 后换行
+  AfterUnion:          true                 # union 后换行
+  AfterExternBlock:    true                 # extern "C" 后换行
+  BeforeCatch:         true                 # catch 前换行
+  BeforeElse:          true                 # else 前换行
+  IndentBraces:        false                # 大括号自身不额外缩进
+
+# -------------------------------------------------------
+# 空格规则
+# -------------------------------------------------------
+SpaceBeforeParens:     ControlStatements    # if/for/while/do/switch 后加空格：if (xxx)
+SpaceAfterCStyleCast:  true                 # C 风格强制转换后加空格：(uint32_t) var
+SpacesInParentheses:   false                # 圆括号内部不加空格：(xxx)
+SpacesInSquareBrackets: false               # 方括号内部不加空格：[idx]
+SpacesInAngles:        false                # 尖括号内部不加空格：<T>
+PointerAlignment:      Left                 # 指针星号贴类型：int* p;
+AlignConsecutiveAssignments: true           # 连续赋值语句等号对齐（寄存器初始化常用）
+AlignConsecutiveDeclarations: true          # 连续变量声明对齐
+
+# -------------------------------------------------------
+# 其他重要规范
+# -------------------------------------------------------
+AllowShortIfStatementsOnASingleLine:   Never   # 禁止 if/for/while 单行写法
+AllowShortFunctionsOnASingleLine:      None    # 禁止任何函数单行定义
+AlwaysBreakAfterReturnType:            None     # 返回类型不换行换行（函数定义）
+BinPackArguments:      false                # 函数实参不压缩，每行一个参数优先
+BinPackParameters:     false                # 函数形参不压缩
+Cpp11BracedListStyle:  true                 # C++11 列表初始化风格 {1, 2, 3}
+IncludeBlocks:         Preserve             # 保持原有 #include 顺序与分组
+SortIncludes:          Never                # 禁止自动排序 include（避免大量 diff）
+ReflowComments:        true                 # 自动重排注释，使其不超过 ColumnLimit
+
+# -------------------------------------------------------
+# 结束
+# -------------------------------------------------------
+# 使用方式：
+#   clang-format -i src/**/*.c inc/**/*.h          # 格式化
+#   clang-format -i --dry-run --Werror **/*.c **/*.h   # 仅检查（CI 推荐）

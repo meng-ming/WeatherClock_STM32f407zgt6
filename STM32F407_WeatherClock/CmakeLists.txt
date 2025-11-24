@@ -1,0 +1,91 @@
+# 强制让 CMake 生成完整编译选项（clangd 必须！！！）
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# 取消裸机经典 warning（量产项目必备）
+add_link_options(-Wl,--no-warn-rwx-segments)
+add_compile_options(-Wno-implicit-function-declaration)
+
+cmake_minimum_required(VERSION 3.16)
+project(WeatherClock C ASM)
+
+# =======================================================
+# 强制使用我们自己的工具链文件（arm-gcc.cmake）
+# =======================================================
+set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/arm-gcc.cmake" CACHE FILEPATH "Toolchain file")
+set(CMAKE_GENERATOR "Ninja" CACHE STRING "CMake Generator")   # 强制使用 Ninja，编译速度飞起
+
+# 引入芯片和优化配置
+include(Config.cmake)
+
+# =======================================================
+# 全局编译选项（所有目标都会继承，最狠最稳的方式）
+# =======================================================
+add_compile_options(
+    -mcpu=cortex-m4
+    -mthumb
+    -mfloat-abi=softfp          # softfp = 性能接近 hard + 兼容性 100%
+    -mfpu=fpv4-sp-d16           # 开启 FPU 单精度硬件浮点
+    -Wall                       # 开启几乎所有警告
+    -g3                         # 最高级别调试信息
+    ${OPTIMIZATION_FLAGS}       # -Os
+)
+
+# =======================================================
+# 全局链接选项（同上，所有目标都会继承）
+# =======================================================
+add_link_options(
+    -mcpu=cortex-m4
+    -mthumb
+    -mfloat-abi=softfp
+    -mfpu=fpv4-sp-d16
+    -T${LINKER_SCRIPT_PATH}     # 使用我们自定义的链接脚本
+    -Wl,--gc-sections           # 清除未使用的段，减小体积
+    -specs=nano.specs           # 使用 newlib-nano 库，体积更小
+    -specs=nosys.specs          # 裸机环境必备
+)
+
+# =======================================================
+# 全局宏定义（相当于 Keil 里的 #define）
+# =======================================================
+add_compile_definitions(
+    STM32F40_41xxx              # 芯片系列宏
+    USE_STDPERIPH_DRIVER        # 启用官方 SPL 库
+    USE_FULL_ASSERT=1           # 开启断言（调试神器，出错直接告诉你哪一行）
+)
+
+# 添加 SPL 库子目录（里面会生成 libSPL_Target.a）
+add_subdirectory(Drivers/SPL_F4)
+
+# =======================================================
+# 自动扫描所有用户源码（新增文件无需改 CMake！）
+# CONFIGURE_DEPENDS = 关键！每次 configure 都会重新扫描
+# =======================================================
+file(GLOB_RECURSE USER_SOURCES CONFIGURE_DEPENDS "User/Src/*.c")
+
+# 启动文件（GCC 版）
+set(STARTUP_FILE "Core/startup/startup_stm32f407xx.s")
+
+# 生成可执行文件
+add_executable(${PROJECT_NAME}.elf
+    ${USER_SOURCES}
+    ${STARTUP_FILE}
+)
+
+# 头文件搜索路径
+target_include_directories(${PROJECT_NAME}.elf PRIVATE
+    User/Inc
+    Drivers/CMSIS
+    Drivers/SPL_F4/inc
+)
+
+# 链接我们编译好的 SPL 静态库
+target_link_libraries(${PROJECT_NAME}.elf PRIVATE SPL_Target)
+
+# =======================================================
+# 编译完成后自动生成 .bin 并打印大小（超级方便）
+# =======================================================
+add_custom_command(TARGET ${PROJECT_NAME}.elf POST_BUILD
+    COMMAND ${CMAKE_OBJCOPY} -O binary ${PROJECT_NAME}.elf ${PROJECT_NAME}.bin
+    COMMAND ${CMAKE_SIZE} ${PROJECT_NAME}.elf
+    COMMENT "生成 .bin 文件并显示程序大小"
+)

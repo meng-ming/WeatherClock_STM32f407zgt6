@@ -1,0 +1,34 @@
+# 扫描所有 SPL 源码
+file(GLOB SPL_SOURCES "src/*.c")
+
+# =======================================================
+# “删库跑路”大法：把所有容易出事的驱动全删了
+# 只保留核心外设（GPIO、RCC、USART、TIM、DMA、ADC、I2C、SPI）
+# =======================================================
+list(REMOVE_ITEM SPL_SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/stm32f4xx_fmc.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/stm32f4xx_fsmc.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/stm32f4xx_sdio.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/stm32f4xx_qspi.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/stm32f4xx_dcmi.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/stm32f4xx_dma2d.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/stm32f4xx_dsi.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/stm32f4xx_cryp*.c"     # 硬件加密
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/stm32f4xx_hash*.c"    # 硬件哈希
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/stm32f4xx_dfsdm.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/stm32f4xx_it.c"       # 官方模板中断文件（最毒！）
+)
+
+# 生成静态库
+add_library(SPL_Target STATIC
+    "${CMAKE_SOURCE_DIR}/Drivers/CMSIS/system_stm32f4xx.c"
+    ${SPL_SOURCES}
+)
+
+# 头文件路径（PUBLIC = 使用这个库的目标会自动继承）
+target_include_directories(SPL_Target PUBLIC
+    inc
+    "${CMAKE_SOURCE_DIR}/Drivers/CMSIS"
+)
+
+# 编译选项全局已经加了，这里啥都不用写
