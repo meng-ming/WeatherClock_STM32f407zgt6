@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "ms-vscode.cmake-tools",
+        "ms-vscode.cpptools",
+        "marus25.cortex-debug",
+        "twxs.cmake",
+        "jeff-hykin.better-cpp-syntax"
+    ]
+}

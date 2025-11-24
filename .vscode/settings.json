@@ -1,0 +1,66 @@
+{
+    // ==================== CMake 核心配置 ====================
+    "cmake.configureOnOpen": true,
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "cmake.configureArgs": [
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+    ],
+    "cmake.generator": "Ninja",
+    "cmake.configureSettings": {
+        "CMAKE_TOOLCHAIN_FILE": "${workspaceFolder}/arm-gcc.cmake"
+    },
+
+    // ==================== clangd 终极配置（保持不变） ====================
+    "clangd.path": "clangd",
+    "clangd.arguments": [
+        "--background-index",
+        "--clang-tidy",
+        "--header-insertion=iwyu",
+        "--completion-style=detailed",
+        "--function-arg-placeholders=true",
+        "--all-scopes-completion",
+        "--pretty",
+        "-j=12",
+        "--compile-commands-dir=${workspaceFolder}/build"
+    ],
+
+    // ==================== 彻底关闭微软 C/C++ 插件 ====================
+    "C_Cpp.intelliSenseEngine": "Disabled",
+    "C_Cpp.autocomplete": "Disabled",
+    "C_Cpp.errorSquiggles": "Disabled",
+    "C_Cpp.formatting": "Disabled",
+    "C_Cpp.loggingLevel": "None",
+    "C_Cpp.enhancedColorization": "Disabled",
+    "C_Cpp.default.enabled": false,
+
+    // ==================== clang-format 强制生效（关键补丁） ====================
+    // 1. 强制设置 clang-format.exe 的绝对路径
+    "clang-format.executable": "D:/ARM_Development_Toolchains/ClangFormat/clang-format.exe",
+
+    // 2. 告诉插件去读取项目根目录的 .clang-format 文件
+    "clang-format.style": "file",
+    "clang-format.fallbackStyle": "none",
+
+    // 3. 启用保存时格式化
+    "editor.formatOnSave": true,
+
+    // 4. 确保 C/C++ 文件的默认格式化器是 clang-format 插件
+    "editor.defaultFormatter": "xaver.clang-format",
+    "[c]": {
+        "editor.defaultFormatter": "xaver.clang-format",
+        "editor.formatOnSave": true
+    },
+    "[cpp]": {
+        "editor.defaultFormatter": "xaver.clang-format",
+        "editor.formatOnSave": true
+    },
+    // =====================================================
+
+    "editor.codeActionsOnSave": {
+        "source.fixAll": "explicit"
+    },
+    "files.associations": {
+        "*.h": "c",
+        "*.c": "c"
+    }
+}
