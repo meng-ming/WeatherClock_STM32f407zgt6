@@ -60,7 +60,17 @@ add_subdirectory(Drivers/SPL_F4)
 # 自动扫描所有用户源码（新增文件无需改 CMake！）
 # CONFIGURE_DEPENDS = 关键！每次 configure 都会重新扫描
 # =======================================================
-file(GLOB_RECURSE USER_SOURCES CONFIGURE_DEPENDS "User/Src/*.c")
+file(GLOB_RECURSE USER_SOURCES CONFIGURE_DEPENDS
+    "User/src/*.c"
+    "Drivers/BSP/**/*.c"  #<-- 【新增：扫描所有BSP子目录下的 .c 文件】
+    # 新增的 FreeRTOS 源文件路径
+    "Middleware/FreeRTOS/*.c"
+    "Middleware/FreeRTOS/portable/MemMang/*.c"
+    "Middleware/FreeRTOS/portable/GCC/ARM_CM4F/*.c"
+
+)
+
+
 
 # 启动文件（GCC 版）
 set(STARTUP_FILE "Core/startup/startup_stm32f407xx.s")
@@ -73,9 +83,13 @@ add_executable(${PROJECT_NAME}.elf
 
 # 头文件搜索路径
 target_include_directories(${PROJECT_NAME}.elf PRIVATE
-    User/Inc
+    User/inc
     Drivers/CMSIS
     Drivers/SPL_F4/inc
+    Drivers/BSP/ST7789/inc
+    # 新增的 FreeRTOS 头文件路径
+    Middleware/FreeRTOS/include
+    Middleware/FreeRTOS/portable/GCC/ARM_CM4F
 )
 
 # 链接我们编译好的 SPL 静态库
