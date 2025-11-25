@@ -1,4 +1,5 @@
 #include "BSP_Cortex_M4_Delay.h"
+#include "stm32f4xx.h"
 
 // 静态变量保存每微秒的 tick 数
 static uint32_t s_fac_us = 0;

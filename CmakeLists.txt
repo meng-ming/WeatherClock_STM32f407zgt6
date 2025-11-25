@@ -64,6 +64,8 @@ file(GLOB_RECURSE USER_SOURCES CONFIGURE_DEPENDS
     "User/src/*.c"
     "Drivers/BSP/ST7789/src/*.c"
     "Drivers/BSP/ST7789/font/src/*.c"
+    "Drivers/BSP/ST7789/image/src/*.c"
+    "Drivers/BSP/USART/src/*.c"
     # CorteM4 适配的延时函数
     "Drivers/BSP/CortexM4Delay/src/*.c"
     # 新增的 FreeRTOS 源文件路径
@@ -88,7 +90,9 @@ target_include_directories(${PROJECT_NAME}.elf PRIVATE
     Drivers/SPL_F4/inc
     Drivers/BSP/ST7789/inc
     Drivers/BSP/ST7789/font/inc
+    Drivers/BSP/ST7789/image/inc
     Drivers/BSP/CortexM4Delay/inc
+    Drivers/BSP/USART/inc
     # 新增的 FreeRTOS 头文件路径
     Middleware/FreeRTOS/include
     Middleware/FreeRTOS/portable/GCC/ARM_CM4F
