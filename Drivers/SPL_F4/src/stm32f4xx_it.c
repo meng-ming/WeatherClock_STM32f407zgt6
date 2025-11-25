@@ -22,8 +22,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_it.h"
-#include "main.h"
-#include "uart_driver.h"
 
 /** @addtogroup Template_Project
  * @{
@@ -48,24 +46,6 @@
 void NMI_Handler(void)
 {
 }
-
-extern UART_Handle_t g_esp_uart_handler; // 引入全局句柄
-extern UART_Handle_t g_debug_uart_handler; // 引入全局句柄
-
-// USART2 专用中断函数名
-void USART2_IRQHandler(void)
-{
-    // 调用通用处理函数，并传入 USART2 对应的句柄
-    UART_IRQ_Handler(&g_esp_uart_handler);
-}
-
-// USART2 专用中断函数名
-void USART1_IRQHandler(void)
-{
-    // 调用通用处理函数，并传入 USART2 对应的句柄
-    UART_IRQ_Handler(&g_esp_uart_handler);
-}
-
 /**
  * @brief  This function handles Hard Fault exception.
  * @param  None
@@ -152,7 +132,7 @@ void DebugMon_Handler(void)
  */
 // void SysTick_Handler(void)
 // {
-//   TimingDelay_Decrement();
+//
 // }
 
 /******************************************************************************/

@@ -143,20 +143,26 @@ bool UART_Read_Line(UART_Handle_t* UART_Handle, char* out_buffer, uint16_t max_l
 }
 
 /**
- * @brief 通用处理中断函数，
- * @note 记得在stm32f4xx_it.c中对应的USART中断函数中调用此函数（例如 USART2_IRQHandler）
+ * @brief 通用处理中断函数
  */
-void UART_IRQ_Handle(UART_Handle_t* UART_Handle)
+void UART_IRQ_Handler(UART_Handle_t* UART_Handle)
 {
-    uint8_t rx_data;
-    // 确保当前为 USART 接收数据中断
+    uint8_t  rx_data;
+    uint16_t next_write_index;
+
+    // 1. 检查是否是接收中断
     if (USART_GetITStatus(UART_Handle->USART_X, USART_IT_RXNE) == SET)
     {
+        // 2.立刻读取数据，清除中断标志
         rx_data = USART_ReceiveData(UART_Handle->USART_X);
 
-        // 将收到的字节放入环形缓冲区
-        uint16_t next_write_index = (UART_Handle->rx_write_index + 1) % RX_BUFFER_SIZE;
+        // 3. 计算环形缓冲区索引
+        next_write_index = (UART_Handle->rx_write_index + 1) % RX_BUFFER_SIZE;
 
+        // 4.防溢出检查
+        // 如果写入位置等于读取位置，说明Buffer满了,选择覆盖旧数据
+
+        // 这里我教你个严谨的：如果还没满，才写入
         if (next_write_index != UART_Handle->rx_read_index)
         {
             UART_Handle->rx_buffer[UART_Handle->rx_write_index] = rx_data;
@@ -164,15 +170,33 @@ void UART_IRQ_Handle(UART_Handle_t* UART_Handle)
         }
         else
         {
-            // 溢出处理
-            return;
+            // 记录一个错误标志，或者这里做一个极简的计数
+            // UART_Handle->buffer_overflow_count++;
+            // 实际项目中这里要报警
         }
     }
 
-    // 清除可能发生的错误标志位，例如 ORE (溢出错误)
-    // 经验：读 SR 和 DR 可以清除一些标志位，确保中断不会卡死
+    // 5.【错误处理】这一段必须要有，否则一旦出现溢出(ORE)，中断可能会卡死或者一直进不来
     if (USART_GetFlagStatus(UART_Handle->USART_X, USART_FLAG_ORE) != RESET)
     {
-        (void) USART_ReceiveData(UART_Handle->USART_X); // 读取 DR 清除 ORE 标志位
+        // 读取数据寄存器可以清除 ORE 标志位 (根据STM32手册)
+        (void) USART_ReceiveData(UART_Handle->USART_X);
     }
+}
+
+extern UART_Handle_t g_esp_uart_handler;   // 引入全局句柄
+extern UART_Handle_t g_debug_uart_handler; // 引入全局句柄
+
+// USART2 专用中断函数名
+void USART2_IRQHandler(void)
+{
+    // 调用通用处理函数，并传入 USART2 对应的句柄
+    UART_IRQ_Handler(&g_esp_uart_handler);
+}
+
+// USART1 专用中断函数名
+void USART1_IRQHandler(void)
+{
+    // 调用通用处理函数，并传入 USART1 对应的句柄
+    UART_IRQ_Handler(&g_debug_uart_handler);
 }

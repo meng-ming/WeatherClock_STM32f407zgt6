@@ -1,5 +1,5 @@
 #include "st7789.h"
-#include "BSP_Cortex_M4_Delay.h"
+#include "BSP_Tick_Delay.h"
 
 // ====================================================================
 // ºº×Ö×ÖÄ£Êý¾Ý (16x16)
@@ -122,17 +122,17 @@ void ST7789_Hardware_Init(void)
 void ST7789_Init(void)
 {
     ST7789_Hardware_Init();
-    BSP_Cortex_M4_Delay_Init();
+    BSP_SysTick_Init();
 
     LCD_RST_SET();
-    BSP_Cortex_M4_Delay_ms(10);
+    BSP_Delay_ms(10);
     LCD_RST_CLR();
-    BSP_Cortex_M4_Delay_ms(1);
+    BSP_Delay_ms(1);
     LCD_RST_SET();
-    BSP_Cortex_M4_Delay_ms(50);
+    BSP_Delay_ms(50);
 
     TFT_SEND_CMD(0x11);
-    BSP_Cortex_M4_Delay_ms(10);
+    BSP_Delay_ms(10);
 
     TFT_SEND_CMD(0x3A);
     TFT_SEND_DATA(0x05);
