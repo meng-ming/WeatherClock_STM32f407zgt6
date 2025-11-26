@@ -3,7 +3,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # 取消裸机经典 warning（量产项目必备）
 add_link_options(-Wl,--no-warn-rwx-segments)
-add_compile_options(-Wno-implicit-function-declaration)
+add_compile_options(
+    -Wno-implicit-function-declaration
+    -Wno-misleading-indentation -Wno-unsupported
+)
 
 cmake_minimum_required(VERSION 3.16)
 project(WeatherClock C ASM)
@@ -61,16 +64,18 @@ add_subdirectory(Drivers/SPL_F4)
 # CONFIGURE_DEPENDS = 关键！每次 configure 都会重新扫描
 # =======================================================
 file(GLOB_RECURSE USER_SOURCES CONFIGURE_DEPENDS
-    "User/src/*.c"
-    "User/app/src/*.c"
+    "User/*.c"
+    "Constants/src/*.c"
+    "User/App/src/*.c"
+    "User/App/UI/src/*.c"
+    "User/App/Weather/src/*.c"
     "Drivers/BSP/ST7789/src/*.c"
-    "Drivers/BSP/ST7789/font/src/*.c"
-    "Drivers/BSP/ST7789/image/src/*.c"
+    "Resources/Font/src/*.c"
+    "Resources/Image/src/*.c"
     "Drivers/BSP/USART/src/*.c"
     "Drivers/BSP/ESP32C3/src/*.c"
-
-    # 延时函数
     "Drivers/BSP/SysTickDelay/src/*.c"
+    "Middleware/cJSON/src/*.c"
     # 新增的 FreeRTOS 源文件路径
     # "Middleware/FreeRTOS/*.c"
     # "Middleware/FreeRTOS/portable/MemMang/*.c"
@@ -88,18 +93,20 @@ add_executable(${PROJECT_NAME}.elf
 
 # 头文件搜索路径
 target_include_directories(${PROJECT_NAME}.elf PRIVATE
-    User/inc
-    User/app/inc
+    Constants/inc
+    User/App/UI/inc
+    User/App/Weather/inc
     Drivers/CMSIS
     Drivers/SPL_F4/inc
     Drivers/BSP/ST7789/inc
-    Drivers/BSP/ST7789/font/inc
-    Drivers/BSP/ST7789/image/inc
+    Resources/Font/inc
+    Resources/Image/inc
     Drivers/BSP/SysTickDelay/inc
     Drivers/BSP/USART/inc
     Drivers/BSP/ESP32C3/inc
+    Middleware/cJSON/inc
     # 新增的 FreeRTOS 头文件路径
-    # Middleware/FreeRTOS/include
+    # Middleware/FreeRTOS/inc
     # Middleware/FreeRTOS/portable/GCC/ARM_CM4F
 
 

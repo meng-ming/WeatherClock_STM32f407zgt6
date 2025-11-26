@@ -4,7 +4,7 @@
  */
 
 #include "uart_driver.h"
-#include "global_variable_init.h"
+#include "uart_handle_variable.h"
 #include "misc.h"
 #include "stm32f4xx.h"
 #include "stm32f4xx_gpio.h"
@@ -14,10 +14,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "BSP_Tick_Delay.h"
-
-// 引用外部句柄用于中断服务函数
-extern UART_Handle_t g_esp_uart_handler;
-extern UART_Handle_t g_debug_uart_handler;
 
 // 宏：参数检查
 #define IS_HANDLE_VALID(h) ((h) != NULL && (h)->USART_X != NULL)
