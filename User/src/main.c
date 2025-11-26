@@ -1,93 +1,85 @@
+/**
+ * @file    main.c
+ * @brief   天气时钟项目主入口 (架构重构版)
+ * @note    负责系统初始化和任务调度，具体业务逻辑下沉到 App 层。
+ */
+
+#include "BSP_Tick_Delay.h"
 #include "global_variable_init.h"
 #include "uart_driver.h"
-#include "BSP_Tick_Delay.h"
-#include "esp32_weather.h"
+
+// === 引入应用层模块 ===
+// 注意：这里不需要引入 esp32_module.h 或 esp32_weather.h
+// 因为 main 只跟业务层打交道，不跟驱动层直接说话，这就叫【解耦】
+#include "app_ui.h"
+#include "app_weather.h"
+
 #include <stdio.h>
-#include "st7789.h"
-#include "lcd_font.h"
 
-#define WIFI_SSID "7041"
-#define WIFI_PWD "auto7041"
-#define WEATHER_URL                                                                                \
-    "https://api.seniverse.com/v3/weather/"                                                        \
-    "now.json?key=SyLymtirx8EY1K_Dz&location=beijing&language=en&unit=c"
-
-// UI 刷新辅助函数
-void UI_Refresh_Weather(Weather_Info_t* info)
-{
-    // 1. 清除旧数据的区域 (用背景色填充矩形，防止重叠)
-    // 假设背景是黑色 BLACK，字体是白色 WHITE
-    // 也可以直接全屏清空 TFT_clear()，但会闪屏，局部刷新更好
-
-    // 显示标题
-    lcd_show_string(30, 10, "Weather Clock", &font_16, YELLOW, BLACK);
-
-    // 显示分割线
-    lcd_show_string(10, 30, "--------------------", &font_16, WHITE, BLACK);
-
-    // 显示具体数据
-    // City
-    lcd_show_string(10, 50, "City:", &font_16, GREEN, BLACK);
-    lcd_show_string(60, 50, info->city, &font_16, WHITE, BLACK); // Beijing
-
-    // Weather
-    lcd_show_string(10, 80, "Weat:", &font_16, GREEN, BLACK);
-    lcd_show_string(60, 80, info->weather, &font_16, WHITE, BLACK); // Cloudy
-
-    // Temp
-    lcd_show_string(10, 110, "Temp:", &font_16, GREEN, BLACK);
-    lcd_show_string(60, 110, info->temp, &font_16, RED, BLACK); // 6 C
-
-    // Update Time
-    lcd_show_string(10, 140, "Time:", &font_16, GREEN, BLACK);
-    lcd_show_string(60, 140, info->update_time, &font_16, WHITE, BLACK);
-
-    // 底部状态
-    lcd_show_string(40, 200, "Updated!", &font_16, BLUE, BLACK);
-}
-
+/**
+ * @brief  主程序入口
+ */
 int main(void)
 {
+    // ====================================================
+    // 1. BSP 层初始化 (硬件基础)
+    // ====================================================
+    // 设置中断优先级分组 (FreeRTOS 或 高级应用必备)
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+
+    // 初始化滴答定时器 (用于 BSP_Delay_ms)
     BSP_SysTick_Init();
+
+    // 初始化全局变量 (字库等)
     Global_Variable_Init();
+
+    // 初始化调试串口 (USART1 -> 电脑)
+    // 注意：ESP32 的串口 (USART2) 不需要在这里显式初始化
+    // 因为它属于 Weather 模块的私有资源，应该由 App_Weather_Init 内部去调驱动初始化
     UART_Init(&g_debug_uart_handler);
-    UART_Init(&g_esp_uart_handler);
-    ST7789_Init();
 
-    printf("\r\n=== Final Weather Clock Demo ===\r\n");
+    printf("\r\n");
+    printf("=============================================\r\n");
+    printf("    STM32 Weather Clock (Architecture V2.0)  \r\n");
+    printf("    Build Date: %s %s\r\n", __DATE__, __TIME__);
+    printf("=============================================\r\n");
 
-    if (!ESP32_Weather_Init(&g_esp_uart_handler))
-    {
-        printf("ESP32 Init Failed!\r\n");
-        while (1)
-            ;
-    }
+    // ====================================================
+    // 2. App 层初始化 (应用业务)
+    // ====================================================
 
-    if (!ESP32_WiFi_Connect(&g_esp_uart_handler, WIFI_SSID, WIFI_PWD))
-    {
-        printf("WiFi Connect Failed!\r\n");
-        while (1)
-            ;
-    }
+    // A. 初始化 UI 系统
+    // 这一步会让屏幕亮起，绘制出背景框、标题栏和静态标签
+    printf("[Main] Init UI System...\r\n");
+    App_UI_Init();
 
-    Weather_Info_t info;
-    if (ESP32_Get_Weather(&g_esp_uart_handler, WEATHER_URL, &info, 15000))
-    {
-        Weather_Print_Info(&info); // 串口打印保持
-                                   // === 核心：上屏显示 ===
-        TFT_clear();               // 为了简单先全刷，防止残影
-        UI_Refresh_Weather(&info);
+    // 此时屏幕应该显示框架，底部可能有默认状态或空
 
-        // 休息
-        BSP_Delay_ms(60000); // 1分钟后刷新
-    }
-    else
-    {
-        printf("Get Weather Failed!\r\n");
-        lcd_show_string(40, 200, "Update Fail!", &font_16, RED, BLACK);
-        BSP_Delay_ms(5000);
-    }
+    // B. 初始化天气服务系统
+    // 关键点：【依赖注入】
+    // 我们告诉 Weather 模块："你有新数据了就调 App_UI_Update，有状态了就调 App_UI_ShowStatus"
+    // 这样 Weather 模块不需要知道 UI 模块的具体实现，只要符合函数签名即可
+    printf("[Main] Init Weather Service...\r\n");
+    App_Weather_Init(App_UI_Update, App_UI_ShowStatus);
+
+    // ====================================================
+    // 3. 超级循环 (Super Loop) / 任务调度
+    // ====================================================
+    printf("[Main] System Running...\r\n");
 
     while (1)
-        BSP_Delay_ms(1000);
+    {
+        // 调度天气服务任务
+        // 这是一个非阻塞的状态机，每次执行只需几微秒到几毫秒
+        // 它负责管理 AT 指令收发、重试、JSON 解析、定时更新等所有脏活累活
+        App_Weather_Task();
+
+        // 可以在这里添加其他非阻塞任务，例如：
+        // Key_Scan();      // 按键扫描
+        // LED_Blink();     // 运行指示灯
+
+        // 稍微让出 CPU，降低功耗 (在裸机系统中非必须，但推荐)
+        // 如果将来上 FreeRTOS，这里就是 vTaskDelay
+        BSP_Delay_ms(5);
+    }
 }

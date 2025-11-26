@@ -62,11 +62,13 @@ add_subdirectory(Drivers/SPL_F4)
 # =======================================================
 file(GLOB_RECURSE USER_SOURCES CONFIGURE_DEPENDS
     "User/src/*.c"
+    "User/app/src/*.c"
     "Drivers/BSP/ST7789/src/*.c"
     "Drivers/BSP/ST7789/font/src/*.c"
     "Drivers/BSP/ST7789/image/src/*.c"
     "Drivers/BSP/USART/src/*.c"
     "Drivers/BSP/ESP32C3/src/*.c"
+
     # 延时函数
     "Drivers/BSP/SysTickDelay/src/*.c"
     # 新增的 FreeRTOS 源文件路径
@@ -87,6 +89,7 @@ add_executable(${PROJECT_NAME}.elf
 # 头文件搜索路径
 target_include_directories(${PROJECT_NAME}.elf PRIVATE
     User/inc
+    User/app/inc
     Drivers/CMSIS
     Drivers/SPL_F4/inc
     Drivers/BSP/ST7789/inc

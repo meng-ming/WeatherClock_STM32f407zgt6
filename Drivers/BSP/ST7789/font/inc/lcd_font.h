@@ -34,7 +34,7 @@ typedef struct
 } CN_Font_16_t;
 
 /* 对外显示接口 */
-void lcd_show_string(uint16_t           x,
+void LCD_Show_String(uint16_t           x,
                      uint16_t           y,
                      const char*        str,
                      const font_info_t* font,

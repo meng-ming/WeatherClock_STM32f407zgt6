@@ -9,7 +9,7 @@
  * h: 字符高度
  * size: 字模数据字节数
  */
-static void lcd_draw_glyph_base(uint16_t       x,
+static void LCD_Draw_Glyph_Base(uint16_t       x,
                                 uint16_t       y,
                                 uint16_t       w,
                                 uint16_t       h,
@@ -75,7 +75,7 @@ end:
 // ----------------------------------------------------------------------------
 // 公共接口：通用字符串显示
 // ----------------------------------------------------------------------------
-void lcd_show_string(uint16_t           x,
+void LCD_Show_String(uint16_t           x,
                      uint16_t           y,
                      const char*        str,
                      const font_info_t* font,
@@ -108,7 +108,7 @@ void lcd_show_string(uint16_t           x,
                 uint32_t char_size = (font->ascii_w * font->ascii_h) / 8;
                 uint32_t offset    = (*str - 32) * char_size;
 
-                lcd_draw_glyph_base(cursor_x,
+                LCD_Draw_Glyph_Base(cursor_x,
                                     cursor_y,
                                     font->ascii_w,
                                     font->ascii_h,
@@ -166,7 +166,7 @@ void lcd_show_string(uint16_t           x,
             if (p_target_data)
             {
                 // 绘制汉字
-                lcd_draw_glyph_base(cursor_x,
+                LCD_Draw_Glyph_Base(cursor_x,
                                     cursor_y,
                                     font->cn_w,
                                     font->cn_h,
