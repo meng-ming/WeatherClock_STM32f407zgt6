@@ -1,4 +1,5 @@
 #include "global_variable_init.h"
+#include <string.h>
 
 // 字库数组
 extern const HZK_16_t HZK_16[];       //
@@ -53,3 +54,24 @@ UART_Handle_t g_debug_uart_handler = {
     .RX_AF                     = GPIO_AF_USART1,
     // 缓冲/索引0默认
 };
+
+void Global_Variable_Init(void)
+{
+    // UART句柄缓冲区初始化
+    memset((void*) g_esp_uart_handler.rx_buffer, 0, RX_BUFFER_SIZE);
+    g_esp_uart_handler.rx_read_index  = 0;
+    g_esp_uart_handler.rx_write_index = 0;
+
+    memset((void*) g_debug_uart_handler.rx_buffer, 0, RX_BUFFER_SIZE);
+    g_debug_uart_handler.rx_read_index  = 0;
+    g_debug_uart_handler.rx_write_index = 0;
+
+    // 环形缓冲区必须清零
+    g_esp_uart_handler.rx_read_index   = 0;
+    g_esp_uart_handler.rx_write_index  = 0;
+    g_esp_uart_handler.rx_overflow_cnt = 0;
+
+    g_debug_uart_handler.rx_read_index   = 0;
+    g_debug_uart_handler.rx_write_index  = 0;
+    g_debug_uart_handler.rx_overflow_cnt = 0;
+}

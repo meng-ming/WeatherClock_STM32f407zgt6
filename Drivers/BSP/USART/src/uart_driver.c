@@ -1,4 +1,5 @@
 #include "uart_driver.h"
+#include "global_variable_init.h"
 #include "misc.h"
 #include "stm32f4xx.h"
 #include "stm32f4xx_gpio.h"
@@ -6,6 +7,10 @@
 #include "stm32f4xx_usart.h"
 #include "string.h"
 #include <stdint.h>
+#include "BSP_Tick_Delay.h"
+
+extern UART_Handle_t g_esp_uart_handler;
+extern UART_Handle_t g_debug_uart_handler;
 
 // 内部函数，发送一个字节
 static void UART_Send_Byte(USART_TypeDef* USART_X, uint8_t data)
@@ -91,112 +96,114 @@ void UART_Send_AT_Command(UART_Handle_t* UART_Handle, const char* command)
     UART_Send_Data(UART_Handle, "\r\n", 2);
 }
 
-/**
- * @brief 从环形缓冲区中读取一行数据 (以 \n 结束)
- */
-bool UART_Read_Line(UART_Handle_t* UART_Handle, char* out_buffer, uint16_t max_len)
+/* ========================== 环形缓冲区接口实现 ========================== */
+
+uint16_t UART_RingBuf_Available(UART_Handle_t* handle)
 {
-    // 逻辑不变，但使用 UART_Handle-> 访问缓冲区
-    uint16_t start_index   = UART_Handle->rx_read_index;
-    bool     found_newline = false;
-
-    // 1. 扫描缓冲区
-    while (start_index != UART_Handle->rx_write_index)
-    {
-        if (UART_Handle->rx_buffer[start_index] == '\n')
-        {
-            found_newline = true;
-            break;
-        }
-        start_index = (start_index + 1) % RX_BUFFER_SIZE;
-    }
-
-    if (found_newline)
-    {
-        // 2. 拷贝数据并移动读指针
-        uint16_t i = 0;
-        __disable_irq(); // 关中断！
-
-        while (UART_Handle->rx_read_index != start_index)
-        {
-            if (i < max_len - 1)
-            {
-                out_buffer[i++] = UART_Handle->rx_buffer[UART_Handle->rx_read_index];
-            }
-            UART_Handle->rx_read_index = (UART_Handle->rx_read_index + 1) % RX_BUFFER_SIZE;
-        }
-
-        // 拷贝最后一个 \n 字符并跳过
-        if (i < max_len - 1)
-        {
-            out_buffer[i++] = UART_Handle->rx_buffer[UART_Handle->rx_read_index];
-        }
-        UART_Handle->rx_read_index = (UART_Handle->rx_read_index + 1) % RX_BUFFER_SIZE;
-
-        __enable_irq(); // 开中断
-
-        out_buffer[i] = '\0';
-        return true;
-    }
-
-    return false;
+    return (RX_BUFFER_SIZE + handle->rx_write_index - handle->rx_read_index) % RX_BUFFER_SIZE;
 }
 
-/**
- * @brief 通用处理中断函数
- */
-void UART_IRQ_Handler(UART_Handle_t* UART_Handle)
+uint8_t UART_RingBuf_ReadByte(UART_Handle_t* handle, uint8_t* pData)
 {
-    uint8_t  rx_data;
-    uint16_t next_write_index;
+    if (handle->rx_read_index == handle->rx_write_index)
+        return 0; // 空
 
-    // 1. 检查是否是接收中断
-    if (USART_GetITStatus(UART_Handle->USART_X, USART_IT_RXNE) == SET)
+    *pData                = handle->rx_buffer[handle->rx_read_index];
+    handle->rx_read_index = (handle->rx_read_index + 1) % RX_BUFFER_SIZE;
+    return 1;
+}
+
+uint16_t
+UART_RingBuf_ReadLine(UART_Handle_t* handle, char* buf, uint16_t max_len, uint32_t timeout_ms)
+{
+    uint32_t start = BSP_GetTick_ms();
+    uint16_t pos   = 0;
+    uint8_t  ch;
+
+    while ((BSP_GetTick_ms() - start) < timeout_ms)
     {
-        // 2.立刻读取数据，清除中断标志
-        rx_data = USART_ReceiveData(UART_Handle->USART_X);
-
-        // 3. 计算环形缓冲区索引
-        next_write_index = (UART_Handle->rx_write_index + 1) % RX_BUFFER_SIZE;
-
-        // 4.防溢出检查
-        // 如果写入位置等于读取位置，说明Buffer满了,选择覆盖旧数据
-
-        // 这里我教你个严谨的：如果还没满，才写入
-        if (next_write_index != UART_Handle->rx_read_index)
+        if (UART_RingBuf_ReadByte(handle, &ch))
         {
-            UART_Handle->rx_buffer[UART_Handle->rx_write_index] = rx_data;
-            UART_Handle->rx_write_index                         = next_write_index;
+            if (pos < max_len - 1)
+                buf[pos++] = ch;
+
+            if (ch == '\n')
+            {
+                buf[pos] = '\0';
+                // 去掉前面的 \r
+                if (pos > 0 && buf[pos - 1] == '\r')
+                    buf[pos - 1] = '\0';
+                return pos;
+            }
         }
         else
         {
-            // 记录一个错误标志，或者这里做一个极简的计数
-            // UART_Handle->buffer_overflow_count++;
-            // 实际项目中这里要报警
+            BSP_Delay_us(50); // 微小延时，省CPU
         }
     }
 
-    // 5.【错误处理】这一段必须要有，否则一旦出现溢出(ORE)，中断可能会卡死或者一直进不来
-    if (USART_GetFlagStatus(UART_Handle->USART_X, USART_FLAG_ORE) != RESET)
-    {
-        // 读取数据寄存器可以清除 ORE 标志位 (根据STM32手册)
-        (void) USART_ReceiveData(UART_Handle->USART_X);
-    }
+    buf[pos] = '\0';
+    return pos; // 超时返回
 }
 
-extern UART_Handle_t g_esp_uart_handler;   // 引入全局句柄
-extern UART_Handle_t g_debug_uart_handler; // 引入全局句柄
+void UART_RingBuf_Clear(UART_Handle_t* handle)
+{
+    handle->rx_read_index   = 0;
+    handle->rx_write_index  = 0;
+    handle->rx_overflow_cnt = 0;
+}
 
-// USART2 专用中断函数名
+/* ========================== 中断服务函数（必须放在 .c 文件） ========================== */
+
+/* ESP32 模块串口中断 */
 void USART2_IRQHandler(void)
 {
-    // 调用通用处理函数，并传入 USART2 对应的句柄
-    UART_IRQ_Handler(&g_esp_uart_handler);
+    if (USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
+    {
+        uint8_t data = (uint8_t) USART_ReceiveData(USART2);
+
+        uint16_t next_write = (g_esp_uart_handler.rx_write_index + 1) % RX_BUFFER_SIZE;
+
+        if (next_write != g_esp_uart_handler.rx_read_index)
+        {
+            // 缓冲区未满，正常写入
+            g_esp_uart_handler.rx_buffer[g_esp_uart_handler.rx_write_index] = data;
+            g_esp_uart_handler.rx_write_index                               = next_write;
+        }
+        else
+        {
+            // 缓冲区满：覆盖最旧数据（最新优先策略）+ 溢出计数
+            g_esp_uart_handler.rx_overflow_cnt++;
+            g_esp_uart_handler.rx_read_index =
+                (g_esp_uart_handler.rx_read_index + 1) % RX_BUFFER_SIZE; // 丢弃最旧
+            g_esp_uart_handler.rx_buffer[g_esp_uart_handler.rx_write_index] = data;
+            g_esp_uart_handler.rx_write_index                               = next_write;
+        }
+    }
+    // RXNE 标志读取 DR 后自动清除，无需手动清
 }
 
-// USART1 专用中断函数名
+/* Debug 串口中断（USART1） */
 void USART1_IRQHandler(void)
 {
-    // 调用通用处理函数，并传入 USART1 对应的句柄
-    UART_IRQ_Handler(&g_debug_uart_handler);
+    if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+    {
+        uint8_t data = (uint8_t) USART_ReceiveData(USART1);
+
+        uint16_t next_write = (g_debug_uart_handler.rx_write_index + 1) % RX_BUFFER_SIZE;
+
+        if (next_write != g_debug_uart_handler.rx_read_index)
+        {
+            g_debug_uart_handler.rx_buffer[g_debug_uart_handler.rx_write_index] = data;
+            g_debug_uart_handler.rx_write_index                                 = next_write;
+        }
+        else
+        {
+            g_debug_uart_handler.rx_overflow_cnt++;
+            g_debug_uart_handler.rx_read_index =
+                (g_debug_uart_handler.rx_read_index + 1) % RX_BUFFER_SIZE;
+            g_debug_uart_handler.rx_buffer[g_debug_uart_handler.rx_write_index] = data;
+            g_debug_uart_handler.rx_write_index                                 = next_write;
+        }
+    }
 }

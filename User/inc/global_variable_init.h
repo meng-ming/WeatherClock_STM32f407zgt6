@@ -23,4 +23,6 @@ extern font_info_t font_16;
 extern UART_Handle_t g_esp_uart_handler;
 extern UART_Handle_t g_debug_uart_handler;
 
+void Global_Variable_Init(void);
+
 #endif
