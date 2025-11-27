@@ -12,9 +12,18 @@
  */
 typedef struct
 {
-    uint16_t index;      ///< 汉字索引 (或内码)
-    uint8_t  matrix[32]; ///< 点阵数据 (16*16/8 = 32字节)
+    const char* index_str;  ///< 汉字索引 字符串指针，自动适应编码
+    uint8_t     matrix[32]; ///< 点阵数据 (16*16/8 = 32字节)
 } HZK_16_t;
+
+/**
+ * @brief 16点阵汉字结构体
+ */
+typedef struct
+{
+    const char* index_str;  ///< 汉字索引 字符串指针，自动适应编码
+    uint8_t     matrix[60]; ///< 点阵数据 ((20+7)/8*20 = 60字节)
+} HZK_Week_20_t;
 
 /**
  * @brief 字体配置描述符
@@ -45,14 +54,18 @@ typedef struct
  * ================================================================== */
 
 // 原始字库数组 (定义在 Resources/Font/src/*.c 中)
-extern const HZK_16_t HZK_16[];
-extern const uint8_t  ASCII_8x16[];
-extern const uint8_t  gImage_image[];
+extern const HZK_16_t      HZK_16[];
+extern const HZK_Week_20_t HZK_Week_20[];
+extern const uint8_t       ASCII_8x16[];
+extern const uint8_t       ASCII_10x20[];
+extern const uint8_t       ASCII_30x60[];
 
 /**
- * @brief 全局 16 点阵字体配置对象
+ * @brief 全局点阵字体配置对象
  * @note  给 app_ui.c 使用
  */
-extern font_info_t font_16; //
+extern font_info_t font_16;
+extern font_info_t font_time_20;
+extern font_info_t font_time_30x60;
 
 #endif /* __FONT_VARIABLE_H */

@@ -166,61 +166,71 @@ void ST7789_Init(void)
     TFT_SEND_DATA(0xA1);
 
     // Gamma Setting (如果不准可微调)
-    TFT_SEND_CMD(0xE0);
+    TFT_SEND_CMD(0xE0); // Set Gamma
     TFT_SEND_DATA(0xD0);
-    TFT_SEND_DATA(0x04);
-    TFT_SEND_DATA(0x0D);
-    TFT_SEND_DATA(0x11);
-    TFT_SEND_DATA(0x13);
-    TFT_SEND_DATA(0x2B);
+    TFT_SEND_DATA(0x05);
+    TFT_SEND_DATA(0x09);
+    TFT_SEND_DATA(0x09);
+    TFT_SEND_DATA(0x08);
+    TFT_SEND_DATA(0x14);
+    TFT_SEND_DATA(0x28);
+    TFT_SEND_DATA(0x33);
     TFT_SEND_DATA(0x3F);
-    TFT_SEND_DATA(0x54);
-    TFT_SEND_DATA(0x4C);
-    TFT_SEND_DATA(0x18);
-    TFT_SEND_DATA(0x0D);
-    TFT_SEND_DATA(0x0B);
-    TFT_SEND_DATA(0x1F);
-    TFT_SEND_DATA(0x23);
+    TFT_SEND_DATA(0x07);
+    TFT_SEND_DATA(0x13);
+    TFT_SEND_DATA(0x14);
+    TFT_SEND_DATA(0x28);
+    TFT_SEND_DATA(0x30);
 
-    TFT_SEND_CMD(0xE1);
+    TFT_SEND_CMD(0XE1); // Set Gamma
     TFT_SEND_DATA(0xD0);
-    TFT_SEND_DATA(0x04);
-    TFT_SEND_DATA(0x0C);
-    TFT_SEND_DATA(0x11);
+    TFT_SEND_DATA(0x05);
+    TFT_SEND_DATA(0x09);
+    TFT_SEND_DATA(0x09);
+    TFT_SEND_DATA(0x08);
+    TFT_SEND_DATA(0x03);
+    TFT_SEND_DATA(0x24);
+    TFT_SEND_DATA(0x32);
+    TFT_SEND_DATA(0x32);
+    TFT_SEND_DATA(0x3B);
+    TFT_SEND_DATA(0x14);
     TFT_SEND_DATA(0x13);
-    TFT_SEND_DATA(0x2C);
-    TFT_SEND_DATA(0x3F);
-    TFT_SEND_DATA(0x44);
-    TFT_SEND_DATA(0x51);
+    TFT_SEND_DATA(0x28);
     TFT_SEND_DATA(0x2F);
-    TFT_SEND_DATA(0x1F);
-    TFT_SEND_DATA(0x1F);
-    TFT_SEND_DATA(0x20);
-    TFT_SEND_DATA(0x23);
 
     TFT_SEND_CMD(0x20); // Display Inversion On
     TFT_SEND_CMD(0x29); // Display On
 }
 
-void TFT_Fill_Rect(
-    uint16_t x_start, uint16_t y_start, uint16_t x_end, uint16_t y_end, uint16_t color)
+void TFT_Fill_Rect(uint16_t x_start, uint16_t y_start, uint16_t w, uint16_t h, uint16_t color)
 {
-    // 边界保护
+    // 1. 参数合法性基础检查：如果宽或高为0，直接返回，不浪费时间
+    if (w == 0 || h == 0)
+        return;
+
+    // 2. 起始坐标越界检查
+    if (x_start >= TFT_COLUMN_NUMBER || y_start >= TFT_LINE_NUMBER)
+        return;
+
+    // 3. 计算结束坐标 (注意：坐标是从0开始的，所以要减1)
+    uint16_t x_end = x_start + w - 1;
+    uint16_t y_end = y_start + h - 1;
+
+    // 4. 右/下边界 硬件裁剪 (Clipping)
+    // 如果计算出的结束坐标超出了屏幕最大分辨率，强制限制在边界上
     if (x_end >= TFT_COLUMN_NUMBER)
         x_end = TFT_COLUMN_NUMBER - 1;
     if (y_end >= TFT_LINE_NUMBER)
         y_end = TFT_LINE_NUMBER - 1;
 
-    uint32_t total_pixels = (uint32_t) (x_end - x_start + 1) * (y_end - y_start + 1);
-
-    // 设置写入窗口
-    TFT_SEND_CMD(0x2A);
+    // 重新设置窗口指令
+    TFT_SEND_CMD(0x2A); // Column Address Set
     TFT_SEND_DATA(x_start >> 8);
     TFT_SEND_DATA(x_start & 0xFF);
     TFT_SEND_DATA(x_end >> 8);
     TFT_SEND_DATA(x_end & 0xFF);
 
-    TFT_SEND_CMD(0x2B);
+    TFT_SEND_CMD(0x2B); // Row Address Set
     TFT_SEND_DATA(y_start >> 8);
     TFT_SEND_DATA(y_start & 0xFF);
     TFT_SEND_DATA(y_end >> 8);
@@ -228,13 +238,18 @@ void TFT_Fill_Rect(
 
     TFT_SEND_CMD(0x2C); // Memory Write
 
+    // 准备颜色数据
     uint8_t color_h = color >> 8;
     uint8_t color_l = color & 0xFF;
+
+    // 计算实际需要发送的像素点总数
+    // 注意：这里必须用处理过后的 x_end/y_end 来计算，否则会溢出写
+    uint32_t total_pixels = (uint32_t) (x_end - x_start + 1) * (y_end - y_start + 1);
 
     LCD_DC_SET();
     LCD_CS_CLR();
 
-    // 批量发送颜色数据
+    // 纯阻塞发送
     while (total_pixels--)
     {
         ST7789_SPI_SendByte(color_h);
@@ -246,7 +261,7 @@ void TFT_Fill_Rect(
 
 void TFT_full(uint16_t color)
 {
-    TFT_Fill_Rect(0, 0, TFT_COLUMN_NUMBER - 1, TFT_LINE_NUMBER - 1, color);
+    TFT_Fill_Rect(0, 0, TFT_COLUMN_NUMBER, TFT_LINE_NUMBER, color);
 }
 
 void TFT_clear(void)

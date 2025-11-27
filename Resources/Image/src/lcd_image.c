@@ -7,7 +7,7 @@
  * @param w, h: 图片宽、高
  * @param pData: 图片数组指针 (const uint8_t*)
  */
-void TFT_ShowImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint8_t* pData)
+void LCD_Show_Image(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const unsigned char* pData)
 {
     uint32_t size = w * h * 2; // RGB565 每个像素 2 字节
     uint32_t i;

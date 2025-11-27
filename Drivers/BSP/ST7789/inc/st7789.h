@@ -110,14 +110,13 @@ void TFT_full(uint16_t color);
 void TFT_clear(void);
 
 /**
- * @brief  在指定区域填充颜色
- * @param  x_start: 起始 X 坐标
- * @param  y_start: 起始 Y 坐标
- * @param  x_end:   结束 X 坐标
- * @param  y_end:   结束 Y 坐标
- * @param  color:   填充颜色
+ * @brief  在指定区域填充颜色 (使用左上角坐标 + 长宽)
+ * @param  x_start: 起始 X 坐标 (0 ~ TFT_COLUMN_NUMBER-1)
+ * @param  y_start: 起始 Y 坐标 (0 ~ TFT_LINE_NUMBER-1)
+ * @param  w:       填充宽度
+ * @param  h:       填充高度
+ * @param  color:   填充颜色 (RGB565)
  */
-void TFT_Fill_Rect(
-    uint16_t x_start, uint16_t y_start, uint16_t x_end, uint16_t y_end, uint16_t color);
+void TFT_Fill_Rect(uint16_t x_start, uint16_t y_start, uint16_t w, uint16_t h, uint16_t color);
 
 #endif /* __ST7789_H */

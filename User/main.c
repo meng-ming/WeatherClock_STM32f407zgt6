@@ -24,8 +24,7 @@ int main(void)
     // ====================================================
     // 1. BSP 层初始化 (硬件基础)
     // ====================================================
-    // 设置中断优先级分组 (FreeRTOS 或 高级应用必备)
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+    // 设置中断优先级分组 (FreeRTOS 或 高级应用必备) NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 
     // 初始化滴答定时器 (用于 BSP_Delay_ms)
     BSP_SysTick_Init();
@@ -69,7 +68,7 @@ int main(void)
         // 调度天气服务任务
         // 这是一个非阻塞的状态机，每次执行只需几微秒到几毫秒
         // 它负责管理 AT 指令收发、重试、JSON 解析、定时更新等所有脏活累活
-        App_Weather_Task();
+        // App_Weather_Task();
 
         // 可以在这里添加其他非阻塞任务，例如：
         // Key_Scan();      // 按键扫描
