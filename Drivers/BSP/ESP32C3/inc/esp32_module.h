@@ -47,4 +47,25 @@ bool ESP_Send_AT(const char* cmd, const char* expect_resp, uint32_t timeout_ms, 
  */
 bool ESP_WiFi_Connect(const char* ssid, const char* pwd, uint8_t retry);
 
+/**
+ * @brief  从 ESP32 获取网络时间并同步到 RTC
+ * @retval true: 同步成功, false: 失败
+ */
+bool ESP_SNTP_Sync_RTC(void);
+
+/**
+ * @brief 开启 ESP32 的 SNTP 功能
+ * @note 只需连上 WIFI 之后配置一次
+ * @retval true: 设置成功
+ * @retval false: 设置失败
+ */
+bool ESP_SNTP_Config(void);
+
+/**
+ * @brief  使用 AT+HTTPCLIENT 发送 GET 请求
+ * @param  url: 完整的 URL (如 "http://api.xxx.com/...")
+ * @retval true: 指令发送成功
+ */
+bool ESP_HTTP_Get(const char* url, uint32_t timeout_ms);
+
 #endif /* __ESP32_MODULE_H */

@@ -1,5 +1,6 @@
 #ifndef __SYS_LOG_H
 #define __SYS_LOG_H
+#include <stdio.h>
 
 // 定义日志开关 (1: 开启, 0: 关闭)
 // 量产时改为 0，全世界都清净了
@@ -13,7 +14,9 @@
 
 #if SYS_LOG_ENABLE
 // 普通日志
-#define LOG_I(fmt, ...) printf(LOG_CLR_GREEN "[INFO] " fmt LOG_CLR_RESET "\r\n", ##__VA_ARGS__)
+#define LOG_I(fmt, ...) printf("[INFO] " fmt LOG_CLR_RESET "\r\n", ##__VA_ARGS__)
+// 警告日志 (黄色高亮)
+#define LOG_W(fmt, ...) printf(LOG_CLR_YELLOW "[ERROR] " fmt LOG_CLR_RESET "\r\n", ##__VA_ARGS__)
 // 错误日志 (红色高亮)
 #define LOG_E(fmt, ...) printf(LOG_CLR_RED "[ERROR] " fmt LOG_CLR_RESET "\r\n", ##__VA_ARGS__)
 // 调试日志
@@ -23,6 +26,7 @@
 #else
 // 关闭时，宏展开为空，完全不占代码空间
 #define LOG_I(fmt, ...)
+#define LOG_W(fmt, ...)
 #define LOG_E(fmt, ...)
 #define LOG_D(fmt, ...)
 #define LOG_RAW(fmt, ...)

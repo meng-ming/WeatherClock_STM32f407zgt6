@@ -99,5 +99,5 @@ extern const unsigned char gImage_weather_qiya[];
 
 // --- WIFI 图标 ---
 extern const unsigned char gImage_WIFI[];
-
+extern const unsigned char gImage_WIFI_Disconnected[];
 #endif /* __APP_UI_CONF_H */

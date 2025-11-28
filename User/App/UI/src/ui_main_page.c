@@ -1,10 +1,12 @@
 #include "ui_main_page.h"
+#include "app_data.h"
 #include "app_ui_config.h"
 #include "lcd_image.h"
 #include "st7789.h"
 #include "lcd_font.h"
 #include "font_variable.h" // font_16
 #include <stdio.h>
+#include <string.h>
 
 void UI_MainPage_Init(void)
 {
@@ -20,9 +22,6 @@ void UI_MainPage_Init(void)
 
     // --- 时间 ---
     TFT_Fill_Rect(BOX_TIME_X, BOX_TIME_Y, BOX_TIME_W, BOX_TIME_H, UI_TIME_BG);
-    LCD_Show_String(30, 35, "23:25", &font_time_30x60, UI_TEXT_WHITE, UI_TIME_BG);
-    LCD_Show_String(182, 68, "56", &font_time_20, UI_TEXT_WHITE, UI_TIME_BG);
-    LCD_Show_String(35, 95, "2025-11-27 星期一", &font_time_20, UI_TEXT_WHITE, UI_TIME_BG);
 
     // --- 当前天气 ---
     TFT_Fill_Rect(BOX_ICON_X, BOX_ICON_Y, BOX_ICON_W, BOX_ICON_H, UI_ICON_BG);
@@ -95,4 +94,25 @@ void UI_MainPage_Update(const App_Weather_Data_t* data)
         BOX_LIST_X + 10, BOX_LIST_Y + 10, data->weather, &font_16, UI_TEXT_WHITE, UI_LIST_BG);
     LCD_Show_String(
         BOX_LIST_X + 10, BOX_LIST_Y + 40, data->temp, &font_16, UI_TEXT_WHITE, UI_LIST_BG);
+}
+
+void APP_UI_UpdateCalendar(BSP_RTC_Calendar_t cal)
+{
+    char time_buf[8];
+    char date_buf[32];
+
+    snprintf(time_buf, sizeof(time_buf), "%02d:%02d", cal.hour, cal.min);
+    LCD_Show_String(30, 35, time_buf, &font_time_30x60, UI_TEXT_WHITE, UI_TIME_BG);
+
+    snprintf(time_buf, sizeof(time_buf), "%02d", cal.sec);
+    LCD_Show_String(182, 68, time_buf, &font_time_20, UI_TEXT_WHITE, UI_TIME_BG);
+
+    snprintf(date_buf,
+             sizeof(date_buf),
+             "%04d-%02d-%02d %s",
+             cal.year,
+             cal.month,
+             cal.date,
+             WEEK_STR[cal.week]);
+    LCD_Show_String(35, 95, date_buf, &font_time_20, UI_TEXT_WHITE, UI_TIME_BG);
 }

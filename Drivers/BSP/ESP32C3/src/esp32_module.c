@@ -5,11 +5,19 @@
 
 #include "esp32_module.h"
 #include "BSP_Tick_Delay.h"
+#include <stdint.h>
 #include <string.h>
 #include <stdio.h>
+#include "sys_log.h"
+#include "uart_driver.h"
+#include "bsp_rtc.h"
 
 // 内部静态变量：保存 UART 句柄
 static UART_Handle_t* g_module_uart = NULL;
+
+// 月份缩写映射表
+static const char* MONTH_STR[] = {
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
 // === 异常处理宏 ===
 // 检查模块是否已初始化
@@ -18,7 +26,7 @@ static UART_Handle_t* g_module_uart = NULL;
     {                                                                                              \
         if (g_module_uart == NULL)                                                                 \
         {                                                                                          \
-            printf("[ESP Error] Driver Not Initialized!\r\n");                                     \
+            LOG_E("[ESP Error] Driver Not Initialized!");                                          \
             return false;                                                                          \
         }                                                                                          \
     } while (0)
@@ -29,7 +37,7 @@ static UART_Handle_t* g_module_uart = NULL;
     {                                                                                              \
         if ((ptr) == NULL)                                                                         \
         {                                                                                          \
-            printf("[ESP Error] Invalid Parameter (NULL)\r\n");                                    \
+            LOG_E("[ESP Error] Invalid Parameter (NULL)");                                         \
             return false;                                                                          \
         }                                                                                          \
     } while (0)
@@ -41,7 +49,7 @@ void ESP_Module_Init(UART_Handle_t* uart_handler)
 {
     if (uart_handler == NULL)
     {
-        printf("[ESP Error] Init failed: Handle is NULL\r\n");
+        LOG_E("[ESP Error] Init failed: Handle is NULL");
         return;
     }
 
@@ -53,7 +61,7 @@ void ESP_Module_Init(UART_Handle_t* uart_handler)
     // 清理环境
     UART_RingBuf_Clear(g_module_uart);
 
-    // printf("[ESP Info] Module Init OK\r\n");
+    LOG_I("[ESP Info] Module Init OK");
 }
 
 /**
@@ -96,7 +104,7 @@ bool ESP_Send_AT(const char* cmd, const char* expect_resp, uint32_t timeout_ms, 
             if (UART_RingBuf_ReadLine(g_module_uart, line_buf, sizeof(line_buf), 20) > 0)
             {
                 // 调试打印 (排查问题时打开)
-                // printf("[ESP RX] %s\r\n", line_buf);
+                // LOG_D("[ESP RX] %s", line_buf);
 
                 // A. 成功匹配
                 if (strstr(line_buf, expect_resp) != NULL)
@@ -108,7 +116,7 @@ bool ESP_Send_AT(const char* cmd, const char* expect_resp, uint32_t timeout_ms, 
                 // B. 显式错误 (收到 ERROR) -> 立即终止本次等待，进入下一次重试
                 if (strstr(line_buf, "ERROR") != NULL)
                 {
-                    // printf("[ESP Error] Cmd '%s' -> ERROR\r\n", cmd);
+                    LOG_E("[ESP Error] Cmd '%s' -> ERROR", cmd);
                     break;
                 }
 
@@ -129,7 +137,7 @@ bool ESP_Send_AT(const char* cmd, const char* expect_resp, uint32_t timeout_ms, 
         // 本次尝试失败，准备重试
         if (i < retry)
         {
-            // printf("[ESP Info] Retry %d/%d: %s\r\n", i+1, retry, cmd);
+            LOG_D("[ESP Info] Retry %d/%d: %s\r\n", i + 1, retry, cmd);
             BSP_Delay_ms(500); // 避让时间，给模块恢复
         }
     }
@@ -151,7 +159,7 @@ bool ESP_WiFi_Connect(const char* ssid, const char* pwd, uint8_t retry)
     // 1. 设置模式 (重试1次)
     if (!ESP_Send_AT("AT+CWMODE=1", "OK", 1000, 1))
     {
-        printf("[ESP Error] Set CWMODE failed\r\n");
+        LOG_E("[ESP Error] Set CWMODE failed");
         return false;
     }
 
@@ -159,7 +167,7 @@ bool ESP_WiFi_Connect(const char* ssid, const char* pwd, uint8_t retry)
     int len = snprintf(cmd_buf, sizeof(cmd_buf), "AT+CWJAP=\"%s\",\"%s\"", ssid, pwd);
     if (len < 0 || len >= sizeof(cmd_buf))
     {
-        printf("[ESP Error] SSID/PWD too long!\r\n");
+        LOG_E("[ESP Error] SSID/PWD too long!");
         return false;
     }
 
@@ -170,6 +178,105 @@ bool ESP_WiFi_Connect(const char* ssid, const char* pwd, uint8_t retry)
         return true;
     }
 
-    printf("[ESP Error] WiFi Connect Failed after %d retries\r\n", retry);
+    LOG_E("[ESP Error] WiFi Connect Failed after %d retries", retry);
     return false;
+}
+
+bool ESP_SNTP_Config(void)
+{
+    LOG_I("[ESP] Configing SNTP!");
+    return ESP_Send_AT("AT+CIPSNTPCFG=1,8,\"ntp1.aliyun.com\"", "OK", 2000, 2);
+}
+
+bool ESP_SNTP_Sync_RTC(void)
+{
+    char line_buf[128];
+    bool ret = false;
+
+    UART_RingBuf_Clear(g_module_uart);
+
+    UART_Send_AT_Command(g_module_uart, "AT+CIPSNTPTIME?");
+
+    uint64_t start = BSP_GetTick_ms();
+    // 返回值示例：+CIPSNTPTIME:Mon Oct 18 20:12:27 2021
+    while ((BSP_GetTick_ms() - start) < 2000)
+    {
+        if (UART_RingBuf_ReadLine(g_module_uart, line_buf, sizeof(line_buf), 50) > 0)
+        {
+            // 可调试打印
+            // LOG_D("[SNTP] Receive Data:%s", line_buf);
+
+            char* pData = strstr(line_buf, "+CIPSNTPTIME:");
+            if (pData)
+            {
+                pData += 13; // 跳过 +CIPSNTPTIME: 前缀
+
+                char wday_str[4], mon_str[4];
+                int  day, hour, min, sec, year;
+                // 使用 sscanf 格式化取出数据
+                int count = sscanf(pData,
+                                   "%3s %3s %d %d:%d:%d %d",
+                                   wday_str,
+                                   mon_str,
+                                   &day,
+                                   &hour,
+                                   &min,
+                                   &sec,
+                                   &year);
+                // 如果取出数据正确
+                if (count >= 7)
+                {
+                    int month_idx = 0;
+                    // 解析月份
+                    for (int i = 0; i < 12; i++)
+                    {
+                        if (strncmp(mon_str, MONTH_STR[i], 3) == 0)
+                        {
+                            month_idx = i + 1;
+                            break;
+                        }
+                    }
+                    if (month_idx > 0)
+                    {
+                        LOG_I("[SNTP] Net Time: %04d-%02d-%02d %02d:%02d:%02d",
+                              year,
+                              month_idx,
+                              day,
+                              hour,
+                              min,
+                              sec);
+
+                        // === 同步到 RTC ===
+                        BSP_RTC_SetDate(year, month_idx, day);
+                        BSP_RTC_SetTime(hour, min, sec);
+
+                        ret = true;
+                        break; // 成功，退出循环
+                    }
+                }
+            }
+        }
+    }
+    return ret;
+}
+
+bool ESP_HTTP_Get(const char* url, uint32_t timeout_ms)
+{
+    char cmd[512]; // 确保缓冲区够大，URL 很长
+
+    // 清空缓存
+    UART_RingBuf_Clear(g_module_uart);
+
+    // 构造指令
+    // 格式: AT+HTTPCLIENT=<opt>,<content-type>,<url>,[<host>],[<path>],<transport_type>
+    // opt=2 (GET)
+    // content-type=1 (application/json)
+    // transport_type=2 (TCP/HTTP), 如果是 https 则为 2
+
+    // 为了防止 URL 里有特殊字符影响 snprintf，最好确保 URL 是干净的
+    snprintf(cmd, sizeof(cmd), "AT+HTTPCLIENT=2,1,\"%s\",,,1", url);
+
+    // 发送指令，等待 "+HTTPCLIENT:" 或 "OK"
+    // 注意：HTTP 请求可能较慢，超时时间给足
+    return ESP_Send_AT(cmd, NULL, timeout_ms, 2); // 这里 expect_resp 传 NULL，在外面自己解析数据
 }

@@ -1,92 +1,95 @@
-/**
- * @file    weather_parser.c
- * @brief   天气数据解析器实现
- * @note    这是一个纯逻辑模块，不依赖任何硬件，只依赖 cJSON 和 app_data 数据结构。
- */
-
 #include "weather_parser.h"
 #include "cJSON.h"
 #include <string.h>
-#include <stdio.h> // for snprintf
+#include <stdio.h>
 
-/**
- * @brief  执行解析
- * @param  json_str: 原始 JSON 字符串
- * @param  out_data: [输出] 解析结果存到这里
- * @retval 1: 成功, 0: 失败
- */
 uint8_t Weather_Parser_Execute(const char* json_str, App_Weather_Data_t* out_data)
 {
-    // 1. 入口参数检查 (防御性编程)
     if (json_str == NULL || out_data == NULL)
         return 0;
 
-    // 2. 解析 JSON 字符串
+    // 1. 解析 JSON
     cJSON* root = cJSON_Parse(json_str);
     if (!root)
         return 0;
 
-    uint8_t ret = 0; // 默认为失败
-
-    // 3. 解析前先清空输出结构体，防止上一轮的垃圾数据残留
+    uint8_t ret = 0;
     memset(out_data, 0, sizeof(App_Weather_Data_t));
 
-    // 4. 开始剥洋葱：results -> [0] -> location/now
-    cJSON* results = cJSON_GetObjectItem(root, "results");
-    if (cJSON_IsArray(results))
+    // 2. 直接提取根节点下的字段
+    cJSON* city = cJSON_GetObjectItem(root, "city");
+    cJSON* wea  = cJSON_GetObjectItem(root, "wea");
+    cJSON* tem  = cJSON_GetObjectItem(root, "tem");
+
+    // 只要有核心数据，就算成功
+    if (city && wea && tem)
     {
-        cJSON* first = cJSON_GetArrayItem(results, 0);
-        if (first)
+        // === 基础信息 ===
+        if (city->valuestring)
+            snprintf(out_data->city, sizeof(out_data->city), "%s", city->valuestring);
+        if (wea->valuestring)
+            snprintf(out_data->weather, sizeof(out_data->weather), "%s", wea->valuestring);
+        if (tem->valuestring)
+            snprintf(out_data->temp, sizeof(out_data->temp), "%s℃", tem->valuestring);
+
+        // === 更新时间 ===
+        // API 返回 "update_time":"20:17"
+        cJSON* upd = cJSON_GetObjectItem(root, "update_time");
+        if (upd && upd->valuestring)
         {
-            cJSON* loc = cJSON_GetObjectItem(first, "location");
-            cJSON* now = cJSON_GetObjectItem(first, "now");
-            cJSON* upd = cJSON_GetObjectItem(first, "last_update");
-
-            // 必须同时有 location 和 now 才算有效数据
-            if (loc && now)
-            {
-                cJSON* name = cJSON_GetObjectItem(loc, "name");
-                cJSON* text = cJSON_GetObjectItem(now, "text");
-                cJSON* temp = cJSON_GetObjectItem(now, "temperature");
-
-                // [安全优化] 使用 sizeof 确保长度安全，防止缓冲区溢出
-                // [安全优化] strncpy 不保证自动封口，必须手动赋值 \0
-
-                // 1. 提取城市名
-                if (name && name->valuestring)
-                {
-                    strncpy(out_data->city, name->valuestring, sizeof(out_data->city) - 1);
-                    out_data->city[sizeof(out_data->city) - 1] = '\0';
-                }
-
-                // 2. 提取天气现象
-                if (text && text->valuestring)
-                {
-                    strncpy(out_data->weather, text->valuestring, sizeof(out_data->weather) - 1);
-                    out_data->weather[sizeof(out_data->weather) - 1] = '\0';
-                }
-
-                // 3. 提取温度 (使用 snprintf 格式化并防止溢出)
-                if (temp && temp->valuestring)
-                {
-                    snprintf(out_data->temp, sizeof(out_data->temp), "%s C", temp->valuestring);
-                }
-
-                // 4. 提取更新时间
-                if (upd && upd->valuestring && strlen(upd->valuestring) > 16)
-                {
-                    // "2023-11-26T14:30:00..." -> 取 "14:30"
-                    strncpy(out_data->update_time, upd->valuestring + 11, 5);
-                    out_data->update_time[5] = '\0';
-                }
-
-                ret = 1; // 标记为成功
-            }
+            snprintf(out_data->update_time, sizeof(out_data->update_time), "%s", upd->valuestring);
         }
+
+        // === 扩展信息 (温差) ===
+        // API 返回 tem_day="17", tem_night="6" -> 拼成 "6~17℃"
+        cJSON* t_day   = cJSON_GetObjectItem(root, "tem_day");
+        cJSON* t_night = cJSON_GetObjectItem(root, "tem_night");
+        if (t_day && t_night)
+        {
+            snprintf(out_data->temp_range,
+                     sizeof(out_data->temp_range),
+                     "%s~%s℃",
+                     t_night->valuestring,
+                     t_day->valuestring);
+        }
+
+        // === 扩展信息 (风向风力) ===
+        // API 返回 win="东南风", win_speed="2级" -> 拼成 "东南风 2级"
+        cJSON* win     = cJSON_GetObjectItem(root, "win");
+        cJSON* win_spd = cJSON_GetObjectItem(root, "win_speed");
+        if (win && win_spd)
+        {
+            snprintf(out_data->wind,
+                     sizeof(out_data->wind),
+                     "%s %s",
+                     win->valuestring,
+                     win_spd->valuestring);
+        }
+
+        // === 扩展信息 (空气质量) ===
+        cJSON* air = cJSON_GetObjectItem(root, "air");
+        if (air && air->valuestring)
+        {
+            snprintf(out_data->air, sizeof(out_data->air), "%s", air->valuestring);
+        }
+
+        // === 扩展信息 (湿度) ===
+        cJSON* hum = cJSON_GetObjectItem(root, "humidity");
+        if (hum && hum->valuestring)
+        {
+            snprintf(out_data->humidity, sizeof(out_data->humidity), "%s", hum->valuestring);
+        }
+
+        // === 扩展信息 (气压) ===
+        cJSON* press = cJSON_GetObjectItem(root, "pressure");
+        if (press && press->valuestring)
+        {
+            snprintf(out_data->pressure, sizeof(out_data->pressure), "%s hPa", press->valuestring);
+        }
+
+        ret = 1;
     }
 
-    // 5. 极其重要：释放 JSON 对象内存
     cJSON_Delete(root);
-
     return ret;
 }
