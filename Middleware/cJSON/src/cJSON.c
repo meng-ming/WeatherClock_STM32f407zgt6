@@ -448,7 +448,7 @@ CJSON_PUBLIC(char*) cJSON_SetValuestring(cJSON *object, const char *valuestring)
 
     if (v1_len <= v2_len)
     {
-        /* strcpy does not handle overlapping string: [X1, X2] [Y1, Y2] => X2 < Y1 or Y2 < X1 */
+        /* strcpy does not handle overlAPPing string: [X1, X2] [Y1, Y2] => X2 < Y1 or Y2 < X1 */
         if (!( valuestring + v1_len < object->valuestring || object->valuestring + v2_len < valuestring ))
         {
             return NULL;
@@ -631,7 +631,7 @@ static cJSON_bool print_number(const cJSON * const item, printbuffer * const out
         return false;
     }
 
-    /* reserve appropriate space in the output */
+    /* reserve APPropriate space in the output */
     output_pointer = ensure(output_buffer, (size_t)length + sizeof(""));
     if (output_pointer == NULL)
     {
@@ -830,7 +830,7 @@ static cJSON_bool parse_string(cJSON * const item, parse_buffer * const input_bu
     }
 
     {
-        /* calculate approximate size of the output (overestimate) */
+        /* calculate APProximate size of the output (overestimate) */
         size_t allocation_length = 0;
         size_t skipped_bytes = 0;
         while (((size_t)(input_end - input_buffer->content) < input_buffer->length) && (*input_end != '\"'))
@@ -1170,7 +1170,7 @@ CJSON_PUBLIC(cJSON *) cJSON_ParseWithLengthOpts(const char *value, size_t buffer
         goto fail;
     }
 
-    /* if we require null-terminated JSON without appended garbage, skip and then check for a null terminator */
+    /* if we require null-terminated JSON without APPended garbage, skip and then check for a null terminator */
     if (require_null_terminated)
     {
         buffer_skip_whitespace(&buffer);
@@ -1359,7 +1359,7 @@ CJSON_PUBLIC(cJSON_bool) cJSON_PrintPreallocated(cJSON *item, char *buffer, cons
     return print_value(item, &p);
 }
 
-/* Parser core - when encountering text, process appropriately. */
+/* Parser core - when encountering text, process APPropriately. */
 static cJSON_bool parse_value(cJSON * const item, parse_buffer * const input_buffer)
 {
     if ((input_buffer == NULL) || (input_buffer->content == NULL))
@@ -2031,7 +2031,7 @@ static cJSON_bool add_item_to_array(cJSON *array, cJSON *item)
     }
     else
     {
-        /* append to the end */
+        /* APPend to the end */
         if (child->prev)
         {
             suffix_object(child->prev, item);

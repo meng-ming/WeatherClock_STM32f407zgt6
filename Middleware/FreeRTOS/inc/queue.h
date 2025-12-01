@@ -31,7 +31,7 @@
 #define QUEUE_H
 
 #ifndef INC_FREERTOS_H
-    #error "include FreeRTOS.h" must appear in source files before "include queue.h"
+    #error "include FreeRTOS.h" must APPear in source files before "include queue.h"
 #endif
 
 /* *INDENT-OFF* */
@@ -95,7 +95,7 @@ typedef struct QueueDefinition   * QueueSetMemberHandle_t;
  * created using xQueueCreate() then both blocks of memory are automatically
  * dynamically allocated inside the xQueueCreate() function.  (see
  * https://www.FreeRTOS.org/a00111.html).  If a queue is created using
- * xQueueCreateStatic() then the application writer must provide the memory that
+ * xQueueCreateStatic() then the APPlication writer must provide the memory that
  * will get used by the queue.  xQueueCreateStatic() therefore allows a queue to
  * be created without using any dynamic memory allocation.
  *
@@ -169,7 +169,7 @@ typedef struct QueueDefinition   * QueueSetMemberHandle_t;
  * created using xQueueCreate() then both blocks of memory are automatically
  * dynamically allocated inside the xQueueCreate() function.  (see
  * https://www.FreeRTOS.org/a00111.html).  If a queue is created using
- * xQueueCreateStatic() then the application writer must provide the memory that
+ * xQueueCreateStatic() then the APPlication writer must provide the memory that
  * will get used by the queue.  xQueueCreateStatic() therefore allows a queue to
  * be created without using any dynamic memory allocation.
  *
@@ -1461,8 +1461,8 @@ UBaseType_t uxQueueMessagesWaitingFromISR( const QueueHandle_t xQueue ) PRIVILEG
  * co-routines.
  *
  * These functions are called from the co-routine macro implementation and
- * should not be called directly from application code.  Instead use the macro
- * wrappers defined within croutine.h.
+ * should not be called directly from APPlication code.  Instead use the macro
+ * wrAPPers defined within croutine.h.
  */
 BaseType_t xQueueCRSendFromISR( QueueHandle_t xQueue,
                                 const void * pvItemToQueue,

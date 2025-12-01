@@ -40,10 +40,10 @@
  * writer and reader to be different tasks or interrupts, but, unlike other
  * FreeRTOS objects, it is not safe to have multiple different writers or
  * multiple different readers.  If there are to be multiple different writers
- * then the application writer must place each call to a writing API function
+ * then the APPlication writer must place each call to a writing API function
  * (such as xStreamBufferSend()) inside a critical section and set the send
  * block time to 0.  Likewise, if there are to be multiple different readers
- * then the application writer must place each call to a reading API function
+ * then the APPlication writer must place each call to a reading API function
  * (such as xStreamBufferReceive()) inside a critical section section and set the
  * receive block time to 0.
  *
@@ -53,7 +53,7 @@
 #define STREAM_BUFFER_H
 
 #ifndef INC_FREERTOS_H
-    #error "include FreeRTOS.h must appear in source files before include stream_buffer.h"
+    #error "include FreeRTOS.h must APPear in source files before include stream_buffer.h"
 #endif
 
 /* *INDENT-OFF* */
@@ -312,10 +312,10 @@ typedef void (* StreamBufferCallbackFunction_t)( StreamBufferHandle_t xStreamBuf
  * writer and reader to be different tasks or interrupts, but, unlike other
  * FreeRTOS objects, it is not safe to have multiple different writers or
  * multiple different readers.  If there are to be multiple different writers
- * then the application writer must place each call to a writing API function
+ * then the APPlication writer must place each call to a writing API function
  * (such as xStreamBufferSend()) inside a critical section and set the send
  * block time to 0.  Likewise, if there are to be multiple different readers
- * then the application writer must place each call to a reading API function
+ * then the APPlication writer must place each call to a reading API function
  * (such as xStreamBufferReceive()) inside a critical section and set the receive
  * block time to 0.
  *
@@ -410,10 +410,10 @@ size_t xStreamBufferSend( StreamBufferHandle_t xStreamBuffer,
  * writer and reader to be different tasks or interrupts, but, unlike other
  * FreeRTOS objects, it is not safe to have multiple different writers or
  * multiple different readers.  If there are to be multiple different writers
- * then the application writer must place each call to a writing API function
+ * then the APPlication writer must place each call to a writing API function
  * (such as xStreamBufferSend()) inside a critical section and set the send
  * block time to 0.  Likewise, if there are to be multiple different readers
- * then the application writer must place each call to a reading API function
+ * then the APPlication writer must place each call to a reading API function
  * (such as xStreamBufferReceive()) inside a critical section and set the receive
  * block time to 0.
  *
@@ -510,10 +510,10 @@ size_t xStreamBufferSendFromISR( StreamBufferHandle_t xStreamBuffer,
  * writer and reader to be different tasks or interrupts, but, unlike other
  * FreeRTOS objects, it is not safe to have multiple different writers or
  * multiple different readers.  If there are to be multiple different writers
- * then the application writer must place each call to a writing API function
+ * then the APPlication writer must place each call to a writing API function
  * (such as xStreamBufferSend()) inside a critical section and set the send
  * block time to 0.  Likewise, if there are to be multiple different readers
- * then the application writer must place each call to a reading API function
+ * then the APPlication writer must place each call to a reading API function
  * (such as xStreamBufferReceive()) inside a critical section and set the receive
  * block time to 0.
  *
@@ -844,7 +844,7 @@ BaseType_t xStreamBufferSetTriggerLevel( StreamBufferHandle_t xStreamBuffer,
  * was blocked on the message or stream buffer waiting for data to arrive then
  * the sbSEND_COMPLETED() macro sends a notification to the task to remove it
  * from the Blocked state.  xStreamBufferSendCompletedFromISR() does the same
- * thing.  It is provided to enable application writers to implement their own
+ * thing.  It is provided to enable APPlication writers to implement their own
  * version of sbSEND_COMPLETED(), and MUST NOT BE USED AT ANY OTHER TIME.
  *
  * See the example implemented in FreeRTOS/Demo/Minimal/MessageBufferAMP.c for
@@ -884,7 +884,7 @@ BaseType_t xStreamBufferSendCompletedFromISR( StreamBufferHandle_t xStreamBuffer
  * that was blocked on the message or stream buffer waiting for data to arrive
  * then the sbRECEIVE_COMPLETED() macro sends a notification to the task to
  * remove it from the Blocked state.  xStreamBufferReceiveCompletedFromISR()
- * does the same thing.  It is provided to enable application writers to
+ * does the same thing.  It is provided to enable APPlication writers to
  * implement their own version of sbRECEIVE_COMPLETED(), and MUST NOT BE USED AT
  * ANY OTHER TIME.
  *

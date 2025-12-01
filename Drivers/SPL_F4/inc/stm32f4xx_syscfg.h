@@ -1,11 +1,11 @@
 /**
   ******************************************************************************
   * @file    stm32f4xx_syscfg.h
-  * @author  MCD Application Team
+  * @author  MCD APPlication Team
   * @version V1.8.1
   * @date    27-January-2022
   * @brief   This file contains all the functions prototypes for the SYSCFG firmware
-  *          library. 
+  *          library.
   ******************************************************************************
   * @attention
   *
@@ -36,13 +36,13 @@
 
 /** @addtogroup SYSCFG
   * @{
-  */ 
+  */
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
-/** @defgroup SYSCFG_Exported_Constants 
+/** @defgroup SYSCFG_Exported_Constants
   * @{
-  */ 
+  */
 #if defined(STM32F413_423xx)
 /** @defgroup BITSTREAM_CLOCK  Bit Stream clock source selection
   * @{
@@ -52,7 +52,7 @@
 /**
   * @}
   */
-  
+
 /** @defgroup MCHDLY_CLOCK  MCHDLY Clock enable
   * @{
   */
@@ -60,8 +60,8 @@
 #define MCHDLY_CLOCK_DFSDM1       SYSCFG_MCHDLYCR_MCHDLY1EN
 /**
   * @}
-  */  
-  
+  */
+
 /** @defgroup DFSDM_CLOCKIN_SOURCE   DFSDM Clock In Source Selection
   * @{
   */
@@ -72,7 +72,7 @@
 /**
   * @}
   */
-  
+
 /** @defgroup DFSDM_CLOCKOUT_SOURCE   DFSDM Clock Source Selection
   * @{
   */
@@ -83,7 +83,7 @@
 /**
   * @}
   */
-  
+
 /** @defgroup DFSDM_DATAIN0_SOURCE   DFSDM Source Selection For DATAIN0
   * @{
   */
@@ -93,8 +93,8 @@
 #define DATAIN0_DFSDM1_DATAIN1    SYSCFG_MCHDLYCR_DFSDM1D0SEL
 /**
   * @}
-  */  
-  
+  */
+
 /** @defgroup DFSDM_DATAIN2_SOURCE   DFSDM Source Selection For DATAIN2
   * @{
   */
@@ -104,8 +104,8 @@
 #define DATAIN2_DFSDM1_DATAIN3    SYSCFG_MCHDLYCR_DFSDM1D2SEL
 /**
   * @}
-  */ 
- 
+  */
+
 /** @defgroup DFSDM_DATAIN4_SOURCE   DFSDM Source Selection For DATAIN4
   * @{
   */
@@ -113,8 +113,8 @@
 #define DATAIN4_DFSDM2_DATAIN5    SYSCFG_MCHDLYCR_DFSDM2D4SEL
 /**
   * @}
-  */ 
-  
+  */
+
 /** @defgroup DFSDM_DATAIN6_SOURCE   DFSDM Source Selection For DATAIN6
   * @{
   */
@@ -122,7 +122,7 @@
 #define DATAIN6_DFSDM2_DATAIN7    SYSCFG_MCHDLYCR_DFSDM2D6SEL
 /**
   * @}
-  */ 
+  */
 
 /** @defgroup DFSDM_CLKIN_SOURCE   DFSDM1 Source Selection For CLKIN
   * @{
@@ -133,8 +133,8 @@
 #define DFSDM1_CLKIN3_TIM4OC1      SYSCFG_MCHDLYCR_DFSDM1CK13SEL
 /**
   * @}
-  */ 
-  
+  */
+
 /** @defgroup DFSDM_CLKIN_SOURCE   DFSDM2 Source Selection For CLKIN
   * @{
   */
@@ -148,12 +148,12 @@
 #define DFSDM2_CLKIN7_TIM3OC1      SYSCFG_MCHDLYCR_DFSDM2CK37SEL
 /**
   * @}
-  */      
+  */
 #endif /* STM32F413_423xx */
 
-/** @defgroup SYSCFG_EXTI_Port_Sources 
+/** @defgroup SYSCFG_EXTI_Port_Sources
   * @{
-  */ 
+  */
 #define EXTI_PortSourceGPIOA       ((uint8_t)0x00)
 #define EXTI_PortSourceGPIOB       ((uint8_t)0x01)
 #define EXTI_PortSourceGPIOC       ((uint8_t)0x02)
@@ -177,15 +177,15 @@
                                          ((PORTSOURCE) == EXTI_PortSourceGPIOI) || \
                                          ((PORTSOURCE) == EXTI_PortSourceGPIOJ) || \
                                          ((PORTSOURCE) == EXTI_PortSourceGPIOK))
-                                         
+
 /**
   * @}
-  */ 
+  */
 
 
-/** @defgroup SYSCFG_EXTI_Pin_Sources 
+/** @defgroup SYSCFG_EXTI_Pin_Sources
   * @{
-  */ 
+  */
 #define EXTI_PinSource0            ((uint8_t)0x00)
 #define EXTI_PinSource1            ((uint8_t)0x01)
 #define EXTI_PinSource2            ((uint8_t)0x02)
@@ -220,28 +220,28 @@
                                        ((PINSOURCE) == EXTI_PinSource15))
 /**
   * @}
-  */ 
+  */
 
 
-/** @defgroup SYSCFG_Memory_Remap_Config 
+/** @defgroup SYSCFG_Memory_Remap_Config
   * @{
-  */ 
+  */
 #define SYSCFG_MemoryRemap_Flash       ((uint8_t)0x00)
 #define SYSCFG_MemoryRemap_SystemFlash ((uint8_t)0x01)
 #define SYSCFG_MemoryRemap_SRAM        ((uint8_t)0x03)
 #define SYSCFG_MemoryRemap_SDRAM       ((uint8_t)0x04)
 
 #if defined (STM32F40_41xxx) || defined(STM32F412xG) || defined(STM32F413_423xx)
-#define SYSCFG_MemoryRemap_FSMC        ((uint8_t)0x02) 
+#define SYSCFG_MemoryRemap_FSMC        ((uint8_t)0x02)
 #endif /* STM32F40_41xxx || STM32F412xG || STM32F413_423xx */
 
 #if defined (STM32F427_437xx) || defined (STM32F429_439xx)
-#define SYSCFG_MemoryRemap_FMC         ((uint8_t)0x02) 
-#endif /* STM32F427_437xx ||  STM32F429_439xx */  
+#define SYSCFG_MemoryRemap_FMC         ((uint8_t)0x02)
+#endif /* STM32F427_437xx ||  STM32F429_439xx */
 
 #if defined (STM32F446xx) || defined (STM32F469_479xx)
-#define SYSCFG_MemoryRemap_ExtMEM      ((uint8_t)0x02) 
-#endif /*  STM32F446xx || STM32F469_479xx */ 
+#define SYSCFG_MemoryRemap_ExtMEM      ((uint8_t)0x02)
+#endif /*  STM32F446xx || STM32F469_479xx */
 
 #if defined (STM32F40_41xxx) || defined(STM32F412xG) || defined(STM32F413_423xx)
 #define IS_SYSCFG_MEMORY_REMAP_CONFING(REMAP) (((REMAP) == SYSCFG_MemoryRemap_Flash)       || \
@@ -281,12 +281,12 @@
 #endif /* STM32F410xx || STM32F412xG || STM32F413_423xx */
 /**
   * @}
-  */ 
+  */
 
 
-/** @defgroup SYSCFG_ETHERNET_Media_Interface 
+/** @defgroup SYSCFG_ETHERNET_Media_Interface
   * @{
-  */ 
+  */
 #define SYSCFG_ETH_MediaInterface_MII    ((uint32_t)0x00000000)
 #define SYSCFG_ETH_MediaInterface_RMII   ((uint32_t)0x00000001)
 
@@ -294,21 +294,21 @@
                                                  ((INTERFACE) == SYSCFG_ETH_MediaInterface_RMII))
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 /* Exported macro ------------------------------------------------------------*/
-/* Exported functions --------------------------------------------------------*/ 
- 
+/* Exported functions --------------------------------------------------------*/
+
 void       SYSCFG_DeInit(void);
 void       SYSCFG_MemoryRemapConfig(uint8_t SYSCFG_MemoryRemap);
-void       SYSCFG_MemorySwappingBank(FunctionalState NewState);
+void       SYSCFG_MemorySwAPPingBank(FunctionalState NewState);
 void       SYSCFG_EXTILineConfig(uint8_t EXTI_PortSourceGPIOx, uint8_t EXTI_PinSourcex);
-void       SYSCFG_ETH_MediaInterfaceConfig(uint32_t SYSCFG_ETH_MediaInterface); 
-void       SYSCFG_CompensationCellCmd(FunctionalState NewState); 
+void       SYSCFG_ETH_MediaInterfaceConfig(uint32_t SYSCFG_ETH_MediaInterface);
+void       SYSCFG_CompensationCellCmd(FunctionalState NewState);
 FlagStatus SYSCFG_GetCompensationCellStatus(void);
 #if defined(STM32F410xx) || defined(STM32F412xG) || defined(STM32F413_423xx)
 void       SYSCFG_BreakConfig(uint32_t SYSCFG_Break);
@@ -334,9 +334,9 @@ void DFSDM2_BitStreamClk_Config(uint32_t source);
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 

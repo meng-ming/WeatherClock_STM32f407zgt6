@@ -118,7 +118,7 @@
 
 /*
  * Setup the timer to generate the tick interrupts.  The implementation in this
- * file is weak to allow application writers to change the timer used to
+ * file is weak to allow APPlication writers to change the timer used to
  * generate the tick interrupt.
  */
 void vPortSetupTimerInterrupt( void );
@@ -231,7 +231,7 @@ static void prvTaskExitError( void )
      * should instead call vTaskDelete( NULL ).
      *
      * Artificially force an assert() to be triggered if configASSERT() is
-     * defined, then stop here so application writers can catch the error. */
+     * defined, then stop here so APPlication writers can catch the error. */
     configASSERT( uxCriticalNesting == ~0UL );
     portDISABLE_INTERRUPTS();
 
@@ -240,9 +240,9 @@ static void prvTaskExitError( void )
         /* This file calls prvTaskExitError() after the scheduler has been
          * started to remove a compiler warning about the function being defined
          * but never called.  ulDummy is used purely to quieten other warnings
-         * about code appearing after this function is called - making ulDummy
+         * about code APPearing after this function is called - making ulDummy
          * volatile makes the compiler think the function could return and
-         * therefore not output an 'unreachable code' warning for code that appears
+         * therefore not output an 'unreachable code' warning for code that APPears
          * after it. */
     }
 }
@@ -358,11 +358,11 @@ BaseType_t xPortStartScheduler( void )
             * This may cause some confusion in some cases - for example, if
             * configMAX_SYSCALL_INTERRUPT_PRIORITY is set to 5, both 5 and 4
             * priority interrupts will be masked in Critical Sections as those
-            * are at the same preemption priority. This may appear confusing as
+            * are at the same preemption priority. This may APPear confusing as
             * 4 is higher (numerically lower) priority than
             * configMAX_SYSCALL_INTERRUPT_PRIORITY and therefore, should not
             * have been masked. Instead, if we set configMAX_SYSCALL_INTERRUPT_PRIORITY
-            * to 4, this confusion does not happen and the behaviour remains the same.
+            * to 4, this confusion does not hAPPen and the behaviour remains the same.
             *
             * The following assert ensures that the sub-priority bit in the
             * configMAX_SYSCALL_INTERRUPT_PRIORITY is clear to avoid the above mentioned
@@ -408,7 +408,7 @@ BaseType_t xPortStartScheduler( void )
 
     /* Should never get here as the tasks will now be executing!  Call the task
      * exit error function to prevent compiler warnings about a static function
-     * not being called in the case that the application writer overrides this
+     * not being called in the case that the APPlication writer overrides this
      * functionality by defining configTASK_RETURN_ADDRESS.  Call
      * vTaskSwitchContext() so link time optimisation does not remove the
      * symbol. */
@@ -610,7 +610,7 @@ void xPortSysTickHandler( void )
             /* Restart SysTick. */
             portNVIC_SYSTICK_CTRL_REG |= portNVIC_SYSTICK_ENABLE_BIT;
 
-            /* Sleep until something happens.  configPRE_SLEEP_PROCESSING() can
+            /* Sleep until something hAPPens.  configPRE_SLEEP_PROCESSING() can
              * set its parameter to 0 to indicate that its implementation contains
              * its own wait for interrupt or wait for event instruction, and so wfi
              * should not be executed again.  However, the original expected idle
@@ -845,7 +845,7 @@ static void vPortEnableVFP( void )
          * to be pre-emption priority bits.  The following assertion will fail if
          * this is not the case (if some bits represent a sub-priority).
          *
-         * If the application only uses CMSIS libraries for interrupt
+         * If the APPlication only uses CMSIS libraries for interrupt
          * configuration then the correct setting can be achieved on all Cortex-M
          * devices by calling NVIC_SetPriorityGrouping( 0 ); before starting the
          * scheduler.  Note however that some vendor specific peripheral libraries

@@ -55,7 +55,7 @@ void ESP_Module_Init(UART_Handle_t* uart_handler)
 
     g_module_uart = uart_handler;
 
-    // 硬件层初始化 (UART_Init 内部也要有健壮性，但这里我们负责调用)
+    // 硬件层初始化
     UART_Init(g_module_uart);
 
     // 清理环境
@@ -137,7 +137,7 @@ bool ESP_Send_AT(const char* cmd, const char* expect_resp, uint32_t timeout_ms, 
         // 本次尝试失败，准备重试
         if (i < retry)
         {
-            LOG_D("[ESP Info] Retry %d/%d: %s\r\n", i + 1, retry, cmd);
+            LOG_D("[ESP Info] Retry %d/%d: %s", i + 1, retry, cmd);
             BSP_Delay_ms(500); // 避让时间，给模块恢复
         }
     }
@@ -270,7 +270,7 @@ bool ESP_HTTP_Get(const char* url, uint32_t timeout_ms)
     // 构造指令
     // 格式: AT+HTTPCLIENT=<opt>,<content-type>,<url>,[<host>],[<path>],<transport_type>
     // opt=2 (GET)
-    // content-type=1 (application/json)
+    // content-type=1 (APPlication/json)
     // transport_type=2 (TCP/HTTP), 如果是 https 则为 2
 
     // 为了防止 URL 里有特殊字符影响 snprintf，最好确保 URL 是干净的

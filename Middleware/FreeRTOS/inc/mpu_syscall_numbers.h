@@ -50,8 +50,8 @@
 #define SYSTEM_CALL_ulTaskGetRunTimePercent                17
 #define SYSTEM_CALL_ulTaskGetIdleRunTimePercent            18
 #define SYSTEM_CALL_ulTaskGetIdleRunTimeCounter            19
-#define SYSTEM_CALL_vTaskSetApplicationTaskTag             20
-#define SYSTEM_CALL_xTaskGetApplicationTaskTag             21
+#define SYSTEM_CALL_vTaskSetAPPlicationTaskTag             20
+#define SYSTEM_CALL_xTaskGetAPPlicationTaskTag             21
 #define SYSTEM_CALL_vTaskSetThreadLocalStoragePointer      22
 #define SYSTEM_CALL_pvTaskGetThreadLocalStoragePointer     23
 #define SYSTEM_CALL_uxTaskGetSystemState                   24

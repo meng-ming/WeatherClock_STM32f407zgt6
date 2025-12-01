@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file    stm32f4xx_flash_ramfunc.h
-  * @author  MCD Application Team
+  * @author  MCD APPlication Team
   * @version V1.8.1
   * @date    27-January-2022
   * @brief   Header file of FLASH RAMFUNC driver.
@@ -36,36 +36,36 @@
 
 /** @addtogroup FLASH RAMFUNC
   * @{
-  */ 
+  */
 
 /* Exported types ------------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-/** 
+/**
   * @brief  __RAM_FUNC definition
-  */ 
+  */
 #if defined ( __CC_ARM   )
 /* ARM Compiler
    ------------
-   RAM functions are defined using the toolchain options. 
+   RAM functions are defined using the toolchain options.
    Functions that are executed in RAM should reside in a separate source module.
-   Using the 'Options for File' dialog you can simply change the 'Code / Const' 
+   Using the 'Options for File' dialog you can simply change the 'Code / Const'
    area of a module to a memory space in physical RAM.
    Available memory areas are declared in the 'Target' tab of the 'Options for Target'
-   dialog. 
+   dialog.
 */
-#define __RAM_FUNC void 
+#define __RAM_FUNC void
 
 #elif defined ( __ICCARM__ )
 /* ICCARM Compiler
    ---------------
-   RAM functions are defined using a specific toolchain keyword "__ramfunc". 
+   RAM functions are defined using a specific toolchain keyword "__ramfunc".
 */
 #define __RAM_FUNC __ramfunc void
 
 #elif defined   (  __GNUC__  )
 /* GNU Compiler
    ------------
-  RAM functions are defined using a specific toolchain attribute 
+  RAM functions are defined using a specific toolchain attribute
    "__attribute__((section(".RamFunc")))".
 */
 #define __RAM_FUNC void  __attribute__((section(".RamFunc")))
@@ -86,10 +86,10 @@ __RAM_FUNC FLASH_FlashSleepModeCmd(FunctionalState NewState);
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 

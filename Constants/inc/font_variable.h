@@ -62,7 +62,7 @@ extern const uint8_t       ASCII_30x60[];
 
 /**
  * @brief 全局点阵字体配置对象
- * @note  给 app_ui.c 使用
+ * @note  给 APP_ui.c 使用
  */
 extern font_info_t font_16;
 extern font_info_t font_time_20;

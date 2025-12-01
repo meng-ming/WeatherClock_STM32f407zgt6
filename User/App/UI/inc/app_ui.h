@@ -16,16 +16,16 @@
  * 此函数应在系统启动时调用一次。
  * @retval None
  */
-void App_UI_Init(void);
+void APP_UI_Init(void);
 
 /**
  * @brief  刷新天气数据（动态内容）
  * @note   根据传入的天气数据，更新屏幕上对应的显示区域。
  * 此函数会自动处理局部刷新，不会造成全屏闪烁。
- * @param  data: 指向 App_Weather_Data_t 结构体的指针，包含最新的天气信息（城市、温度等）。
+ * @param  data: 指向 APP_Weather_Data_t 结构体的指针，包含最新的天气信息（城市、温度等）。
  * @retval None
  */
-void App_UI_Update(const App_Weather_Data_t* data);
+void APP_UI_Update(const APP_Weather_Data_t* data);
 
 /**
  * @brief  显示底部状态栏信息
@@ -35,6 +35,6 @@ void App_UI_Update(const App_Weather_Data_t* data);
  * @param  color:  字体颜色（RGB565格式，如 WHITE, RED, BLUE）。
  * @retval None
  */
-void App_UI_ShowStatus(const char* status, uint16_t color);
+void APP_UI_ShowStatus(const char* status, uint16_t color);
 
 #endif

@@ -30,7 +30,7 @@
 #define CO_ROUTINE_H
 
 #ifndef INC_FREERTOS_H
-    #error "include FreeRTOS.h must appear in source files before include croutine.h"
+    #error "include FreeRTOS.h must APPear in source files before include croutine.h"
 #endif
 
 #include "list.h"
@@ -151,7 +151,7 @@ BaseType_t xCoRoutineCreate( crCOROUTINE_CODE pxCoRoutineCode,
  * preempted by a task.  Co-routines execute cooperatively so one
  * co-routine cannot be preempted by another, but can be preempted by a task.
  *
- * If an application comprises of both tasks and co-routines then
+ * If an APPlication comprises of both tasks and co-routines then
  * vCoRoutineSchedule should be called from the idle task (in an idle task
  * hook).
  *
@@ -159,7 +159,7 @@ BaseType_t xCoRoutineCreate( crCOROUTINE_CODE pxCoRoutineCode,
  * @code{c}
  * // This idle task hook will schedule a co-routine each time it is called.
  * // The rest of the idle task will execute between co-routine calls.
- * void vApplicationIdleHook( void )
+ * void vAPPlicationIdleHook( void )
  * {
  *  vCoRoutineSchedule();
  * }
@@ -167,7 +167,7 @@ BaseType_t xCoRoutineCreate( crCOROUTINE_CODE pxCoRoutineCode,
  * // Alternatively, if you do not require any other part of the idle task to
  * // execute, the idle task hook can call vCoRoutineSchedule() within an
  * // infinite loop.
- * void vApplicationIdleHook( void )
+ * void vAPPlicationIdleHook( void )
  * {
  *  for( ;; )
  *  {
@@ -250,7 +250,7 @@ void vCoRoutineSchedule( void );
 
 /*
  * These macros are intended for internal use by the co-routine implementation
- * only.  The macros should not be used directly by application writers.
+ * only.  The macros should not be used directly by APPlication writers.
  */
 #define crSET_STATE0( xHandle )                                       \
     ( ( CRCB_t * ) ( xHandle ) )->uxState = ( __LINE__ * 2 ); return; \
@@ -728,18 +728,18 @@ void vCoRoutineSchedule( void );
 /*
  * This function is intended for internal use by the co-routine macros only.
  * The macro nature of the co-routine implementation requires that the
- * prototype appears here.  The function should not be used by application
+ * prototype APPears here.  The function should not be used by APPlication
  * writers.
  *
  * Removes the current co-routine from its ready list and places it in the
- * appropriate delayed list.
+ * APPropriate delayed list.
  */
 void vCoRoutineAddToDelayedList( TickType_t xTicksToDelay,
                                  List_t * pxEventList );
 
 /*
  * This function is intended for internal use by the queue implementation only.
- * The function should not be used by application writers.
+ * The function should not be used by APPlication writers.
  *
  * Removes the highest priority co-routine from the event list and places it in
  * the pending ready list.

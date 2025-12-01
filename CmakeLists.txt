@@ -67,9 +67,10 @@ file(GLOB_RECURSE USER_SOURCES CONFIGURE_DEPENDS
     "Constants/src/*.c"
 
     "User/*.c"
-    "User/App/src/*.c"
-    "User/App/UI/src/*.c"
-    "User/App/Weather/src/*.c"
+    "User/APP/src/*.c"
+    "User/APP/UI/src/*.c"
+    "User/APP/Weather/src/*.c"
+    "User/APP/Calendar/src/*.c"
 
     "Drivers/BSP/RTC/src/*.c"
     "Drivers/BSP/USART/src/*.c"
@@ -79,6 +80,7 @@ file(GLOB_RECURSE USER_SOURCES CONFIGURE_DEPENDS
 
     "Resources/Font/src/*.c"
     "Resources/Image/src/*.c"
+    "Resources/City/src/*.c"
 
     "Middleware/cJSON/src/*.c"
     # 新增的 FreeRTOS 源文件路径
@@ -100,8 +102,9 @@ add_executable(${PROJECT_NAME}.elf
 target_include_directories(${PROJECT_NAME}.elf PRIVATE
     Constants/inc
 
-    User/App/UI/inc
-    User/App/Weather/inc
+    User/APP/UI/inc
+    User/APP/Weather/inc
+    User/APP/Calendar/inc
 
     Drivers/CMSIS
     Drivers/SPL_F4/inc
@@ -113,6 +116,7 @@ target_include_directories(${PROJECT_NAME}.elf PRIVATE
 
     Resources/Font/inc
     Resources/Image/inc
+    Resources/City/inc
 
     Middleware/cJSON/inc
     # 新增的 FreeRTOS 头文件路径

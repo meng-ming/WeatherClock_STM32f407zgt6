@@ -1,6 +1,6 @@
 #include "bsp_rtc.h"
 #include "stm32f4xx.h"
-#include "app_data.h"
+#include "APP_data.h"
 #include "stm32f4xx_pwr.h"
 #include "stm32f4xx_rcc.h"
 #include <stdint.h>
@@ -228,12 +228,12 @@ void BSP_RTC_GetCalendar(BSP_RTC_Calendar_t* calendar)
     calendar->sec  = RTC_TimeStructure.RTC_Seconds;
 
     // 调试当前时间
-    LOG_D("Current Calendar: %4d-%02d-%02d,%02d:%02d:%02d %s",
-          calendar->year,
-          calendar->month,
-          calendar->date,
-          calendar->hour,
-          calendar->min,
-          calendar->sec,
-          WEEK_STR[calendar->week]);
+    // LOG_D("Current Calendar: %4d-%02d-%02d,%02d:%02d:%02d %s",
+    //       calendar->year,
+    //       calendar->month,
+    //       calendar->date,
+    //       calendar->hour,
+    //       calendar->min,
+    //       calendar->sec,
+    //       WEEK_STR[calendar->week]);
 }

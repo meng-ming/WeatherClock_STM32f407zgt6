@@ -5,9 +5,13 @@
 #include "app_ui_config.h"
 #include "sys_log.h"
 #include "bsp_rtc.h"
+#include "lcd_font.h"
 
 // 引入新做好的页面模块
 #include "ui_main_page.h"
+#include <string.h>
+
+static uint8_t s_last_status_len = 0; // 上个状态文字的长度，用于覆盖刷新
 
 /**
  * @brief  系统开机界面
@@ -26,34 +30,32 @@ static void APP_Start_UP(void)
     BSP_Delay_ms(2000);
 }
 
-void App_UI_Init(void)
+void APP_UI_Init(void)
 {
     // 1. 启动开机界面
     APP_Start_UP();
 
     // 2. 调用主页面初始化
-    UI_MainPage_Init();
-
-    // 3. 初始显示
-    App_UI_ShowStatus("System Init...", BLACK);
+    APP_UI_MainPage_Init();
 }
 
-void App_UI_Update(const App_Weather_Data_t* data)
+void APP_UI_Update(const APP_Weather_Data_t* data)
 {
     // 调用主页面的更新逻辑
-    // UI_MainPage_Update(data);
+    APP_UI_UpdateWeather(data);
 
     // 底部状态栏更新
-    App_UI_ShowStatus("Updated!", BLACK);
+    APP_UI_ShowStatus("Updated!", BLACK);
 }
 
-void App_UI_ShowStatus(const char* status, uint16_t color)
+void APP_UI_ShowStatus(const char* status, uint16_t color)
 {
-    // 串口打印日志
-    LOG_I("[UI Status] %s", status);
+    LOG_I("[APP] %s", status);
+    // 防止长度不一，不能完全覆盖
+    TFT_Fill_Rect(35, BOX_STATUS_Y + 5, s_last_status_len * 8, 16, UI_STATUS_BG);
+    // 在屏幕上方显示
+    LCD_Show_String(35, BOX_STATUS_Y + 5, status, &font_16, color, UI_STATUS_BG);
 
-    // 在屏幕最下方显示 (如果不希望覆盖室内数据模块，可以调整Y坐标)
-    // 假设我们在最底部 300-320 区域显示调试信息，或者暂时覆盖在 Room 模块上调试
-    // 这里为了不破坏布局，建议暂时只打印串口，或者在 Status Bar 显示
-    // 这里的实现视你的调试需求而定
+    if (strlen(status) != s_last_status_len)
+        s_last_status_len = strlen(status);
 }

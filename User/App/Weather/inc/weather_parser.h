@@ -17,6 +17,6 @@
  * @retval 1: 解析成功
  * @retval 0: 解析失败 (JSON格式错误或字段缺失)
  */
-uint8_t Weather_Parser_Execute(const char* json_str, App_Weather_Data_t* out_data);
+uint8_t Weather_Parser_Execute(const char* json_str, APP_Weather_Data_t* out_data);
 
 #endif

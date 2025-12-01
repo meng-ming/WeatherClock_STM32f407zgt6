@@ -30,7 +30,7 @@
 #define STACK_MACROS_H
 
 /*
- * Call the stack overflow hook function if the stack of the task being swapped
+ * Call the stack overflow hook function if the stack of the task being swAPPed
  * out is currently overflowed, or looks like it might have overflowed in the
  * past.
  *
@@ -61,7 +61,7 @@
         /* Is the currently saved stack pointer within the stack limit? */                            \
         if( pxCurrentTCB->pxTopOfStack <= pxCurrentTCB->pxStack + portSTACK_LIMIT_PADDING )           \
         {                                                                                             \
-            vApplicationStackOverflowHook( ( TaskHandle_t ) pxCurrentTCB, pxCurrentTCB->pcTaskName ); \
+            vAPPlicationStackOverflowHook( ( TaskHandle_t ) pxCurrentTCB, pxCurrentTCB->pcTaskName ); \
         }                                                                                             \
     } while( 0 )
 
@@ -77,7 +77,7 @@
         /* Is the currently saved stack pointer within the stack limit? */                            \
         if( pxCurrentTCB->pxTopOfStack >= pxCurrentTCB->pxEndOfStack - portSTACK_LIMIT_PADDING )      \
         {                                                                                             \
-            vApplicationStackOverflowHook( ( TaskHandle_t ) pxCurrentTCB, pxCurrentTCB->pcTaskName ); \
+            vAPPlicationStackOverflowHook( ( TaskHandle_t ) pxCurrentTCB, pxCurrentTCB->pcTaskName ); \
         }                                                                                             \
     } while( 0 )
 
@@ -96,7 +96,7 @@
             ( pulStack[ 2 ] != ulCheckValue ) ||                                                      \
             ( pulStack[ 3 ] != ulCheckValue ) )                                                       \
         {                                                                                             \
-            vApplicationStackOverflowHook( ( TaskHandle_t ) pxCurrentTCB, pxCurrentTCB->pcTaskName ); \
+            vAPPlicationStackOverflowHook( ( TaskHandle_t ) pxCurrentTCB, pxCurrentTCB->pcTaskName ); \
         }                                                                                             \
     } while( 0 )
 
@@ -120,7 +120,7 @@
         /* Has the extremity of the task stack ever been written over? */                                                                 \
         if( memcmp( ( void * ) pcEndOfStack, ( void * ) ucExpectedStackBytes, sizeof( ucExpectedStackBytes ) ) != 0 )                     \
         {                                                                                                                                 \
-            vApplicationStackOverflowHook( ( TaskHandle_t ) pxCurrentTCB, pxCurrentTCB->pcTaskName );                                     \
+            vAPPlicationStackOverflowHook( ( TaskHandle_t ) pxCurrentTCB, pxCurrentTCB->pcTaskName );                                     \
         }                                                                                                                                 \
     } while( 0 )
 

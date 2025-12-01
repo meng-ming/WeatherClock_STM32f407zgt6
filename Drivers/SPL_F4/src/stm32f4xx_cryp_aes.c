@@ -1,10 +1,10 @@
 /**
   ******************************************************************************
   * @file    stm32f4xx_cryp_aes.c
-  * @author  MCD Application Team
+  * @author  MCD APPlication Team
   * @version V1.8.1
   * @date    27-January-2022
-  * @brief   This file provides high level functions to encrypt and decrypt an 
+  * @brief   This file provides high level functions to encrypt and decrypt an
   *          input message using AES in ECB/CBC/CTR/GCM/CCM modes.
   *          It uses the stm32f4xx_cryp.c/.h drivers to access the STM32F4xx CRYP
   *          peripheral.
@@ -16,19 +16,19 @@
                   ##### How to use this driver #####
  ===================================================================
  [..]
-   (#) Enable The CRYP controller clock using 
+   (#) Enable The CRYP controller clock using
       RCC_AHB2PeriphClockCmd(RCC_AHB2Periph_CRYP, ENABLE); function.
-  
+
    (#) Encrypt and decrypt using AES in ECB Mode using CRYP_AES_ECB() function.
-  
+
    (#) Encrypt and decrypt using AES in CBC Mode using CRYP_AES_CBC() function.
-  
+
    (#) Encrypt and decrypt using AES in CTR Mode using CRYP_AES_CTR() function.
 
    (#) Encrypt and decrypt using AES in GCM Mode using CRYP_AES_GCM() function.
-   
+
    (#) Encrypt and decrypt using AES in CCM Mode using CRYP_AES_CCM() function.
-     
+
 @endverbatim
   *
   ******************************************************************************
@@ -51,7 +51,7 @@
   * @{
   */
 
-/** @defgroup CRYP 
+/** @defgroup CRYP
   * @brief CRYP driver modules
   * @{
   */
@@ -67,12 +67,12 @@
 
 /** @defgroup CRYP_Private_Functions
   * @{
-  */ 
+  */
 
 /** @defgroup CRYP_Group6 High Level AES functions
- *  @brief   High Level AES functions 
+ *  @brief   High Level AES functions
  *
-@verbatim   
+@verbatim
  ===============================================================================
                        ##### High Level AES functions #####
  ===============================================================================
@@ -191,7 +191,7 @@ ErrorStatus CRYP_AES_ECB(uint8_t Mode, uint8_t* Key, uint16_t Keysize,
     }
     else
     {
-      /* Crypto Init for decryption process */  
+      /* Crypto Init for decryption process */
       AES_CRYP_InitStructure.CRYP_AlgoDir = CRYP_AlgoDir_Decrypt;
     }
   }
@@ -217,11 +217,11 @@ ErrorStatus CRYP_AES_ECB(uint8_t Mode, uint8_t* Key, uint16_t Keysize,
 
   if(CRYP_GetCmdStatus() == DISABLE)
   {
-    /* The CRYP peripheral clock is not enabled or the device doesn't embed 
+    /* The CRYP peripheral clock is not enabled or the device doesn't embed
        the CRYP peripheral (please check the device sales type. */
     return(ERROR);
   }
-  
+
   for(i=0; ((i<Ilength) && (status != ERROR)); i+=16)
   {
 
@@ -257,7 +257,7 @@ ErrorStatus CRYP_AES_ECB(uint8_t Mode, uint8_t* Key, uint16_t Keysize,
       outputaddr+=4;
       *(uint32_t*)(outputaddr) = CRYP_DataOut();
       outputaddr+=4;
-      *(uint32_t*)(outputaddr) = CRYP_DataOut(); 
+      *(uint32_t*)(outputaddr) = CRYP_DataOut();
       outputaddr+=4;
     }
   }
@@ -265,7 +265,7 @@ ErrorStatus CRYP_AES_ECB(uint8_t Mode, uint8_t* Key, uint16_t Keysize,
   /* Disable Crypto */
   CRYP_Cmd(DISABLE);
 
-  return status; 
+  return status;
 }
 
 /**
@@ -393,7 +393,7 @@ ErrorStatus CRYP_AES_CBC(uint8_t Mode, uint8_t InitVectors[16], uint8_t *Key,
     }
     else
     {
-      /* Crypto Init for decryption process */  
+      /* Crypto Init for decryption process */
       AES_CRYP_InitStructure.CRYP_AlgoDir = CRYP_AlgoDir_Decrypt;
     }
   }
@@ -420,11 +420,11 @@ ErrorStatus CRYP_AES_CBC(uint8_t Mode, uint8_t InitVectors[16], uint8_t *Key,
 
   if(CRYP_GetCmdStatus() == DISABLE)
   {
-    /* The CRYP peripheral clock is not enabled or the device doesn't embed 
+    /* The CRYP peripheral clock is not enabled or the device doesn't embed
        the CRYP peripheral (please check the device sales type. */
     return(ERROR);
   }
-  
+
   for(i=0; ((i<Ilength) && (status != ERROR)); i+=16)
   {
 
@@ -486,7 +486,7 @@ ErrorStatus CRYP_AES_CBC(uint8_t Mode, uint8_t InitVectors[16], uint8_t *Key,
   *          - SUCCESS: Operation done
   *          - ERROR: Operation failed
   */
-ErrorStatus CRYP_AES_CTR(uint8_t Mode, uint8_t InitVectors[16], uint8_t *Key, 
+ErrorStatus CRYP_AES_CTR(uint8_t Mode, uint8_t InitVectors[16], uint8_t *Key,
                          uint16_t Keysize, uint8_t *Input, uint32_t Ilength,
                          uint8_t *Output)
 {
@@ -591,11 +591,11 @@ ErrorStatus CRYP_AES_CTR(uint8_t Mode, uint8_t InitVectors[16], uint8_t *Key,
 
   if(CRYP_GetCmdStatus() == DISABLE)
   {
-    /* The CRYP peripheral clock is not enabled or the device doesn't embed 
+    /* The CRYP peripheral clock is not enabled or the device doesn't embed
        the CRYP peripheral (please check the device sales type. */
     return(ERROR);
   }
-  
+
   for(i=0; ((i<Ilength) && (status != ERROR)); i+=16)
   {
 
@@ -653,7 +653,7 @@ ErrorStatus CRYP_AES_CTR(uint8_t Mode, uint8_t InitVectors[16], uint8_t *Key,
   * @param  Input: pointer to the Input buffer.
   * @param  Ilength: length of the Input buffer in bytes, must be a multiple of 16.
   * @param  Header: pointer to the header buffer.
-  * @param  Hlength: length of the header buffer in bytes, must be a multiple of 16.  
+  * @param  Hlength: length of the header buffer in bytes, must be a multiple of 16.
   * @param  Output: pointer to the returned buffer.
   * @param  AuthTAG: pointer to the authentication TAG buffer.
   * @retval An ErrorStatus enumeration value:
@@ -732,7 +732,7 @@ ErrorStatus CRYP_AES_GCM(uint8_t Mode, uint8_t InitVectors[16],
     default:
     break;
   }
-  
+
   /* CRYP Initialization Vectors */
   AES_CRYP_IVInitStructure.CRYP_IV0Left = __REV(*(uint32_t*)(ivaddr));
   ivaddr+=4;
@@ -741,60 +741,60 @@ ErrorStatus CRYP_AES_GCM(uint8_t Mode, uint8_t InitVectors[16],
   AES_CRYP_IVInitStructure.CRYP_IV1Left = __REV(*(uint32_t*)(ivaddr));
   ivaddr+=4;
   AES_CRYP_IVInitStructure.CRYP_IV1Right= __REV(*(uint32_t*)(ivaddr));
-  
+
   /*------------------ AES Encryption ------------------*/
   if(Mode == MODE_ENCRYPT) /* AES encryption */
   {
     /* Flush IN/OUT FIFOs */
     CRYP_FIFOFlush();
-    
+
     /* Key Initialisation */
     CRYP_KeyInit(&AES_CRYP_KeyInitStructure);
-    
+
     /* CRYP Initialization Vectors */
     CRYP_IVInit(&AES_CRYP_IVInitStructure);
-    
+
     /* Crypto Init for Key preparation for decryption process */
     AES_CRYP_InitStructure.CRYP_AlgoDir = CRYP_AlgoDir_Encrypt;
     AES_CRYP_InitStructure.CRYP_AlgoMode = CRYP_AlgoMode_AES_GCM;
     AES_CRYP_InitStructure.CRYP_DataType = CRYP_DataType_8b;
     CRYP_Init(&AES_CRYP_InitStructure);
-    
+
     /***************************** Init phase *********************************/
     /* Select init phase */
     CRYP_PhaseConfig(CRYP_Phase_Init);
-    
+
     /* Enable Crypto processor */
     CRYP_Cmd(ENABLE);
-    
+
     /* Wait for CRYPEN bit to be 0 */
     while(CRYP_GetCmdStatus() == ENABLE)
     {
     }
-    
+
     /***************************** header phase *******************************/
     if(HLength != 0)
     {
       /* Select header phase */
       CRYP_PhaseConfig(CRYP_Phase_Header);
-      
+
       /* Enable Crypto processor */
       CRYP_Cmd(ENABLE);
-      
+
       if(CRYP_GetCmdStatus() == DISABLE)
       {
-         /* The CRYP peripheral clock is not enabled or the device doesn't embed 
+         /* The CRYP peripheral clock is not enabled or the device doesn't embed
             the CRYP peripheral (please check the device sales type. */
          return(ERROR);
       }
-      
+
       for(loopcounter = 0; (loopcounter < HLength); loopcounter+=16)
       {
         /* Wait until the IFEM flag is reset */
         while(CRYP_GetFlagStatus(CRYP_FLAG_IFEM) == RESET)
         {
         }
-        
+
         /* Write the Input block in the IN FIFO */
         CRYP_DataIn(*(uint32_t*)(headeraddr));
         headeraddr+=4;
@@ -805,7 +805,7 @@ ErrorStatus CRYP_AES_GCM(uint8_t Mode, uint8_t InitVectors[16],
         CRYP_DataIn(*(uint32_t*)(headeraddr));
         headeraddr+=4;
       }
-      
+
       /* Wait until the complete message has been processed */
       counter = 0;
       do
@@ -819,23 +819,23 @@ ErrorStatus CRYP_AES_GCM(uint8_t Mode, uint8_t InitVectors[16],
         status = ERROR;
       }
     }
-    
+
     /**************************** payload phase *******************************/
     if(ILength != 0)
     {
       /* Select payload phase */
       CRYP_PhaseConfig(CRYP_Phase_Payload);
-      
+
       /* Enable Crypto processor */
       CRYP_Cmd(ENABLE);
-      
+
       if(CRYP_GetCmdStatus() == DISABLE)
       {
-        /* The CRYP peripheral clock is not enabled or the device doesn't embed 
+        /* The CRYP peripheral clock is not enabled or the device doesn't embed
            the CRYP peripheral (please check the device sales type. */
         return(ERROR);
       }
-      
+
       for(loopcounter = 0; ((loopcounter < ILength) && (status != ERROR)); loopcounter+=16)
       {
         /* Wait until the IFEM flag is reset */
@@ -851,7 +851,7 @@ ErrorStatus CRYP_AES_GCM(uint8_t Mode, uint8_t InitVectors[16],
         inputaddr+=4;
         CRYP_DataIn(*(uint32_t*)(inputaddr));
         inputaddr+=4;
-        
+
         /* Wait until the complete message has been processed */
         counter = 0;
         do
@@ -870,7 +870,7 @@ ErrorStatus CRYP_AES_GCM(uint8_t Mode, uint8_t InitVectors[16],
           while(CRYP_GetFlagStatus(CRYP_FLAG_OFNE) == RESET)
           {
           }
-          
+
           /* Read the Output block from the Output FIFO */
           *(uint32_t*)(outputaddr) = CRYP_DataOut();
           outputaddr+=4;
@@ -883,21 +883,21 @@ ErrorStatus CRYP_AES_GCM(uint8_t Mode, uint8_t InitVectors[16],
         }
       }
     }
-    
+
     /***************************** final phase ********************************/
     /* Select final phase */
     CRYP_PhaseConfig(CRYP_Phase_Final);
-    
+
     /* Enable Crypto processor */
     CRYP_Cmd(ENABLE);
-    
+
     if(CRYP_GetCmdStatus() == DISABLE)
     {
-      /* The CRYP peripheral clock is not enabled or the device doesn't embed 
+      /* The CRYP peripheral clock is not enabled or the device doesn't embed
          the CRYP peripheral (please check the device sales type. */
       return(ERROR);
     }
-    
+
     /* Write number of bits concatenated with header in the IN FIFO */
     CRYP_DataIn(__REV(headerlength>>32));
     CRYP_DataIn(__REV(headerlength));
@@ -907,7 +907,7 @@ ErrorStatus CRYP_AES_GCM(uint8_t Mode, uint8_t InitVectors[16],
     while(CRYP_GetFlagStatus(CRYP_FLAG_OFNE) == RESET)
     {
     }
-    
+
     tagaddr = (uint32_t)AuthTAG;
     /* Read the Auth TAG in the IN FIFO */
     *(uint32_t*)(tagaddr) = CRYP_DataOut();
@@ -924,54 +924,54 @@ ErrorStatus CRYP_AES_GCM(uint8_t Mode, uint8_t InitVectors[16],
   {
     /* Flush IN/OUT FIFOs */
     CRYP_FIFOFlush();
-    
+
     /* Key Initialisation */
     CRYP_KeyInit(&AES_CRYP_KeyInitStructure);
-    
+
     /* CRYP Initialization Vectors */
     CRYP_IVInit(&AES_CRYP_IVInitStructure);
-    
+
     /* Crypto Init for Key preparation for decryption process */
     AES_CRYP_InitStructure.CRYP_AlgoDir = CRYP_AlgoDir_Decrypt;
     AES_CRYP_InitStructure.CRYP_AlgoMode = CRYP_AlgoMode_AES_GCM;
     AES_CRYP_InitStructure.CRYP_DataType = CRYP_DataType_8b;
     CRYP_Init(&AES_CRYP_InitStructure);
-    
+
     /***************************** Init phase *********************************/
     /* Select init phase */
     CRYP_PhaseConfig(CRYP_Phase_Init);
-    
+
     /* Enable Crypto processor */
     CRYP_Cmd(ENABLE);
-    
+
     /* Wait for CRYPEN bit to be 0 */
     while(CRYP_GetCmdStatus() == ENABLE)
     {
     }
-    
+
     /***************************** header phase *******************************/
     if(HLength != 0)
     {
       /* Select header phase */
       CRYP_PhaseConfig(CRYP_Phase_Header);
-      
+
       /* Enable Crypto processor */
       CRYP_Cmd(ENABLE);
-      
+
       if(CRYP_GetCmdStatus() == DISABLE)
       {
-        /* The CRYP peripheral clock is not enabled or the device doesn't embed 
+        /* The CRYP peripheral clock is not enabled or the device doesn't embed
            the CRYP peripheral (please check the device sales type. */
         return(ERROR);
       }
-      
+
       for(loopcounter = 0; (loopcounter < HLength); loopcounter+=16)
       {
         /* Wait until the IFEM flag is reset */
         while(CRYP_GetFlagStatus(CRYP_FLAG_IFEM) == RESET)
         {
         }
-        
+
         /* Write the Input block in the IN FIFO */
         CRYP_DataIn(*(uint32_t*)(headeraddr));
         headeraddr+=4;
@@ -982,7 +982,7 @@ ErrorStatus CRYP_AES_GCM(uint8_t Mode, uint8_t InitVectors[16],
         CRYP_DataIn(*(uint32_t*)(headeraddr));
         headeraddr+=4;
       }
-      
+
       /* Wait until the complete message has been processed */
       counter = 0;
       do
@@ -996,7 +996,7 @@ ErrorStatus CRYP_AES_GCM(uint8_t Mode, uint8_t InitVectors[16],
         status = ERROR;
       }
     }
-    
+
     /**************************** payload phase *******************************/
     if(ILength != 0)
     {
@@ -1005,14 +1005,14 @@ ErrorStatus CRYP_AES_GCM(uint8_t Mode, uint8_t InitVectors[16],
 
       /* Enable Crypto processor */
       CRYP_Cmd(ENABLE);
-      
+
       if(CRYP_GetCmdStatus() == DISABLE)
       {
-        /* The CRYP peripheral clock is not enabled or the device doesn't embed 
+        /* The CRYP peripheral clock is not enabled or the device doesn't embed
            the CRYP peripheral (please check the device sales type. */
         return(ERROR);
       }
-      
+
       for(loopcounter = 0; ((loopcounter < ILength) && (status != ERROR)); loopcounter+=16)
       {
         /* Wait until the IFEM flag is reset */
@@ -1028,7 +1028,7 @@ ErrorStatus CRYP_AES_GCM(uint8_t Mode, uint8_t InitVectors[16],
         inputaddr+=4;
         CRYP_DataIn(*(uint32_t*)(inputaddr));
         inputaddr+=4;
-        
+
         /* Wait until the complete message has been processed */
         counter = 0;
         do
@@ -1047,7 +1047,7 @@ ErrorStatus CRYP_AES_GCM(uint8_t Mode, uint8_t InitVectors[16],
           while(CRYP_GetFlagStatus(CRYP_FLAG_OFNE) == RESET)
           {
           }
-          
+
           /* Read the Output block from the Output FIFO */
           *(uint32_t*)(outputaddr) = CRYP_DataOut();
           outputaddr+=4;
@@ -1060,21 +1060,21 @@ ErrorStatus CRYP_AES_GCM(uint8_t Mode, uint8_t InitVectors[16],
         }
       }
     }
-    
+
     /***************************** final phase ********************************/
     /* Select final phase */
     CRYP_PhaseConfig(CRYP_Phase_Final);
 
     /* Enable Crypto processor */
     CRYP_Cmd(ENABLE);
-    
+
     if(CRYP_GetCmdStatus() == DISABLE)
     {
-      /* The CRYP peripheral clock is not enabled or the device doesn't embed 
+      /* The CRYP peripheral clock is not enabled or the device doesn't embed
          the CRYP peripheral (please check the device sales type. */
       return(ERROR);
     }
-    
+
     /* Write number of bits concatenated with header in the IN FIFO */
     CRYP_DataIn(__REV(headerlength>>32));
     CRYP_DataIn(__REV(headerlength));
@@ -1084,7 +1084,7 @@ ErrorStatus CRYP_AES_GCM(uint8_t Mode, uint8_t InitVectors[16],
     while(CRYP_GetFlagStatus(CRYP_FLAG_OFNE) == RESET)
     {
     }
-    
+
     tagaddr = (uint32_t)AuthTAG;
     /* Read the Auth TAG in the IN FIFO */
     *(uint32_t*)(tagaddr) = CRYP_DataOut();
@@ -1116,7 +1116,7 @@ ErrorStatus CRYP_AES_GCM(uint8_t Mode, uint8_t InitVectors[16],
   * @param  Ilength: length of the Input buffer in bytes, must be a multiple of 16.
   * @param  Header: pointer to the header buffer.
   * @param  Hlength: length of the header buffer in bytes.
-  * @param  HBuffer: pointer to temporary buffer used to append the header
+  * @param  HBuffer: pointer to temporary buffer used to APPend the header
   *         HBuffer size must be equal to Hlength + 21
   * @param  Output: pointer to the returned buffer.
   * @param  AuthTAG: pointer to the authentication TAG buffer.
@@ -1125,7 +1125,7 @@ ErrorStatus CRYP_AES_GCM(uint8_t Mode, uint8_t InitVectors[16],
   *          - SUCCESS: Operation done
   *          - ERROR: Operation failed
   */
-ErrorStatus CRYP_AES_CCM(uint8_t Mode, 
+ErrorStatus CRYP_AES_CCM(uint8_t Mode,
                          uint8_t* Nonce, uint32_t NonceSize,
                          uint8_t *Key, uint16_t Keysize,
                          uint8_t *Input, uint32_t ILength,
@@ -1152,7 +1152,7 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
   uint32_t temptag[4] = {0}; /* temporary TAG (MAC) */
   uint32_t ctraddr = (uint32_t)ctr;
   uint32_t b0addr = (uint32_t)blockb0;
-  
+
   /************************ Formatting the header block ***********************/
   if(headersize != 0)
   {
@@ -1200,7 +1200,7 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
   }
   /* Flags byte */
   blockb0[0] |= 0u | (((( (uint8_t) TAGSize - 2) / 2) & 0x07 ) << 3 ) | ( ( (uint8_t) (15 - NonceSize) - 1) & 0x07);
-  
+
   for (loopcounter = 0; loopcounter < NonceSize; loopcounter++)
   {
     blockb0[loopcounter+1] = Nonce[loopcounter];
@@ -1209,10 +1209,10 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
   {
     blockb0[loopcounter+1] = 0;
   }
-  
+
   blockb0[14] = ((ILength >> 8) & 0xFF);
   blockb0[15] = (ILength & 0xFF);
-  
+
   /************************* Formatting the initial counter *******************/
   /* Byte 0:
      Bits 7 and 6 are reserved and shall be set to 0
@@ -1228,10 +1228,10 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
   }
   /* Set the LSB to 1 */
   ctr[15] |= 0x01;
-  
+
   /* Crypto structures initialisation*/
   CRYP_KeyStructInit(&AES_CRYP_KeyInitStructure);
-  
+
   switch(Keysize)
   {
     case 128:
@@ -1279,7 +1279,7 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
     default:
     break;
   }
-  
+
   /* CRYP Initialization Vectors */
   AES_CRYP_IVInitStructure.CRYP_IV0Left = (__REV(*(uint32_t*)(ctraddr)));
   ctraddr+=4;
@@ -1288,29 +1288,29 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
   AES_CRYP_IVInitStructure.CRYP_IV1Left = (__REV(*(uint32_t*)(ctraddr)));
   ctraddr+=4;
   AES_CRYP_IVInitStructure.CRYP_IV1Right= (__REV(*(uint32_t*)(ctraddr)));
-  
+
   /*------------------ AES Encryption ------------------*/
   if(Mode == MODE_ENCRYPT) /* AES encryption */
   {
     /* Flush IN/OUT FIFOs */
     CRYP_FIFOFlush();
-    
+
     /* Key Initialisation */
     CRYP_KeyInit(&AES_CRYP_KeyInitStructure);
-    
+
     /* CRYP Initialization Vectors */
     CRYP_IVInit(&AES_CRYP_IVInitStructure);
-    
+
     /* Crypto Init for Key preparation for decryption process */
     AES_CRYP_InitStructure.CRYP_AlgoDir = CRYP_AlgoDir_Encrypt;
     AES_CRYP_InitStructure.CRYP_AlgoMode = CRYP_AlgoMode_AES_CCM;
     AES_CRYP_InitStructure.CRYP_DataType = CRYP_DataType_8b;
     CRYP_Init(&AES_CRYP_InitStructure);
-    
+
     /***************************** Init phase *********************************/
     /* Select init phase */
     CRYP_PhaseConfig(CRYP_Phase_Init);
-    
+
     b0addr = (uint32_t)blockb0;
     /* Write the blockb0 block in the IN FIFO */
     CRYP_DataIn((*(uint32_t*)(b0addr)));
@@ -1320,10 +1320,10 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
     CRYP_DataIn((*(uint32_t*)(b0addr)));
     b0addr+=4;
     CRYP_DataIn((*(uint32_t*)(b0addr)));
-    
+
     /* Enable Crypto processor */
     CRYP_Cmd(ENABLE);
-    
+
     /* Wait for CRYPEN bit to be 0 */
     while(CRYP_GetCmdStatus() == ENABLE)
     {
@@ -1333,24 +1333,24 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
     {
       /* Select header phase */
       CRYP_PhaseConfig(CRYP_Phase_Header);
-      
+
       /* Enable Crypto processor */
       CRYP_Cmd(ENABLE);
-      
+
       if(CRYP_GetCmdStatus() == DISABLE)
       {
-         /* The CRYP peripheral clock is not enabled or the device doesn't embed 
+         /* The CRYP peripheral clock is not enabled or the device doesn't embed
             the CRYP peripheral (please check the device sales type. */
          return(ERROR);
       }
-      
+
       for(loopcounter = 0; (loopcounter < headersize); loopcounter+=16)
       {
         /* Wait until the IFEM flag is reset */
         while(CRYP_GetFlagStatus(CRYP_FLAG_IFEM) == RESET)
         {
         }
-        
+
         /* Write the Input block in the IN FIFO */
         CRYP_DataIn(*(uint32_t*)(headeraddr));
         headeraddr+=4;
@@ -1361,7 +1361,7 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
         CRYP_DataIn(*(uint32_t*)(headeraddr));
         headeraddr+=4;
       }
-      
+
       /* Wait until the complete message has been processed */
       counter = 0;
       do
@@ -1375,30 +1375,30 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
         status = ERROR;
       }
     }
-    
+
     /**************************** payload phase *******************************/
     if(ILength != 0)
     {
       /* Select payload phase */
       CRYP_PhaseConfig(CRYP_Phase_Payload);
-      
+
       /* Enable Crypto processor */
       CRYP_Cmd(ENABLE);
-      
+
       if(CRYP_GetCmdStatus() == DISABLE)
       {
-        /* The CRYP peripheral clock is not enabled or the device doesn't embed 
+        /* The CRYP peripheral clock is not enabled or the device doesn't embed
            the CRYP peripheral (please check the device sales type. */
         return(ERROR);
       }
-      
+
       for(loopcounter = 0; ((loopcounter < ILength) && (status != ERROR)); loopcounter+=16)
       {
         /* Wait until the IFEM flag is reset */
         while(CRYP_GetFlagStatus(CRYP_FLAG_IFEM) == RESET)
         {
         }
-        
+
         /* Write the Input block in the IN FIFO */
         CRYP_DataIn(*(uint32_t*)(inputaddr));
         inputaddr+=4;
@@ -1408,7 +1408,7 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
         inputaddr+=4;
         CRYP_DataIn(*(uint32_t*)(inputaddr));
         inputaddr+=4;
-        
+
         /* Wait until the complete message has been processed */
         counter = 0;
         do
@@ -1427,7 +1427,7 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
           while(CRYP_GetFlagStatus(CRYP_FLAG_OFNE) == RESET)
           {
           }
-          
+
           /* Read the Output block from the Output FIFO */
           *(uint32_t*)(outputaddr) = CRYP_DataOut();
           outputaddr+=4;
@@ -1440,21 +1440,21 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
         }
       }
     }
-    
+
     /***************************** final phase ********************************/
     /* Select final phase */
     CRYP_PhaseConfig(CRYP_Phase_Final);
-    
+
     /* Enable Crypto processor */
     CRYP_Cmd(ENABLE);
-    
+
     if(CRYP_GetCmdStatus() == DISABLE)
     {
-      /* The CRYP peripheral clock is not enabled or the device doesn't embed 
+      /* The CRYP peripheral clock is not enabled or the device doesn't embed
          the CRYP peripheral (please check the device sales type. */
       return(ERROR);
     }
-    
+
     ctraddr = (uint32_t)ctr;
     /* Write the counter block in the IN FIFO */
     CRYP_DataIn(*(uint32_t*)(ctraddr));
@@ -1465,12 +1465,12 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
     ctraddr+=4;
     /* Reset bit 0 (after 8-bit swap) is equivalent to reset bit 24 (before 8-bit swap) */
     CRYP_DataIn(*(uint32_t*)(ctraddr) & 0xfeffffff);
-    
+
     /* Wait until the OFNE flag is reset */
     while(CRYP_GetFlagStatus(CRYP_FLAG_OFNE) == RESET)
     {
     }
-    
+
     /* Read the Auth TAG in the IN FIFO */
     temptag[0] = CRYP_DataOut();
     temptag[1] = CRYP_DataOut();
@@ -1482,23 +1482,23 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
   {
     /* Flush IN/OUT FIFOs */
     CRYP_FIFOFlush();
-    
+
     /* Key Initialisation */
     CRYP_KeyInit(&AES_CRYP_KeyInitStructure);
-    
+
     /* CRYP Initialization Vectors */
     CRYP_IVInit(&AES_CRYP_IVInitStructure);
-    
+
     /* Crypto Init for Key preparation for decryption process */
     AES_CRYP_InitStructure.CRYP_AlgoDir = CRYP_AlgoDir_Decrypt;
     AES_CRYP_InitStructure.CRYP_AlgoMode = CRYP_AlgoMode_AES_CCM;
     AES_CRYP_InitStructure.CRYP_DataType = CRYP_DataType_8b;
     CRYP_Init(&AES_CRYP_InitStructure);
-    
+
     /***************************** Init phase *********************************/
     /* Select init phase */
     CRYP_PhaseConfig(CRYP_Phase_Init);
-    
+
     b0addr = (uint32_t)blockb0;
     /* Write the blockb0 block in the IN FIFO */
     CRYP_DataIn((*(uint32_t*)(b0addr)));
@@ -1508,38 +1508,38 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
     CRYP_DataIn((*(uint32_t*)(b0addr)));
     b0addr+=4;
     CRYP_DataIn((*(uint32_t*)(b0addr)));
-    
+
     /* Enable Crypto processor */
     CRYP_Cmd(ENABLE);
-    
+
     /* Wait for CRYPEN bit to be 0 */
     while(CRYP_GetCmdStatus() == ENABLE)
     {
     }
-    
+
     /***************************** header phase *******************************/
     if(headersize != 0)
     {
       /* Select header phase */
       CRYP_PhaseConfig(CRYP_Phase_Header);
-      
+
       /* Enable Crypto processor */
       CRYP_Cmd(ENABLE);
-      
+
       if(CRYP_GetCmdStatus() == DISABLE)
       {
-        /* The CRYP peripheral clock is not enabled or the device doesn't embed 
+        /* The CRYP peripheral clock is not enabled or the device doesn't embed
            the CRYP peripheral (please check the device sales type. */
         return(ERROR);
       }
-      
+
       for(loopcounter = 0; (loopcounter < headersize); loopcounter+=16)
       {
         /* Wait until the IFEM flag is reset */
         while(CRYP_GetFlagStatus(CRYP_FLAG_IFEM) == RESET)
         {
         }
-        
+
         /* Write the Input block in the IN FIFO */
         CRYP_DataIn(*(uint32_t*)(headeraddr));
         headeraddr+=4;
@@ -1550,7 +1550,7 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
         CRYP_DataIn(*(uint32_t*)(headeraddr));
         headeraddr+=4;
       }
-      
+
       /* Wait until the complete message has been processed */
       counter = 0;
       do
@@ -1564,7 +1564,7 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
         status = ERROR;
       }
     }
-    
+
     /**************************** payload phase *******************************/
     if(ILength != 0)
     {
@@ -1573,21 +1573,21 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
 
       /* Enable Crypto processor */
       CRYP_Cmd(ENABLE);
-      
+
       if(CRYP_GetCmdStatus() == DISABLE)
       {
-        /* The CRYP peripheral clock is not enabled or the device doesn't embed 
+        /* The CRYP peripheral clock is not enabled or the device doesn't embed
            the CRYP peripheral (please check the device sales type. */
         return(ERROR);
       }
-      
+
       for(loopcounter = 0; ((loopcounter < ILength) && (status != ERROR)); loopcounter+=16)
       {
         /* Wait until the IFEM flag is reset */
         while(CRYP_GetFlagStatus(CRYP_FLAG_IFEM) == RESET)
         {
         }
-        
+
         /* Write the Input block in the IN FIFO */
         CRYP_DataIn(*(uint32_t*)(inputaddr));
         inputaddr+=4;
@@ -1597,7 +1597,7 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
         inputaddr+=4;
         CRYP_DataIn(*(uint32_t*)(inputaddr));
         inputaddr+=4;
-        
+
         /* Wait until the complete message has been processed */
         counter = 0;
         do
@@ -1616,7 +1616,7 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
           while(CRYP_GetFlagStatus(CRYP_FLAG_OFNE) == RESET)
           {
           }
-          
+
           /* Read the Output block from the Output FIFO */
           *(uint32_t*)(outputaddr) = CRYP_DataOut();
           outputaddr+=4;
@@ -1629,21 +1629,21 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
         }
       }
     }
-    
+
     /***************************** final phase ********************************/
     /* Select final phase */
     CRYP_PhaseConfig(CRYP_Phase_Final);
-    
+
     /* Enable Crypto processor */
     CRYP_Cmd(ENABLE);
-    
+
     if(CRYP_GetCmdStatus() == DISABLE)
     {
-      /* The CRYP peripheral clock is not enabled or the device doesn't embed 
+      /* The CRYP peripheral clock is not enabled or the device doesn't embed
          the CRYP peripheral (please check the device sales type. */
       return(ERROR);
     }
-    
+
     ctraddr = (uint32_t)ctr;
     /* Write the counter block in the IN FIFO */
     CRYP_DataIn(*(uint32_t*)(ctraddr));
@@ -1654,26 +1654,26 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
     ctraddr+=4;
     /* Reset bit 0 (after 8-bit swap) is equivalent to reset bit 24 (before 8-bit swap) */
     CRYP_DataIn(*(uint32_t*)(ctraddr) & 0xfeffffff);
-    
+
     /* Wait until the OFNE flag is reset */
     while(CRYP_GetFlagStatus(CRYP_FLAG_OFNE) == RESET)
     {
     }
-    
+
     /* Read the Authentification TAG (MAC) in the IN FIFO */
     temptag[0] = CRYP_DataOut();
     temptag[1] = CRYP_DataOut();
     temptag[2] = CRYP_DataOut();
     temptag[3] = CRYP_DataOut();
   }
-  
+
   /* Copy temporary authentication TAG in user TAG buffer */
   for(loopcounter = 0; (loopcounter < TAGSize); loopcounter++)
   {
     /* Set the authentication TAG buffer */
     *((uint8_t*)tagaddr+loopcounter) = *((uint8_t*)temptag+loopcounter);
   }
-  
+
   /* Disable Crypto */
   CRYP_Cmd(DISABLE);
 
@@ -1682,18 +1682,18 @@ ErrorStatus CRYP_AES_CCM(uint8_t Mode,
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 

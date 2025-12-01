@@ -37,7 +37,7 @@ typedef void (* TaskFunction_t)( void * );
 
 /* Converts a time in milliseconds to a time in ticks.  This macro can be
  * overridden by a macro of the same name defined in FreeRTOSConfig.h in case the
- * definition here is not suitable for your application. */
+ * definition here is not suitable for your APPlication. */
 #ifndef pdMS_TO_TICKS
     #define pdMS_TO_TICKS( xTimeInMs )    ( ( TickType_t ) ( ( ( TickType_t ) ( xTimeInMs ) * ( TickType_t ) configTICK_RATE_HZ ) / ( TickType_t ) 1000U ) )
 #endif
@@ -99,7 +99,7 @@ typedef void (* TaskFunction_t)( void * );
 #define pdFREERTOS_ERRNO_EROFS            30  /* Read only file system */
 #define pdFREERTOS_ERRNO_EUNATCH          42  /* Protocol driver not attached */
 #define pdFREERTOS_ERRNO_EBADE            50  /* Invalid exchange */
-#define pdFREERTOS_ERRNO_EFTYPE           79  /* Inappropriate file type or format */
+#define pdFREERTOS_ERRNO_EFTYPE           79  /* InAPPropriate file type or format */
 #define pdFREERTOS_ERRNO_ENMFILE          89  /* No more files */
 #define pdFREERTOS_ERRNO_ENOTEMPTY        90  /* Directory not empty */
 #define pdFREERTOS_ERRNO_ENAMETOOLONG     91  /* File or path name too long */

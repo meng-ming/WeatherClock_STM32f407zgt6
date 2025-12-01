@@ -1,5 +1,5 @@
 /**
- * @file    app_ui_conf.h
+ * @file    APP_ui_conf.h
  * @brief   UI 界面布局与配色配置文件
  * @note    所有界面的坐标、尺寸、颜色定义均在此处管理，方便统一调整。
  */
@@ -86,6 +86,13 @@ extern const unsigned char gImage_weather_xiaxue[];
 extern const unsigned char gImage_weather_yintian[];
 extern const unsigned char gImage_weather_youfeng[];
 extern const unsigned char gImage_weather_yujiaxue[];
+
+// === 天气图标映射表 ===
+typedef struct
+{
+    const char*          keyword; // 匹配关键字 (如 "雷")
+    const unsigned char* img_ptr; // 对应的图片指针
+} Weather_Map_t;
 
 // --- 天气参数图标 ---
 extern const unsigned char gImage_weather_shinei[];

@@ -1,14 +1,14 @@
 /**
   ******************************************************************************
   * @file    system_stm32f4xx.c
-  * @author  MCD Application Team
+  * @author  MCD APPlication Team
   * @version V1.8.1
   * @date    27-January-2022
   * @brief   CMSIS Cortex-M4 Device Peripheral Access Layer System Source File.
   *          This file contains the system clock configuration for STM32F4xx devices.
   *
   * 1.  This file provides two functions and one global variable to be called from
-  *     user application:
+  *     user APPlication:
   *      - SystemInit(): Setups the system clock (System clock source, PLL Multiplier
   *                      and Divider factors, AHB/APBx prescalers and Flash settings),
   *                      depending on the configuration made in the clock xls tool.
@@ -17,7 +17,7 @@
   *                      the "startup_stm32f4xx.s" file.
   *
   *      - SystemCoreClock variable: Contains the core clock (HCLK), it can be used
-  *                                  by the user application to setup the SysTick
+  *                                  by the user APPlication to setup the SysTick
   *                                  timer or configure other parameters.
   *
   *      - SystemCoreClockUpdate(): Updates the variable SystemCoreClock and must
@@ -517,7 +517,7 @@ void SystemInit(void)
 /**
    * @brief  Update SystemCoreClock variable according to Clock Register Values.
   *         The SystemCoreClock variable contains the core clock (HCLK), it can
-  *         be used by the user application to setup the SysTick timer or configure
+  *         be used by the user APPlication to setup the SysTick timer or configure
   *         other parameters.
   *
   * @note   Each time the core clock (HCLK) changes, this function must be called
@@ -755,7 +755,7 @@ static void SetSysClock(void)
     }
   }
   else
-  { /* If HSE fails to start-up, the application will have wrong clock
+  { /* If HSE fails to start-up, the APPlication will have wrong clock
          configuration. User can add here some code to deal with this error */
   }
 #elif defined(STM32F410xx) || defined(STM32F411xE)
@@ -824,7 +824,7 @@ static void SetSysClock(void)
     }
   }
   else
-  { /* If HSE fails to start-up, the application will have wrong clock
+  { /* If HSE fails to start-up, the APPlication will have wrong clock
          configuration. User can add here some code to deal with this error */
   }
 #else /* HSI will be used as PLL clock source */

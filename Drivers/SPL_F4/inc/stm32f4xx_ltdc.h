@@ -1,10 +1,10 @@
 /**
   ******************************************************************************
   * @file    stm32f4xx_ltdc.h
-  * @author  MCD Application Team
+  * @author  MCD APPlication Team
   * @version V1.8.1
   * @date    27-January-2022
-  * @brief   This file contains all the functions prototypes for the LTDC firmware 
+  * @brief   This file contains all the functions prototypes for the LTDC firmware
   *          library.
   ******************************************************************************
   * @attention
@@ -36,12 +36,12 @@
 
 /** @addtogroup LTDC
   * @{
-  */ 
+  */
 
 /* Exported types ------------------------------------------------------------*/
- 
-/** 
-  * @brief  LTDC Init structure definition  
+
+/**
+  * @brief  LTDC Init structure definition
   */
 
 typedef struct
@@ -58,10 +58,10 @@ typedef struct
   uint32_t LTDC_PCPolarity;                 /*!< configures the pixel clock polarity. This parameter can
                                                  be one of value of @ref LTDC_PCPolarity */
 
-  uint32_t LTDC_HorizontalSync;             /*!< configures the number of Horizontal synchronization 
+  uint32_t LTDC_HorizontalSync;             /*!< configures the number of Horizontal synchronization
                                                  width. This parameter must range from 0x000 to 0xFFF. */
 
-  uint32_t LTDC_VerticalSync;               /*!< configures the number of Vertical synchronization 
+  uint32_t LTDC_VerticalSync;               /*!< configures the number of Vertical synchronization
                                                  height. This parameter must range from 0x000 to 0x7FF. */
 
   uint32_t LTDC_AccumulatedHBP;             /*!< configures the accumulated horizontal back porch width.
@@ -69,48 +69,48 @@ typedef struct
 
   uint32_t LTDC_AccumulatedVBP;             /*!< configures the accumulated vertical back porch height.
                                                  This parameter must range from LTDC_VerticalSync to 0x7FF. */
-            
-  uint32_t LTDC_AccumulatedActiveW;         /*!< configures the accumulated active width. This parameter 
+
+  uint32_t LTDC_AccumulatedActiveW;         /*!< configures the accumulated active width. This parameter
                                                  must range from LTDC_AccumulatedHBP to 0xFFF. */
 
-  uint32_t LTDC_AccumulatedActiveH;         /*!< configures the accumulated active height. This parameter 
+  uint32_t LTDC_AccumulatedActiveH;         /*!< configures the accumulated active height. This parameter
                                                  must range from LTDC_AccumulatedVBP to 0x7FF. */
 
-  uint32_t LTDC_TotalWidth;                 /*!< configures the total width. This parameter 
+  uint32_t LTDC_TotalWidth;                 /*!< configures the total width. This parameter
                                                  must range from LTDC_AccumulatedActiveW to 0xFFF. */
 
-  uint32_t LTDC_TotalHeigh;                 /*!< configures the total height. This parameter 
+  uint32_t LTDC_TotalHeigh;                 /*!< configures the total height. This parameter
                                                  must range from LTDC_AccumulatedActiveH to 0x7FF. */
-            
+
   uint32_t LTDC_BackgroundRedValue;         /*!< configures the background red value.
                                                  This parameter must range from 0x00 to 0xFF. */
 
   uint32_t LTDC_BackgroundGreenValue;       /*!< configures the background green value.
-                                                 This parameter must range from 0x00 to 0xFF. */ 
+                                                 This parameter must range from 0x00 to 0xFF. */
 
    uint32_t LTDC_BackgroundBlueValue;       /*!< configures the background blue value.
                                                  This parameter must range from 0x00 to 0xFF. */
 } LTDC_InitTypeDef;
 
-/** 
-  * @brief  LTDC Layer structure definition  
+/**
+  * @brief  LTDC Layer structure definition
   */
 
 typedef struct
 {
   uint32_t LTDC_HorizontalStart;            /*!< Configures the Window Horizontal Start Position.
                                                  This parameter must range from 0x000 to 0xFFF. */
-            
+
   uint32_t LTDC_HorizontalStop;             /*!< Configures the Window Horizontal Stop Position.
                                                  This parameter must range from 0x0000 to 0xFFFF. */
-  
+
   uint32_t LTDC_VerticalStart;              /*!< Configures the Window vertical Start Position.
                                                  This parameter must range from 0x000 to 0xFFF. */
 
   uint32_t LTDC_VerticalStop;               /*!< Configures the Window vaertical Stop Position.
                                                  This parameter must range from 0x0000 to 0xFFFF. */
-  
-  uint32_t LTDC_PixelFormat;                /*!< Specifies the pixel format. This parameter can be 
+
+  uint32_t LTDC_PixelFormat;                /*!< Specifies the pixel format. This parameter can be
                                                  one of value of @ref LTDC_Pixelformat */
 
   uint32_t LTDC_ConstantAlpha;              /*!< Specifies the constant alpha used for blending.
@@ -121,33 +121,33 @@ typedef struct
 
   uint32_t LTDC_DefaultColorGreen;          /*!< Configures the default green value.
                                                  This parameter must range from 0x00 to 0xFF. */
-            
+
   uint32_t LTDC_DefaultColorRed;            /*!< Configures the default red value.
                                                  This parameter must range from 0x00 to 0xFF. */
 
   uint32_t LTDC_DefaultColorAlpha;          /*!< Configures the default alpha value.
                                                  This parameter must range from 0x00 to 0xFF. */
 
-  uint32_t LTDC_BlendingFactor_1;           /*!< Select the blending factor 1. This parameter 
+  uint32_t LTDC_BlendingFactor_1;           /*!< Select the blending factor 1. This parameter
                                                  can be one of value of @ref LTDC_BlendingFactor1 */
 
-  uint32_t LTDC_BlendingFactor_2;           /*!< Select the blending factor 2. This parameter 
+  uint32_t LTDC_BlendingFactor_2;           /*!< Select the blending factor 2. This parameter
                                                  can be one of value of @ref LTDC_BlendingFactor2 */
-            
+
   uint32_t LTDC_CFBStartAdress;             /*!< Configures the color frame buffer address */
 
-  uint32_t LTDC_CFBLineLength;              /*!< Configures the color frame buffer line length. 
+  uint32_t LTDC_CFBLineLength;              /*!< Configures the color frame buffer line length.
                                                  This parameter must range from 0x0000 to 0x1FFF. */
 
   uint32_t LTDC_CFBPitch;                   /*!< Configures the color frame buffer pitch in bytes.
                                                  This parameter must range from 0x0000 to 0x1FFF. */
-                                                 
-  uint32_t LTDC_CFBLineNumber;              /*!< Specifies the number of line in frame buffer. 
+
+  uint32_t LTDC_CFBLineNumber;              /*!< Specifies the number of line in frame buffer.
                                                  This parameter must range from 0x000 to 0x7FF. */
 } LTDC_Layer_InitTypeDef;
 
-/** 
-  * @brief  LTDC Position structure definition  
+/**
+  * @brief  LTDC Position structure definition
   */
 typedef struct
 {
@@ -155,8 +155,8 @@ typedef struct
   uint32_t LTDC_POSY;                         /*!<  Current Y Position */
 } LTDC_PosTypeDef;
 
-/** 
-  * @brief  LTDC RGB structure definition  
+/**
+  * @brief  LTDC RGB structure definition
   */
 typedef struct
 {
@@ -165,33 +165,33 @@ typedef struct
   uint32_t LTDC_RedWidth;                         /*!< Red width */
 } LTDC_RGBTypeDef;
 
-/** 
-  * @brief  LTDC Color Keying structure definition  
+/**
+  * @brief  LTDC Color Keying structure definition
   */
 typedef struct
 {
-  uint32_t LTDC_ColorKeyBlue;               /*!< Configures the color key blue value. 
+  uint32_t LTDC_ColorKeyBlue;               /*!< Configures the color key blue value.
                                                  This parameter must range from 0x00 to 0xFF. */
 
-  uint32_t LTDC_ColorKeyGreen;              /*!< Configures the color key green value. 
+  uint32_t LTDC_ColorKeyGreen;              /*!< Configures the color key green value.
                                                  This parameter must range from 0x00 to 0xFF. */
-            
-  uint32_t LTDC_ColorKeyRed;                /*!< Configures the color key red value. 
+
+  uint32_t LTDC_ColorKeyRed;                /*!< Configures the color key red value.
                                                  This parameter must range from 0x00 to 0xFF. */
 } LTDC_ColorKeying_InitTypeDef;
 
-/** 
-  * @brief  LTDC CLUT structure definition  
+/**
+  * @brief  LTDC CLUT structure definition
   */
 typedef struct
 {
   uint32_t LTDC_CLUTAdress;                 /*!< Configures the CLUT address.
                                                  This parameter must range from 0x00 to 0xFF. */
 
-  uint32_t LTDC_BlueValue;                  /*!< Configures the blue value. 
+  uint32_t LTDC_BlueValue;                  /*!< Configures the blue value.
                                                  This parameter must range from 0x00 to 0xFF. */
-                                                 
-  uint32_t LTDC_GreenValue;                 /*!< Configures the green value. 
+
+  uint32_t LTDC_GreenValue;                 /*!< Configures the green value.
                                                  This parameter must range from 0x00 to 0xFF. */
 
   uint32_t LTDC_RedValue;                   /*!< Configures the red value.
@@ -202,8 +202,8 @@ typedef struct
 /** @defgroup LTDC_Exported_Constants
   * @{
   */
-  
-/** @defgroup LTDC_SYNC 
+
+/** @defgroup LTDC_SYNC
   * @{
   */
 
@@ -222,7 +222,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup LTDC_HSPolarity 
+/** @defgroup LTDC_HSPolarity
   * @{
   */
 #define LTDC_HSPolarity_AL                ((uint32_t)0x00000000)                /*!< Horizontal Synchronization is active low. */
@@ -234,19 +234,19 @@ typedef struct
   * @}
   */
 
-/** @defgroup LTDC_VSPolarity 
+/** @defgroup LTDC_VSPolarity
   * @{
   */
 #define LTDC_VSPolarity_AL                ((uint32_t)0x00000000)                /*!< Vertical Synchronization is active low. */
 #define LTDC_VSPolarity_AH                LTDC_GCR_VSPOL                        /*!< Vertical Synchronization is active high. */
 
 #define IS_LTDC_VSPOL(VSPOL) (((VSPOL) == LTDC_VSPolarity_AL) || \
-                              ((VSPOL) == LTDC_VSPolarity_AH))  
+                              ((VSPOL) == LTDC_VSPolarity_AH))
 /**
   * @}
   */
 
-/** @defgroup LTDC_DEPolarity 
+/** @defgroup LTDC_DEPolarity
   * @{
   */
 #define LTDC_DEPolarity_AL                ((uint32_t)0x00000000)                /*!< Data Enable, is active low. */
@@ -258,7 +258,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup LTDC_PCPolarity 
+/** @defgroup LTDC_PCPolarity
   * @{
   */
 #define LTDC_PCPolarity_IPC               ((uint32_t)0x00000000)                /*!< input pixel clock. */
@@ -270,7 +270,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup LTDC_Reload 
+/** @defgroup LTDC_Reload
   * @{
   */
 #define LTDC_IMReload                     LTDC_SRCR_IMR                         /*!< Immediately Reload. */
@@ -289,12 +289,12 @@ typedef struct
 
 #define IS_LTDC_BackBlueValue(BBLUE)    ((BBLUE) <= LTDC_Back_Color)
 #define IS_LTDC_BackGreenValue(BGREEN)  ((BGREEN) <= LTDC_Back_Color)
-#define IS_LTDC_BackRedValue(BRED)      ((BRED) <= LTDC_Back_Color) 
+#define IS_LTDC_BackRedValue(BRED)      ((BRED) <= LTDC_Back_Color)
 /**
   * @}
   */
 
-/** @defgroup LTDC_Position 
+/** @defgroup LTDC_Position
   * @{
   */
 #define LTDC_POS_CY                       LTDC_CPSR_CYPOS
@@ -305,7 +305,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup LTDC_LIPosition 
+/** @defgroup LTDC_LIPosition
   * @{
   */
 #define IS_LTDC_LIPOS(LIPOS) ((LIPOS) <= 0x7FF)
@@ -313,7 +313,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup LTDC_CurrentStatus 
+/** @defgroup LTDC_CurrentStatus
   * @{
   */
 #define LTDC_CD_VDES                     LTDC_CDSR_VDES
@@ -327,7 +327,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup LTDC_Interrupts 
+/** @defgroup LTDC_Interrupts
   * @{
   */
 #define LTDC_IT_LI                      LTDC_IER_LIE
@@ -341,7 +341,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup LTDC_Flag 
+/** @defgroup LTDC_Flag
   * @{
   */
 #define LTDC_FLAG_LI                     LTDC_ISR_LIF
@@ -355,7 +355,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup LTDC_Pixelformat 
+/** @defgroup LTDC_Pixelformat
   * @{
   */
 #define LTDC_Pixelformat_ARGB8888                  ((uint32_t)0x00000000)
@@ -376,7 +376,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup LTDC_BlendingFactor1 
+/** @defgroup LTDC_BlendingFactor1
   * @{
   */
 #define LTDC_BlendingFactor1_CA                       ((uint32_t)0x00000400)

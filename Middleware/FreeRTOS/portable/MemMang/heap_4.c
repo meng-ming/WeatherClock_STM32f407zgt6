@@ -38,8 +38,8 @@
 #include <string.h>
 
 /* Defining MPU_WRAPPERS_INCLUDED_FROM_API_FILE prevents task.h from redefining
- * all the API functions to use the MPU wrappers.  That should only be done when
- * task.h is included from an application file. */
+ * all the API functions to use the MPU wrAPPers.  That should only be done when
+ * task.h is included from an APPlication file. */
 #define MPU_WRAPPERS_INCLUDED_FROM_API_FILE
 
 #include "FreeRTOS.h"
@@ -72,7 +72,7 @@
 
 /* MSB of the xBlockSize member of an BlockLink_t structure is used to track
  * the allocation status of a block.  When MSB of the xBlockSize member of
- * an BlockLink_t structure is set then the block belongs to the application.
+ * an BlockLink_t structure is set then the block belongs to the APPlication.
  * When the bit is free the block is still part of the free heap space. */
 #define heapBLOCK_ALLOCATED_BITMASK    ( ( ( size_t ) 1 ) << ( ( sizeof( size_t ) * heapBITS_PER_BYTE ) - 1 ) )
 #define heapBLOCK_SIZE_IS_VALID( xBlockSize )    ( ( ( xBlockSize ) & heapBLOCK_ALLOCATED_BITMASK ) == 0 )
@@ -85,7 +85,7 @@
 /* Allocate the memory for the heap. */
 #if ( configAPPLICATION_ALLOCATED_HEAP == 1 )
 
-/* The application writer has already defined the array used for the RTOS
+/* The APPlication writer has already defined the array used for the RTOS
 * heap - probably so it can be placed in a special segment or address. */
     extern uint8_t ucHeap[ configTOTAL_HEAP_SIZE ];
 #else
@@ -197,7 +197,7 @@ void * pvPortMalloc( size_t xWantedSize )
 
         /* Check the block size we are trying to allocate is not so large that the
          * top bit is set.  The top bit of the block size member of the BlockLink_t
-         * structure is used to determine who owns the block - the application or
+         * structure is used to determine who owns the block - the APPlication or
          * the kernel, so it must be free. */
         if( heapBLOCK_SIZE_IS_VALID( xWantedSize ) != 0 )
         {
@@ -262,7 +262,7 @@ void * pvPortMalloc( size_t xWantedSize )
                     }
 
                     /* The block is being returned - it is allocated and owned
-                     * by the application and has no "next" block. */
+                     * by the APPlication and has no "next" block. */
                     heapALLOCATE_BLOCK( pxBlock );
                     pxBlock->pxNextFreeBlock = NULL;
                     xNumberOfSuccessfulAllocations++;
@@ -290,7 +290,7 @@ void * pvPortMalloc( size_t xWantedSize )
     {
         if( pvReturn == NULL )
         {
-            vApplicationMallocFailedHook();
+            vAPPlicationMallocFailedHook();
         }
         else
         {

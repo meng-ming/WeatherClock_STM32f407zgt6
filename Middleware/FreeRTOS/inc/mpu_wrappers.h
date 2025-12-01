@@ -29,7 +29,7 @@
 #ifndef MPU_WRAPPERS_H
 #define MPU_WRAPPERS_H
 
-/* This file redefines API functions to be called through a wrapper macro, but
+/* This file redefines API functions to be called through a wrAPPer macro, but
  * only for ports that are using the MPU. */
 #if ( portUSING_MPU_WRAPPERS == 1 )
 
@@ -40,7 +40,7 @@
 
 /*
  * Map standard (non MPU) API functions to equivalents that start
- * "MPU_".  This will cause the application code to call the MPU_
+ * "MPU_".  This will cause the APPlication code to call the MPU_
  * version, which wraps the non-MPU version with privilege promoting
  * then demoting code, so the kernel code always runs will full
  * privileges.
@@ -60,8 +60,8 @@
         #define pcTaskGetName                         MPU_pcTaskGetName
         #define uxTaskGetStackHighWaterMark           MPU_uxTaskGetStackHighWaterMark
         #define uxTaskGetStackHighWaterMark2          MPU_uxTaskGetStackHighWaterMark2
-        #define vTaskSetApplicationTaskTag            MPU_vTaskSetApplicationTaskTag
-        #define xTaskGetApplicationTaskTag            MPU_xTaskGetApplicationTaskTag
+        #define vTaskSetAPPlicationTaskTag            MPU_vTaskSetAPPlicationTaskTag
+        #define xTaskGetAPPlicationTaskTag            MPU_xTaskGetAPPlicationTaskTag
         #define vTaskSetThreadLocalStoragePointer     MPU_vTaskSetThreadLocalStoragePointer
         #define pvTaskGetThreadLocalStoragePointer    MPU_pvTaskGetThreadLocalStoragePointer
         #define xTaskGetIdleTaskHandle                MPU_xTaskGetIdleTaskHandle
@@ -83,15 +83,15 @@
             #define ulTaskGetRunTimePercent           MPU_ulTaskGetRunTimePercent
         #endif /* #if ( configUSE_MPU_WRAPPERS_V1 == 0 ) */
 
-/* Privileged only wrappers for Task APIs. These are needed so that
- * the application can use opaque handles maintained in mpu_wrappers.c
+/* Privileged only wrAPPers for Task APIs. These are needed so that
+ * the APPlication can use opaque handles maintained in mpu_wrAPPers.c
  * with all the APIs. */
         #define xTaskCreate                              MPU_xTaskCreate
         #define xTaskCreateStatic                        MPU_xTaskCreateStatic
         #define vTaskDelete                              MPU_vTaskDelete
         #define vTaskPrioritySet                         MPU_vTaskPrioritySet
         #define xTaskGetHandle                           MPU_xTaskGetHandle
-        #define xTaskCallApplicationTaskHook             MPU_xTaskCallApplicationTaskHook
+        #define xTaskCallAPPlicationTaskHook             MPU_xTaskCallAPPlicationTaskHook
 
         #if ( configUSE_MPU_WRAPPERS_V1 == 0 )
             #define xTaskCreateRestricted                MPU_xTaskCreateRestricted
@@ -100,7 +100,7 @@
             #define xTaskGetStaticBuffers                MPU_xTaskGetStaticBuffers
             #define uxTaskPriorityGetFromISR             MPU_uxTaskPriorityGetFromISR
             #define xTaskResumeFromISR                   MPU_xTaskResumeFromISR
-            #define xTaskGetApplicationTaskTagFromISR    MPU_xTaskGetApplicationTaskTagFromISR
+            #define xTaskGetAPPlicationTaskTagFromISR    MPU_xTaskGetAPPlicationTaskTagFromISR
             #define xTaskGenericNotifyFromISR            MPU_xTaskGenericNotifyFromISR
             #define vTaskGenericNotifyGiveFromISR        MPU_vTaskGenericNotifyGiveFromISR
         #endif /* #if ( configUSE_MPU_WRAPPERS_V1 == 0 ) */
@@ -124,8 +124,8 @@
             #define pcQueueGetName           MPU_pcQueueGetName
         #endif /* #if ( configQUEUE_REGISTRY_SIZE > 0 ) */
 
-/* Privileged only wrappers for Queue APIs. These are needed so that
- * the application can use opaque handles maintained in mpu_wrappers.c
+/* Privileged only wrAPPers for Queue APIs. These are needed so that
+ * the APPlication can use opaque handles maintained in mpu_wrAPPers.c
  * with all the APIs. */
         #define vQueueDelete                           MPU_vQueueDelete
         #define xQueueCreateMutex                      MPU_xQueueCreateMutex
@@ -163,8 +163,8 @@
         #define xTimerGetPeriod                   MPU_xTimerGetPeriod
         #define xTimerGetExpiryTime               MPU_xTimerGetExpiryTime
 
-/* Privileged only wrappers for Timer APIs. These are needed so that
- * the application can use opaque handles maintained in mpu_wrappers.c
+/* Privileged only wrAPPers for Timer APIs. These are needed so that
+ * the APPlication can use opaque handles maintained in mpu_wrAPPers.c
  * with all the APIs. */
         #if ( configUSE_MPU_WRAPPERS_V1 == 0 )
             #define xTimerGetReloadMode      MPU_xTimerGetReloadMode
@@ -184,8 +184,8 @@
             #define vEventGroupSetNumber     MPU_vEventGroupSetNumber
         #endif /* #if ( ( configUSE_TRACE_FACILITY == 1 ) && ( configUSE_MPU_WRAPPERS_V1 == 0 ) ) */
 
-/* Privileged only wrappers for Event Group APIs. These are needed so that
- * the application can use opaque handles maintained in mpu_wrappers.c
+/* Privileged only wrAPPers for Event Group APIs. These are needed so that
+ * the APPlication can use opaque handles maintained in mpu_wrAPPers.c
  * with all the APIs. */
         #define xEventGroupCreate                  MPU_xEventGroupCreate
         #define xEventGroupCreateStatic            MPU_xEventGroupCreateStatic
@@ -209,8 +209,8 @@
         #define xStreamBufferSetTriggerLevel           MPU_xStreamBufferSetTriggerLevel
         #define xStreamBufferNextMessageLengthBytes    MPU_xStreamBufferNextMessageLengthBytes
 
-/* Privileged only wrappers for Stream Buffer APIs. These are needed so that
- * the application can use opaque handles maintained in mpu_wrappers.c
+/* Privileged only wrAPPers for Stream Buffer APIs. These are needed so that
+ * the APPlication can use opaque handles maintained in mpu_wrAPPers.c
  * with all the APIs. */
 
         #define xStreamBufferGenericCreate                  MPU_xStreamBufferGenericCreate
@@ -227,7 +227,7 @@
         #endif /* #if ( configUSE_MPU_WRAPPERS_V1 == 0 ) */
 
 /* Remove the privileged function macro, but keep the PRIVILEGED_DATA
- * macro so applications can place data in privileged access sections
+ * macro so APPlications can place data in privileged access sections
  * (useful when using statically allocated objects). */
         #define PRIVILEGED_FUNCTION
         #define PRIVILEGED_DATA    __attribute__( ( section( "privileged_data" ) ) )

@@ -27,9 +27,9 @@
  */
 
 /*
- * When the MPU is used the standard (non MPU) API functions are mapped to
+ * When the MPU is used the standard (non MPU) API functions are mAPPed to
  * equivalents that start "MPU_", the prototypes for which are defined in this
- * header files.  This will cause the application code to call the MPU_ version
+ * header files.  This will cause the APPlication code to call the MPU_ version
  * which wraps the non-MPU version with privilege promoting then demoting code,
  * so the kernel code always runs will full privileges.
  */
@@ -92,9 +92,9 @@ UBaseType_t MPU_uxTaskGetNumberOfTasks( void ) FREERTOS_SYSTEM_CALL;
 char * MPU_pcTaskGetName( TaskHandle_t xTaskToQuery ) FREERTOS_SYSTEM_CALL;
 UBaseType_t MPU_uxTaskGetStackHighWaterMark( TaskHandle_t xTask ) FREERTOS_SYSTEM_CALL;
 configSTACK_DEPTH_TYPE MPU_uxTaskGetStackHighWaterMark2( TaskHandle_t xTask ) FREERTOS_SYSTEM_CALL;
-void MPU_vTaskSetApplicationTaskTag( TaskHandle_t xTask,
+void MPU_vTaskSetAPPlicationTaskTag( TaskHandle_t xTask,
                                      TaskHookFunction_t pxHookFunction ) FREERTOS_SYSTEM_CALL;
-TaskHookFunction_t MPU_xTaskGetApplicationTaskTag( TaskHandle_t xTask ) FREERTOS_SYSTEM_CALL;
+TaskHookFunction_t MPU_xTaskGetAPPlicationTaskTag( TaskHandle_t xTask ) FREERTOS_SYSTEM_CALL;
 void MPU_vTaskSetThreadLocalStoragePointer( TaskHandle_t xTaskToSet,
                                             BaseType_t xIndex,
                                             void * pvValue ) FREERTOS_SYSTEM_CALL;
@@ -134,8 +134,8 @@ BaseType_t MPU_xTaskCheckForTimeOut( TimeOut_t * const pxTimeOut,
 TaskHandle_t MPU_xTaskGetCurrentTaskHandle( void ) FREERTOS_SYSTEM_CALL;
 BaseType_t MPU_xTaskGetSchedulerState( void ) FREERTOS_SYSTEM_CALL;
 
-/* Privileged only wrappers for Task APIs. These are needed so that
- * the application can use opaque handles maintained in mpu_wrappers.c
+/* Privileged only wrAPPers for Task APIs. These are needed so that
+ * the APPlication can use opaque handles maintained in mpu_wrAPPers.c
  * with all the APIs. */
 BaseType_t MPU_xTaskCreate( TaskFunction_t pxTaskCode,
                             const char * const pcName,
@@ -154,7 +154,7 @@ void MPU_vTaskDelete( TaskHandle_t xTaskToDelete ) PRIVILEGED_FUNCTION;
 void MPU_vTaskPrioritySet( TaskHandle_t xTask,
                            UBaseType_t uxNewPriority ) PRIVILEGED_FUNCTION;
 TaskHandle_t MPU_xTaskGetHandle( const char * pcNameToQuery ) PRIVILEGED_FUNCTION;
-BaseType_t MPU_xTaskCallApplicationTaskHook( TaskHandle_t xTask,
+BaseType_t MPU_xTaskCallAPPlicationTaskHook( TaskHandle_t xTask,
                                              void * pvParameter ) PRIVILEGED_FUNCTION;
 BaseType_t MPU_xTaskCreateRestricted( const TaskParameters_t * const pxTaskDefinition,
                                       TaskHandle_t * pxCreatedTask ) PRIVILEGED_FUNCTION;
@@ -167,7 +167,7 @@ BaseType_t MPU_xTaskGetStaticBuffers( TaskHandle_t xTask,
                                       StaticTask_t ** ppxTaskBuffer ) PRIVILEGED_FUNCTION;
 UBaseType_t MPU_uxTaskPriorityGetFromISR( const TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
 BaseType_t MPU_xTaskResumeFromISR( TaskHandle_t xTaskToResume ) PRIVILEGED_FUNCTION;
-TaskHookFunction_t MPU_xTaskGetApplicationTaskTagFromISR( TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
+TaskHookFunction_t MPU_xTaskGetAPPlicationTaskTagFromISR( TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
 BaseType_t MPU_xTaskGenericNotifyFromISR( TaskHandle_t xTaskToNotify,
                                           UBaseType_t uxIndexToNotify,
                                           uint32_t ulValue,
@@ -210,8 +210,8 @@ void MPU_vQueueSetQueueNumber( QueueHandle_t xQueue,
 UBaseType_t MPU_uxQueueGetQueueNumber( QueueHandle_t xQueue ) FREERTOS_SYSTEM_CALL;
 uint8_t MPU_ucQueueGetQueueType( QueueHandle_t xQueue ) FREERTOS_SYSTEM_CALL;
 
-/* Privileged only wrappers for Queue APIs. These are needed so that
- * the application can use opaque handles maintained in mpu_wrappers.c
+/* Privileged only wrAPPers for Queue APIs. These are needed so that
+ * the APPlication can use opaque handles maintained in mpu_wrAPPers.c
  * with all the APIs. */
 void MPU_vQueueDelete( QueueHandle_t xQueue ) PRIVILEGED_FUNCTION;
 QueueHandle_t MPU_xQueueCreateMutex( const uint8_t ucQueueType ) PRIVILEGED_FUNCTION;
@@ -275,8 +275,8 @@ UBaseType_t MPU_uxTimerGetReloadMode( TimerHandle_t xTimer ) FREERTOS_SYSTEM_CAL
 TickType_t MPU_xTimerGetPeriod( TimerHandle_t xTimer ) FREERTOS_SYSTEM_CALL;
 TickType_t MPU_xTimerGetExpiryTime( TimerHandle_t xTimer ) FREERTOS_SYSTEM_CALL;
 
-/* Privileged only wrappers for Timer APIs. These are needed so that
- * the application can use opaque handles maintained in mpu_wrappers.c
+/* Privileged only wrAPPers for Timer APIs. These are needed so that
+ * the APPlication can use opaque handles maintained in mpu_wrAPPers.c
  * with all the APIs. */
 TimerHandle_t MPU_xTimerCreate( const char * const pcTimerName,
                                 const TickType_t xTimerPeriodInTicks,
@@ -313,8 +313,8 @@ EventBits_t MPU_xEventGroupSync( EventGroupHandle_t xEventGroup,
                                    UBaseType_t uxEventGroupNumber ) FREERTOS_SYSTEM_CALL;
 #endif /* ( configUSE_TRACE_FACILITY == 1 )*/
 
-/* Privileged only wrappers for Event Group APIs. These are needed so that
- * the application can use opaque handles maintained in mpu_wrappers.c
+/* Privileged only wrAPPers for Event Group APIs. These are needed so that
+ * the APPlication can use opaque handles maintained in mpu_wrAPPers.c
  * with all the APIs. */
 EventGroupHandle_t MPU_xEventGroupCreate( void ) PRIVILEGED_FUNCTION;
 EventGroupHandle_t MPU_xEventGroupCreateStatic( StaticEventGroup_t * pxEventGroupBuffer ) PRIVILEGED_FUNCTION;
@@ -345,8 +345,8 @@ BaseType_t MPU_xStreamBufferSetTriggerLevel( StreamBufferHandle_t xStreamBuffer,
                                              size_t xTriggerLevel ) FREERTOS_SYSTEM_CALL;
 size_t MPU_xStreamBufferNextMessageLengthBytes( StreamBufferHandle_t xStreamBuffer ) FREERTOS_SYSTEM_CALL;
 
-/* Privileged only wrappers for Stream Buffer APIs. These are needed so that
- * the application can use opaque handles maintained in mpu_wrappers.c
+/* Privileged only wrAPPers for Stream Buffer APIs. These are needed so that
+ * the APPlication can use opaque handles maintained in mpu_wrAPPers.c
  * with all the APIs. */
 StreamBufferHandle_t MPU_xStreamBufferGenericCreate( size_t xBufferSizeBytes,
                                                      size_t xTriggerLevelBytes,

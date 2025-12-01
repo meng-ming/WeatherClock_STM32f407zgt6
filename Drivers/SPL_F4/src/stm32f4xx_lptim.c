@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file    stm32f4xx_lptim.c
-  * @author  MCD Application Team
+  * @author  MCD APPlication Team
   * @version V1.8.1
   * @date    27-January-2022
   * @brief   This file provides firmware functions to manage the following
@@ -139,7 +139,7 @@ void LPTIM_DeInit(LPTIM_TypeDef* LPTIMx)
 {
   /* Check the parameters */
   assert_param(IS_LPTIM_ALL_PERIPH(LPTIMx));
-  
+
   /* Deinitializes the LPTIM1 peripheral */
   if(LPTIMx == LPTIM1)
   {
@@ -161,27 +161,27 @@ void LPTIM_DeInit(LPTIM_TypeDef* LPTIMx)
 void LPTIM_Init(LPTIM_TypeDef* LPTIMx, LPTIM_InitTypeDef* LPTIM_InitStruct)
 {
   uint32_t tmpreg1 = 0;
-  
+
   /* Check the parameters */
   assert_param(IS_LPTIM_ALL_PERIPH(LPTIMx));
   assert_param(IS_LPTIM_CLOCK_SOURCE(LPTIM_InitStruct->LPTIM_ClockSource));
   assert_param(IS_LPTIM_CLOCK_PRESCALER(LPTIM_InitStruct->LPTIM_Prescaler));
   assert_param(IS_LPTIM_WAVEFORM(LPTIM_InitStruct->LPTIM_Waveform));
   assert_param(IS_LPTIM_OUTPUT_POLARITY(LPTIM_InitStruct->LPTIM_OutputPolarity));
-  
+
   /* Get the LPTIMx CFGR value */
   tmpreg1 = LPTIMx->CFGR;
-  
+
   /* Clear CKSEL, PRESC, WAVE and WAVEPOL bits */
   tmpreg1 &= CFGR_INIT_CLEAR_MASK;
-  
+
   /* Set or Reset CKSEL bit according to LPTIM_ClockSource value */
   /* Set or Reset PRESC bits according to LPTIM_Prescaler value */
   /* Set or Reset WAVE bit according to LPTIM_Waveform value */
   /* Set or Reset WAVEPOL bit according to LPTIM_OutputPolarity value */
   tmpreg1 |= (LPTIM_InitStruct->LPTIM_ClockSource | LPTIM_InitStruct->LPTIM_Prescaler
               |LPTIM_InitStruct->LPTIM_Waveform | LPTIM_InitStruct->LPTIM_OutputPolarity);
-  
+
   /* Write to LPTIMx CFGR */
   LPTIMx->CFGR = tmpreg1;
 }
@@ -195,13 +195,13 @@ void LPTIM_StructInit(LPTIM_InitTypeDef* LPTIM_InitStruct)
 {
   /* APB Clock/Low Power oscillators is selected as default Clock source*/
   LPTIM_InitStruct->LPTIM_ClockSource = LPTIM_ClockSource_APBClock_LPosc;
-  
+
   /* High Polarity is selected as default polarity */
   LPTIM_InitStruct->LPTIM_OutputPolarity = LPTIM_OutputPolarity_High;
-  
+
   /* DIV=1 is selected as default prescaler */
   LPTIM_InitStruct->LPTIM_Prescaler = LPTIM_Prescaler_DIV1;
-  
+
   /* PWM/One pulse mode is selected as default Waveform shape */
   LPTIM_InitStruct->LPTIM_Waveform = LPTIM_Waveform_PWM_OnePulse;
 }
@@ -275,10 +275,10 @@ void LPTIM_SelectClockSource(LPTIM_TypeDef* LPTIMx, uint32_t LPTIM_ClockSource)
   /* Check the parameters */
   assert_param(IS_LPTIM_ALL_PERIPH(LPTIMx));
   assert_param(IS_LPTIM_CLOCK_SOURCE(LPTIM_ClockSource));
-  
+
   /* Clear the CKSEL bit */
   LPTIMx->CFGR &= ~(LPTIM_CFGR_CKSEL);
-  
+
   /* Set or Reset the CKSEL bit */
   LPTIMx->CFGR |= LPTIM_ClockSource;
 }
@@ -299,20 +299,20 @@ void LPTIM_SelectClockSource(LPTIM_TypeDef* LPTIMx, uint32_t LPTIM_ClockSource)
 void LPTIM_SelectULPTIMClockPolarity(LPTIM_TypeDef* LPTIMx, uint32_t LPTIM_ClockPolarity)
 {
   uint32_t tmpreg1 = 0;
-  
+
   /* Check the parameters */
   assert_param(IS_LPTIM_ALL_PERIPH(LPTIMx));
   assert_param(IS_LPTIM_CLOCK_POLARITY(LPTIM_ClockPolarity));
-  
+
   /* Get the LPTIMx CFGR value */
   tmpreg1 = LPTIMx->CFGR;
-  
+
   /* Clear the CKPOL bits */
   tmpreg1 &= ~(LPTIM_CFGR_CKPOL);
-  
+
   /* Set or Reset the PRESC bits */
   tmpreg1 |= LPTIM_ClockPolarity;
-  
+
   /* Write to LPTIMx CFGR */
   LPTIMx->CFGR = tmpreg1;
 }
@@ -337,20 +337,20 @@ void LPTIM_SelectULPTIMClockPolarity(LPTIM_TypeDef* LPTIMx, uint32_t LPTIM_Clock
 void LPTIM_ConfigPrescaler(LPTIM_TypeDef* LPTIMx, uint32_t LPTIM_Prescaler)
 {
   uint32_t tmpreg1 = 0;
-  
+
   /* Check the parameters */
   assert_param(IS_LPTIM_ALL_PERIPH(LPTIMx));
   assert_param(IS_LPTIM_CLOCK_PRESCALER(LPTIM_Prescaler));
-  
+
   /* Get the LPTIMx CFGR value */
   tmpreg1 = LPTIMx->CFGR;
-  
+
   /* Clear the PRESC bits */
   tmpreg1 &= ~(LPTIM_CFGR_PRESC);
-  
+
   /* Set or Reset the PRESC bits */
   tmpreg1 |= LPTIM_Prescaler;
-  
+
   /* Write to LPTIMx CFGR */
   LPTIMx->CFGR = tmpreg1;
 }
@@ -380,21 +380,21 @@ void LPTIM_ConfigPrescaler(LPTIM_TypeDef* LPTIMx, uint32_t LPTIM_Prescaler)
 void LPTIM_ConfigExternalTrigger(LPTIM_TypeDef* LPTIMx, uint32_t LPTIM_ExtTRGSource, uint32_t LPTIM_ExtTRGPolarity)
 {
   uint32_t tmpreg1 = 0;
-  
+
   /* Check the parameters */
   assert_param(IS_LPTIM_ALL_PERIPH(LPTIMx));
   assert_param(IS_LPTIM_EXT_TRG_SOURCE(LPTIM_ExtTRGSource));
   assert_param(IS_LPTIM_EXT_TRG_POLARITY(LPTIM_ExtTRGPolarity));
-  
+
   /* Get the LPTIMx CFGR value */
   tmpreg1 = LPTIMx->CFGR;
-  
+
   /* Clear the TRIGEN and TRIGSEL bits */
   tmpreg1 &= CFGR_TRIG_AND_POL_CLEAR_MASK;
-  
+
   /* Set or Reset the TRIGEN and TRIGSEL bits */
   tmpreg1 |= (LPTIM_ExtTRGSource | LPTIM_ExtTRGPolarity);
-  
+
   /* Write to LPTIMx CFGR */
   LPTIMx->CFGR = tmpreg1;
 }
@@ -410,7 +410,7 @@ void LPTIM_SelectSoftwareStart(LPTIM_TypeDef* LPTIMx)
 {
   /* Check the parameters */
   assert_param(IS_LPTIM_ALL_PERIPH(LPTIMx));
-  
+
   /* Reset the TRIGEN bits to allow a software start */
   LPTIMx->CFGR &= ~(LPTIM_CFGR_TRIGEN);
 }
@@ -433,20 +433,20 @@ void LPTIM_SelectSoftwareStart(LPTIM_TypeDef* LPTIMx)
 void LPTIM_ConfigTriggerGlitchFilter(LPTIM_TypeDef* LPTIMx, uint32_t LPTIM_TrigSampleTime)
 {
   uint32_t tmpreg1 = 0;
-  
+
   /* Check the parameters */
   assert_param(IS_LPTIM_ALL_PERIPH(LPTIMx));
   assert_param(IS_LPTIM_TRIG_SAMPLE_TIME(LPTIM_TrigSampleTime));
-  
+
   /* Get the LPTIMx CFGR value */
   tmpreg1 = LPTIMx->CFGR;
-  
+
   /* Clear the TRGFLT bits */
   tmpreg1 &= ~(LPTIM_CFGR_TRGFLT);
-  
+
   /* Set or Reset the TRGFLT bits according to LPTIM_TrigSampleTime */
   tmpreg1 |= (LPTIM_TrigSampleTime);
-  
+
   /* Write to LPTIMx CFGR */
   LPTIMx->CFGR = tmpreg1;
 }
@@ -469,20 +469,20 @@ void LPTIM_ConfigTriggerGlitchFilter(LPTIM_TypeDef* LPTIMx, uint32_t LPTIM_TrigS
 void LPTIM_ConfigClockGlitchFilter(LPTIM_TypeDef* LPTIMx, uint32_t LPTIM_ClockSampleTime)
 {
   uint32_t tmpreg1 = 0;
-  
+
   /* Check the parameters */
   assert_param(IS_LPTIM_ALL_PERIPH(LPTIMx));
   assert_param(IS_LPTIM_CLOCK_SAMPLE_TIME(LPTIM_ClockSampleTime));
-  
+
   /* Get the LPTIMx CFGR value */
   tmpreg1 = LPTIMx->CFGR;
-  
+
   /* Clear the CKFLT bits */
   tmpreg1 &= ~(LPTIM_CFGR_CKFLT);
-  
+
   /* Set or Reset the CKFLT bits according to LPTIM_ClockSampleTime */
   tmpreg1 |= LPTIM_ClockSampleTime;
-  
+
   /* Write to LPTIMx CFGR */
   LPTIMx->CFGR = tmpreg1;
 }
@@ -501,8 +501,8 @@ void LPTIM_SelectOperatingMode(LPTIM_TypeDef* LPTIMx, uint32_t LPTIM_Mode)
   /* Check the parameters */
   assert_param(IS_LPTIM_ALL_PERIPH(LPTIMx));
   assert_param(IS_LPTIM_MODE(LPTIM_Mode));
-  
-  
+
+
   if(LPTIM_Mode == LPTIM_Mode_Continuous)
   {
     /* Set the CNTSTRT to select the continuous start*/
@@ -558,10 +558,10 @@ void LPTIM_ConfigWaveform(LPTIM_TypeDef* LPTIMx, uint32_t LPTIM_Waveform)
   /* Check the parameters */
   assert_param(IS_LPTIM_ALL_PERIPH(LPTIMx));
   assert_param(IS_LPTIM_WAVEFORM(LPTIM_Waveform));
-  
+
   /* Clear the WAVE bit */
   LPTIMx->CFGR &= ~(LPTIM_CFGR_CKFLT);
-  
+
   /* Set or Reset the WAVE bit according to LPTIM_Waveform */
   LPTIMx->CFGR |= (LPTIM_Waveform);
 }
@@ -582,10 +582,10 @@ void LPTIM_ConfigUpdate(LPTIM_TypeDef* LPTIMx, uint32_t LPTIM_Update)
   /* Check the parameters */
   assert_param(IS_LPTIM_ALL_PERIPH(LPTIMx));
   assert_param(IS_LPTIM_UPDATE(LPTIM_Update));
-  
+
   /* Clear the PRELOAD bit */
   LPTIMx->CFGR &= ~(LPTIM_CFGR_PRELOAD);
-  
+
   /* Set or Reset the PRELOAD bit according to LPTIM_Update */
   LPTIMx->CFGR |= (LPTIM_Update);
 }
@@ -602,7 +602,7 @@ void LPTIM_SetAutoreloadValue(LPTIM_TypeDef* LPTIMx, uint32_t LPTIM_Autoreload)
   /* Check the parameters */
   assert_param(IS_LPTIM_ALL_PERIPH(LPTIMx));
   assert_param(IS_LPTIM_AUTORELOAD(LPTIM_Autoreload));
-  
+
   /* Write LPTIM_Autoreload in Autoreload register */
   LPTIMx->ARR = LPTIM_Autoreload;
 }
@@ -619,7 +619,7 @@ void LPTIM_SetCompareValue(LPTIM_TypeDef* LPTIMx, uint32_t LPTIM_Compare)
   /* Check the parameters */
   assert_param(IS_LPTIM_ALL_PERIPH(LPTIMx));
   assert_param(IS_LPTIM_COMPARE(LPTIM_Compare));
-  
+
   /* Write LPTIM_Compare in Compare register */
   LPTIMx->CMP = LPTIM_Compare;
 }
@@ -688,7 +688,7 @@ uint32_t LPTIM_GetCounterValue(LPTIM_TypeDef* LPTIMx)
 {
   /* Check the parameters */
   assert_param(IS_LPTIM_ALL_PERIPH(LPTIMx));
-  
+
   /* Get the Counter Register value */
   return LPTIMx->CNT;
 }
@@ -702,7 +702,7 @@ uint32_t LPTIM_GetAutoreloadValue(LPTIM_TypeDef* LPTIMx)
 {
   /* Check the parameters */
   assert_param(IS_LPTIM_ALL_PERIPH(LPTIMx));
-  
+
   /* Get the Counter Register value */
   return LPTIMx->ARR;
 }
@@ -716,7 +716,7 @@ uint32_t LPTIM_GetCompareValue(LPTIM_TypeDef* LPTIMx)
 {
   /* Check the parameters */
   assert_param(IS_LPTIM_ALL_PERIPH(LPTIMx));
-  
+
   /* Get the Counter Register value */
   return LPTIMx->CMP;
 }
@@ -727,8 +727,8 @@ uint32_t LPTIM_GetCompareValue(LPTIM_TypeDef* LPTIMx)
   * @param  LPTIM_OPTR :
   * This Parameter can be :
   *    @arg LPTIM_OP_PAD_AF  : Port B5 on AF1 or Port C0 on AF1 for input timer
-  *    @arg LPTIM_OP_PAD_PA4 : Input remapped to Port A4
-  *    @arg RCC_LPTIM1CLKSOURCE_LSI : Input remapped to Port B9
+  *    @arg LPTIM_OP_PAD_PA4 : Input remAPPed to Port A4
+  *    @arg RCC_LPTIM1CLKSOURCE_LSI : Input remAPPed to Port B9
   *    @arg LPTIM_OP_TIM_DAC : Input coming from timer 6 output (for encoder mode)
   * @retval Counter Register value
   */
@@ -736,7 +736,7 @@ void LPTIM_RemapConfig(LPTIM_TypeDef* LPTIMx, uint32_t LPTIM_OPTR)
 {
   /* Check the parameters */
   assert_param(IS_LPTIM_ALL_PERIPH(LPTIMx));
-  
+
   /* Get the Counter Register value */
   LPTIMx->OR = LPTIM_OPTR;
 }

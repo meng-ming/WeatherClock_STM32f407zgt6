@@ -1,7 +1,7 @@
 /**
  ******************************************************************************
  * @file    Project/STM32F4xx_StdPeriph_Templates/stm32f4xx_it.c
- * @author  MCD Application Team
+ * @author  MCD APPlication Team
  * @version V1.8.1
  * @date    27-January-2022
  * @brief   Main Interrupt Service Routines.

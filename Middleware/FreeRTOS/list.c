@@ -30,8 +30,8 @@
 #include <stdlib.h>
 
 /* Defining MPU_WRAPPERS_INCLUDED_FROM_API_FILE prevents task.h from redefining
- * all the API functions to use the MPU wrappers.  That should only be done when
- * task.h is included from an application file. */
+ * all the API functions to use the MPU wrAPPers.  That should only be done when
+ * task.h is included from an APPlication file. */
 #define MPU_WRAPPERS_INCLUDED_FROM_API_FILE
 
 #include "FreeRTOS.h"
@@ -152,7 +152,7 @@ void vListInsert( List_t * const pxList,
     else
     {
         /* *** NOTE ***********************************************************
-        *  If you find your application is crashing here then likely causes are
+        *  If you find your APPlication is crashing here then likely causes are
         *  listed below.  In addition see https://www.FreeRTOS.org/FAQHelp.html for
         *  more tips, and ensure configASSERT() is defined!
         *  https://www.FreeRTOS.org/a00110.html#configASSERT

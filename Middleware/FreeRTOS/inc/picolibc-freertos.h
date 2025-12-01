@@ -59,7 +59,7 @@
 
 /* Allocate thread local storage block off the end of the
 * stack. The _tls_size() function returns the size (in
-* bytes) of the total TLS area used by the application */
+* bytes) of the total TLS area used by the APPlication */
 #if ( portSTACK_GROWTH < 0 )
 
     #define configINIT_TLS_BLOCK( xTLSBlock, pxTopOfStack )                             \

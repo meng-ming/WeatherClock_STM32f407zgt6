@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file    stm32f4xx_fmpi2c.h
-  * @author  MCD Application Team
+  * @author  MCD APPlication Team
   * @version V1.8.1
   * @date    27-January-2022
   * @brief   This file contains all the functions prototypes for the I2C Fast Mode
@@ -47,7 +47,7 @@
 typedef struct
 {
   uint32_t FMPI2C_Timing;              /*!< Specifies the FMPI2C_TIMINGR_register value.
-                                         This parameter calculated by referring to FMPI2C initialization 
+                                         This parameter calculated by referring to FMPI2C initialization
                                          section in Reference manual*/
 
   uint32_t FMPI2C_AnalogFilter;        /*!< Enables or disables analog noise filter.
@@ -76,9 +76,9 @@ typedef struct
   * @{
   */
 
-#define IS_FMPI2C_ALL_PERIPH(PERIPH)       ((PERIPH) == FMPI2C1) 
+#define IS_FMPI2C_ALL_PERIPH(PERIPH)       ((PERIPH) == FMPI2C1)
 
-/** @defgroup FMPI2C_Analog_Filter 
+/** @defgroup FMPI2C_Analog_Filter
   * @{
   */
 
@@ -90,7 +90,7 @@ typedef struct
 /**
   * @}
   */
-     
+
 /** @defgroup FMPI2C_Digital_Filter
   * @{
   */
@@ -100,7 +100,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMPI2C_mode 
+/** @defgroup FMPI2C_mode
   * @{
   */
 
@@ -139,7 +139,7 @@ typedef struct
                                              ((ADDRESS) == FMPI2C_AcknowledgedAddress_10bit))
 /**
   * @}
-  */ 
+  */
 
 /** @defgroup FMPI2C_own_address1
   * @{
@@ -150,7 +150,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMPI2C_transfer_direction 
+/** @defgroup FMPI2C_transfer_direction
   * @{
   */
 
@@ -163,7 +163,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMPI2C_DMA_transfer_requests 
+/** @defgroup FMPI2C_DMA_transfer_requests
   * @{
   */
 
@@ -215,7 +215,7 @@ typedef struct
                                          ((MASK) == FMPI2C_OA2_Mask04) || \
                                          ((MASK) == FMPI2C_OA2_Mask05) || \
                                          ((MASK) == FMPI2C_OA2_Mask06) || \
-                                         ((MASK) == FMPI2C_OA2_Mask07))  
+                                         ((MASK) == FMPI2C_OA2_Mask07))
 
 /**
   * @}
@@ -231,7 +231,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMPI2C_registers 
+/** @defgroup FMPI2C_registers
   * @{
   */
 
@@ -262,7 +262,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMPI2C_interrupts_definition 
+/** @defgroup FMPI2C_interrupts_definition
   * @{
   */
 
@@ -280,7 +280,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMPI2C_flags_definition 
+/** @defgroup FMPI2C_flags_definition
   * @{
   */
 
@@ -316,7 +316,7 @@ typedef struct
   */
 
 
-/** @defgroup FMPI2C_interrupts_definition 
+/** @defgroup FMPI2C_interrupts_definition
   * @{
   */
 
@@ -335,7 +335,7 @@ typedef struct
 #define  FMPI2C_IT_ALERT                   FMPI2C_ISR_ALERT
 
 #define IS_FMPI2C_CLEAR_IT(IT)             ((((IT) & (uint32_t)0xFFFFC001) == 0x00) && ((IT) != 0x00))
-                               
+
 #define IS_FMPI2C_GET_IT(IT)               (((IT) == FMPI2C_IT_TXIS) || ((IT) == FMPI2C_IT_RXNE) || \
                                          ((IT) == FMPI2C_IT_ADDR) || ((IT) == FMPI2C_IT_NACKF) || \
                                          ((IT) == FMPI2C_IT_STOPF) || ((IT) == FMPI2C_IT_TC) || \
@@ -348,7 +348,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup FMPI2C_ReloadEndMode_definition 
+/** @defgroup FMPI2C_ReloadEndMode_definition
   * @{
   */
 
@@ -356,17 +356,17 @@ typedef struct
 #define  FMPI2C_AutoEnd_Mode               FMPI2C_CR2_AUTOEND
 #define  FMPI2C_SoftEnd_Mode               ((uint32_t)0x00000000)
 
-                              
+
 #define IS_RELOAD_END_MODE(MODE)        (((MODE) == FMPI2C_Reload_Mode) || \
                                          ((MODE) == FMPI2C_AutoEnd_Mode) || \
                                          ((MODE) == FMPI2C_SoftEnd_Mode))
-                               
+
 
 /**
   * @}
   */
 
-/** @defgroup FMPI2C_StartStopMode_definition 
+/** @defgroup FMPI2C_StartStopMode_definition
   * @{
   */
 
@@ -375,12 +375,12 @@ typedef struct
 #define  FMPI2C_Generate_Start_Read          (uint32_t)(FMPI2C_CR2_START | FMPI2C_CR2_RD_WRN)
 #define  FMPI2C_Generate_Start_Write         FMPI2C_CR2_START
 
-                              
+
 #define IS_START_STOP_MODE(MODE)        (((MODE) == FMPI2C_Generate_Stop) || \
                                          ((MODE) == FMPI2C_Generate_Start_Read) || \
                                          ((MODE) == FMPI2C_Generate_Start_Write) || \
                                          ((MODE) == FMPI2C_No_StartStop))
-                               
+
 
 /**
   * @}

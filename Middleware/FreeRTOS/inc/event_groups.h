@@ -30,7 +30,7 @@
 #define EVENT_GROUPS_H
 
 #ifndef INC_FREERTOS_H
-    #error "include FreeRTOS.h" must appear in source files before "include event_groups.h"
+    #error "include FreeRTOS.h" must APPear in source files before "include event_groups.h"
 #endif
 
 /* FreeRTOS includes. */
@@ -63,11 +63,11 @@
 /* *INDENT-ON* */
 
 /**
- * An event group is a collection of bits to which an application can assign a
- * meaning.  For example, an application may create an event group to convey
+ * An event group is a collection of bits to which an APPlication can assign a
+ * meaning.  For example, an APPlication may create an event group to convey
  * the status of various CAN bus related events in which bit 0 might mean "A CAN
  * message has been received and is ready for processing", bit 1 might mean "The
- * application has queued a message that is ready for sending onto the CAN
+ * APPlication has queued a message that is ready for sending onto the CAN
  * network", and bit 2 might mean "It is time to send a SYNC message onto the
  * CAN network" etc.  A task can then test the bit values to see which events
  * are active, and optionally enter the Blocked state to wait for a specified
@@ -79,7 +79,7 @@
  * send a SYNC).
  *
  * The event groups implementation contains intelligence to avoid race
- * conditions that would otherwise occur were an application to use a simple
+ * conditions that would otherwise occur were an APPlication to use a simple
  * variable for the same purpose.  This is particularly important with respect
  * to when a bit within an event group is to be cleared, and when bits have to
  * be set and then tested atomically - as is the case where event groups are
@@ -125,7 +125,7 @@ typedef TickType_t               EventBits_t;
  * groups is created using xEventGroupCreate() then the required memory is
  * automatically dynamically allocated inside the xEventGroupCreate() function.
  * (see https://www.FreeRTOS.org/a00111.html).  If an event group is created
- * using xEventGroupCreateStatic() then the application writer must instead
+ * using xEventGroupCreateStatic() then the APPlication writer must instead
  * provide the memory that will get used by the event group.
  * xEventGroupCreateStatic() therefore allows an event group to be created
  * without using any dynamic memory allocation.
@@ -182,7 +182,7 @@ typedef TickType_t               EventBits_t;
  * groups is created using xEventGroupCreate() then the required memory is
  * automatically dynamically allocated inside the xEventGroupCreate() function.
  * (see https://www.FreeRTOS.org/a00111.html).  If an event group is created
- * using xEventGroupCreateStatic() then the application writer must instead
+ * using xEventGroupCreateStatic() then the APPlication writer must instead
  * provide the memory that will get used by the event group.
  * xEventGroupCreateStatic() therefore allows an event group to be created
  * without using any dynamic memory allocation.
@@ -207,7 +207,7 @@ typedef TickType_t               EventBits_t;
  * @code{c}
  *  // StaticEventGroup_t is a publicly accessible structure that has the same
  *  // size and alignment requirements as the real event group structure.  It is
- *  // provided as a mechanism for applications to know the size of the event
+ *  // provided as a mechanism for APPlications to know the size of the event
  *  // group (which is dependent on the architecture and configuration file
  *  // settings) without breaking the strict data hiding policy by exposing the
  *  // real event group internals.  This StaticEventGroup_t variable is passed
@@ -675,7 +675,7 @@ EventBits_t xEventGroupSetBits( EventGroupHandle_t xEventGroup,
  *      // sync point.  The other two tasks will set the other two bits defined
  *      // by ALL_SYNC_BITS.  All three tasks have reached the synchronisation
  *      // point when all the ALL_SYNC_BITS are set.  Wait a maximum of 100ms
- *      // for this to happen.
+ *      // for this to hAPPen.
  *      uxReturn = xEventGroupSync( xEventBits, TASK_0_BIT, ALL_SYNC_BITS, xTicksToWait );
  *
  *      if( ( uxReturn & ALL_SYNC_BITS ) == ALL_SYNC_BITS )
@@ -696,7 +696,7 @@ EventBits_t xEventGroupSetBits( EventGroupHandle_t xEventGroup,
  *      // synchronisation point.  The other two tasks will set the other two
  *      // bits defined by ALL_SYNC_BITS.  All three tasks have reached the
  *      // synchronisation point when all the ALL_SYNC_BITS are set.  Wait
- *      // indefinitely for this to happen.
+ *      // indefinitely for this to hAPPen.
  *      xEventGroupSync( xEventBits, TASK_1_BIT, ALL_SYNC_BITS, portMAX_DELAY );
  *
  *      // xEventGroupSync() was called with an indefinite block time, so
@@ -715,7 +715,7 @@ EventBits_t xEventGroupSetBits( EventGroupHandle_t xEventGroup,
  *      // synchronisation point.  The other two tasks will set the other two
  *      // bits defined by ALL_SYNC_BITS.  All three tasks have reached the
  *      // synchronisation point when all the ALL_SYNC_BITS are set.  Wait
- *      // indefinitely for this to happen.
+ *      // indefinitely for this to hAPPen.
  *      xEventGroupSync( xEventBits, TASK_2_BIT, ALL_SYNC_BITS, portMAX_DELAY );
  *
  *      // xEventGroupSync() was called with an indefinite block time, so

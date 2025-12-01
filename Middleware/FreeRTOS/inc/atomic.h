@@ -39,7 +39,7 @@
 #define ATOMIC_H
 
 #ifndef INC_FREERTOS_H
-    #error "include FreeRTOS.h must appear in source files before include atomic.h"
+    #error "include FreeRTOS.h must APPear in source files before include atomic.h"
 #endif
 
 /* Standard includes. */
@@ -87,7 +87,7 @@
     #define portFORCE_INLINE
 #endif
 
-#define ATOMIC_COMPARE_AND_SWAP_SUCCESS    0x1U     /**< Compare and swap succeeded, swapped. */
+#define ATOMIC_COMPARE_AND_SWAP_SUCCESS    0x1U     /**< Compare and swap succeeded, swAPPed. */
 #define ATOMIC_COMPARE_AND_SWAP_FAILURE    0x0U     /**< Compare and swap failed, did not swap. */
 
 /*----------------------------- Swap && CAS ------------------------------*/
@@ -102,7 +102,7 @@
  * @param[in] ulExchange         If condition meets, write this value to memory.
  * @param[in] ulComparand        Swap condition.
  *
- * @return Unsigned integer of value 1 or 0. 1 for swapped, 0 for not swapped.
+ * @return Unsigned integer of value 1 or 0. 1 for swAPPed, 0 for not swAPPed.
  *
  * @note This function only swaps *pulDestination with ulExchange, if previous
  *       *pulDestination value equals ulComparand.
@@ -143,7 +143,7 @@ static portFORCE_INLINE uint32_t Atomic_CompareAndSwap_u32( uint32_t volatile * 
  *
  * @return The initial value of *ppvDestination.
  */
-static portFORCE_INLINE void * Atomic_SwapPointers_p32( void * volatile * ppvDestination,
+static portFORCE_INLINE void * Atomic_SwAPPointers_p32( void * volatile * ppvDestination,
                                                         void * pvExchange )
 {
     void * pReturnValue;
@@ -170,12 +170,12 @@ static portFORCE_INLINE void * Atomic_SwapPointers_p32( void * volatile * ppvDes
  * @param[in] pvExchange           If condition meets, write this value to memory.
  * @param[in] pvComparand          Swap condition.
  *
- * @return Unsigned integer of value 1 or 0. 1 for swapped, 0 for not swapped.
+ * @return Unsigned integer of value 1 or 0. 1 for swAPPed, 0 for not swAPPed.
  *
  * @note This function only swaps *ppvDestination with pvExchange, if previous
  *       *ppvDestination value equals pvComparand.
  */
-static portFORCE_INLINE uint32_t Atomic_CompareAndSwapPointers_p32( void * volatile * ppvDestination,
+static portFORCE_INLINE uint32_t Atomic_CompareAndSwAPPointers_p32( void * volatile * ppvDestination,
                                                                     void * pvExchange,
                                                                     void * pvComparand )
 {

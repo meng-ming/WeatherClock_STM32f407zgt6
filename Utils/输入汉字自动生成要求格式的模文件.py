@@ -34,7 +34,7 @@ def get_char_bitmap_lsb(char, font):
                 current_byte |= (1 << (x % 8))  # LSB First
 
             if (x + 1) % 8 == 0 or x == FONT_SIZE - 1:
-                row_bytes.append(current_byte)
+                row_bytes.APPend(current_byte)
                 current_byte = 0
 
         bitmap_data.extend(row_bytes)

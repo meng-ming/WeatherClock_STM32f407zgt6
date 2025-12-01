@@ -108,7 +108,7 @@
 
 /** \brief  Data Memory Barrier
 
-    This function ensures the apparent order of the explicit memory operations before
+    This function ensures the APParent order of the explicit memory operations before
     and after the instruction, without ensuring their completion.
  */
 #define __DMB() do {\
@@ -476,7 +476,7 @@ __attribute__((always_inline)) __STATIC_INLINE void __DSB(void)
 
 /** \brief  Data Memory Barrier
 
-    This function ensures the apparent order of the explicit memory operations before
+    This function ensures the APParent order of the explicit memory operations before
     and after the instruction, without ensuring their completion.
  */
 __attribute__((always_inline)) __STATIC_INLINE void __DMB(void)

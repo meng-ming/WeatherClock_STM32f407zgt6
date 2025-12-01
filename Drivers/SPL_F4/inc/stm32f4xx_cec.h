@@ -1,11 +1,11 @@
 /**
   ******************************************************************************
   * @file    stm32f4xx_cec.h
-  * @author  MCD Application Team
+  * @author  MCD APPlication Team
   * @version V1.8.1
   * @date    27-January-2022
-  * @brief   This file contains all the functions prototypes for the CEC firmware 
-  *          library, applicable only for STM32F466xx devices.
+  * @brief   This file contains all the functions prototypes for the CEC firmware
+  *          library, APPlicable only for STM32F466xx devices.
   ******************************************************************************
   * @attention
   *
@@ -39,9 +39,9 @@
   */
 #if defined(STM32F446xx)
 /* Exported types ------------------------------------------------------------*/
-  
-/** 
-  * @brief CEC Init structure definition 
+
+/**
+  * @brief CEC Init structure definition
   */
 typedef struct
 {

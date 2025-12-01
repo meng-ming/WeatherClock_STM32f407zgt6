@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file    stm32f4xx_dfsdm.h
-  * @author  MCD Application Team
+  * @author  MCD APPlication Team
   * @version V1.8.1
   * @date    27-January-2022
   * @brief   This file contains all the functions prototypes for the DFSDM
@@ -41,7 +41,7 @@
 
 /* Exported types ------------------------------------------------------------*/
 
-/** 
+/**
   * @brief  DFSDM Transceiver init structure definition
   */
 typedef struct
@@ -74,8 +74,8 @@ typedef struct
                                             This parameter can be a value of @ref DFSDM_Short_Circuit_Detector_state */
 }DFSDM_TransceiverInitTypeDef;
 
-/** 
-  * @brief  DFSDM filter analog parameters structure definition  
+/**
+  * @brief  DFSDM filter analog parameters structure definition
   */
 typedef struct
 {
@@ -414,7 +414,7 @@ typedef struct
                                           ((TRIG) == DFSDM_Trigger_EXTI15)     || \
                                           ((TRIG) == DFSDM_Trigger_TIM3_TRGO)  || \
                                           ((TRIG) == DFSDM_Trigger_TIM16_OC1)  || \
-                                          ((TRIG) == DFSDM_Trigger_EXTI11))  
+                                          ((TRIG) == DFSDM_Trigger_EXTI11))
 
 #define IS_DFSDM1_INJ_TRIGGER(TRIG)      IS_DFSDM0_INJ_TRIGGER(TRIG)
 /**

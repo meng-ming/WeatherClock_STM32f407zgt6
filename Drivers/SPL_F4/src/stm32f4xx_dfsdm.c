@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file    stm32f4xx_dfsdm.c
-  * @author  MCD Application Team
+  * @author  MCD APPlication Team
   * @version V1.8.1
   * @date    27-January-2022
   * @brief   This file provides firmware functions to manage the following
@@ -308,16 +308,16 @@ void DFSDM_Command(FunctionalState NewState)
 /**
   * @brief  Enables or disables the DFSDM peripheral.
   * @param  Instance: select the instance of DFSDM
-  *         This parameter can be: 1 or 2.   
+  *         This parameter can be: 1 or 2.
   * @param  NewState: new state of the DFSDM interface.
   *         This parameter can be: ENABLE or DISABLE.
   * @retval None
   */
 void DFSDM_Cmd(uint32_t Instance, FunctionalState NewState)
-{ 
+{
   /* Check the parameters */
   assert_param(IS_FUNCTIONAL_STATE(NewState));
-  
+
   if(Instance == 1)
   {
     if (NewState != DISABLE)
@@ -342,7 +342,7 @@ void DFSDM_Cmd(uint32_t Instance, FunctionalState NewState)
     {
       /* Reset the ENABLE bit */
       DFSDM2_Channel0 -> CHCFGR1 &= ~(DFSDM_CHCFGR1_DFSDMEN);
-    } 
+    }
   }
 }
 #endif /* STM32F413_423xx */
@@ -477,7 +477,7 @@ void DFSDM_ConfigClkOutputSource(uint32_t DFSDM_ClkOutSource)
 /**
   * @brief  Configures the Output serial clock divider.
   * @param  Instance: select the instance of DFSDM
-  *         This parameter can be: 1 or 2.              
+  *         This parameter can be: 1 or 2.
   * @param  DFSDM_ClkOutDivision: Defines the divider for the output serial clock
   *         This parameter can be a value between 1 and 256.
   * @retval None
@@ -487,21 +487,21 @@ void DFSDM_ConfigClkOutputSource(uint32_t DFSDM_ClkOutSource)
 void DFSDM_ConfigClkOutputDivider(uint32_t Instance, uint32_t DFSDM_ClkOutDivision)
 {
   uint32_t tmpreg1 = 0;
-  
+
   if(Instance == 1)
   {
     /* Check the parameters */
     assert_param(IS_DFSDM_CLOCK_OUT_DIVIDER(DFSDM_ClkOutDivision));
-    
+
     /* Get the DFSDM_Channel0 CHCFGR1 value */
     tmpreg1 = DFSDM1_Channel0 -> CHCFGR1;
-    
+
     /* Clear the CKOUTDIV bits */
     tmpreg1 &= (uint32_t)(~DFSDM_CHCFGR1_CKOUTDIV);
-    
+
     /* Set or Reset the CKOUTDIV bits */
     tmpreg1 |= (uint32_t)((DFSDM_ClkOutDivision - 1) << 16);
-    
+
     /* Write to DFSDM Channel0 CHCFGR1 */
     DFSDM1_Channel0 -> CHCFGR1 = tmpreg1;
   }
@@ -509,25 +509,25 @@ void DFSDM_ConfigClkOutputDivider(uint32_t Instance, uint32_t DFSDM_ClkOutDivisi
   {
     /* Check the parameters */
     assert_param(IS_DFSDM_CLOCK_OUT_DIVIDER(DFSDM_ClkOutDivision));
-    
+
     /* Get the DFSDM_Channel0 CHCFGR1 value */
     tmpreg1 = DFSDM2_Channel0 -> CHCFGR1;
-    
+
     /* Clear the CKOUTDIV bits */
     tmpreg1 &= (uint32_t)(~DFSDM_CHCFGR1_CKOUTDIV);
-    
+
     /* Set or Reset the CKOUTDIV bits */
     tmpreg1 |= (uint32_t)((DFSDM_ClkOutDivision - 1) << 16);
-    
+
     /* Write to DFSDM Channel0 CHCFGR1 */
-    DFSDM2_Channel0 -> CHCFGR1 = tmpreg1; 
+    DFSDM2_Channel0 -> CHCFGR1 = tmpreg1;
   }
 }
 
 /**
   * @brief  Configures the Output serial clock source.
   * @param  Instance: select the instance of DFSDM
-  *         This parameter can be: 1 or 2.  
+  *         This parameter can be: 1 or 2.
   * @param  DFSDM_ClkOutSource: Defines the divider for the output serial clock
   *         This parameter can be a value of:
   *            @arg DFSDM_ClkOutSource_SysClock
@@ -542,16 +542,16 @@ void DFSDM_ConfigClkOutputSource(uint32_t Instance, uint32_t DFSDM_ClkOutSource)
   {
     /* Check the parameters */
     assert_param(IS_DFSDM_CLOCK_OUT_SOURCE(DFSDM_ClkOutSource));
-    
+
     /* Get the DFSDM_Channel0 CHCFGR1 value */
     tmpreg1 = DFSDM1_Channel0 -> CHCFGR1;
-    
+
     /* Clear the CKOUTSRC bit */
     tmpreg1 &= ~(DFSDM_CHCFGR1_CKOUTSRC);
-    
+
     /* Set or Reset the CKOUTSRC bit */
     tmpreg1 |= DFSDM_ClkOutSource;
-    
+
     /* Write to DFSDM Channel0 CHCFGR1 */
     DFSDM1_Channel0 -> CHCFGR1 = tmpreg1;
   }
@@ -559,16 +559,16 @@ void DFSDM_ConfigClkOutputSource(uint32_t Instance, uint32_t DFSDM_ClkOutSource)
   {
     /* Check the parameters */
     assert_param(IS_DFSDM_CLOCK_OUT_SOURCE(DFSDM_ClkOutSource));
-    
+
     /* Get the DFSDM_Channel0 CHCFGR1 value */
     tmpreg1 = DFSDM2_Channel0 -> CHCFGR1;
-    
+
     /* Clear the CKOUTSRC bit */
     tmpreg1 &= ~(DFSDM_CHCFGR1_CKOUTSRC);
-    
+
     /* Set or Reset the CKOUTSRC bit */
     tmpreg1 |= DFSDM_ClkOutSource;
-    
+
     /* Write to DFSDM Channel0 CHCFGR1 */
     DFSDM2_Channel0 -> CHCFGR1 = tmpreg1;
   }
@@ -858,7 +858,7 @@ int32_t DFSDM_GetInjectedConversionData(DFSDM_Filter_TypeDef* DFSDMx)
 int32_t DFSDM_GetMaxValue(DFSDM_Filter_TypeDef* DFSDMx)
 {
   int32_t value = 0;
-  
+
   /* Check the parameters */
   assert_param(IS_DFSDM_ALL_FILTER(DFSDMx));
 
@@ -883,7 +883,7 @@ int32_t DFSDM_GetMaxValue(DFSDM_Filter_TypeDef* DFSDMx)
 int32_t DFSDM_GetMinValue(DFSDM_Filter_TypeDef* DFSDMx)
 {
   int32_t value = 0;
-  
+
   /* Check the parameters */
   assert_param(IS_DFSDM_ALL_FILTER(DFSDMx));
 
@@ -1555,7 +1555,7 @@ void DFSDM_ITShortCircuitDetectorCmd(FunctionalState NewState)
 /**
   * @brief  Enables or disables the Clock Absence Interrupt.
   * @param  Instance: select the instance of DFSDM
-  *         This parameter can be: 1 or 2.  
+  *         This parameter can be: 1 or 2.
   * @param  NewState: new state of the interrupt.
   *         This parameter can be: ENABLE or DISABLE.
   * @retval None
@@ -1595,7 +1595,7 @@ void DFSDM_ITClockAbsenceCmd(uint32_t Instance, FunctionalState NewState)
 /**
   * @brief  Enables or disables the Short Circuit Detector Interrupt.
   * @param  Instance: select the instance of DFSDM
-  *         This parameter can be: 1 or 2.  
+  *         This parameter can be: 1 or 2.
   * @param  NewState: new state of the interrupt.
   *         This parameter can be: ENABLE or DISABLE.
   * @retval None
@@ -1629,9 +1629,9 @@ void DFSDM_ITShortCircuitDetectorCmd(uint32_t Instance, FunctionalState NewState
     {
       /* Disable the Interrupt source */
       DFSDM2_0->FLTCR2 &= ~(DFSDM_IT_SCD);
-    } 
+    }
   }
-  
+
 }
 #endif /* STM32F413_423xx */
 
@@ -1729,7 +1729,7 @@ FlagStatus DFSDM_GetShortCircuitFlagStatus(uint32_t DFSDM_FLAG_SCD)
 /**
   * @brief  Checks whether the specified Clock Absence Channel flag is set or not.
   * @param  Instance: select the instance of DFSDM
-  *         This parameter can be: 1 or 2. 
+  *         This parameter can be: 1 or 2.
   * @param  DFSDM_FLAG_CLKAbsence: specifies the flag to check.
   *         This parameter can be a value of @ref DFSDM_Clock_Absence_Flag_Definition
   * @retval None
@@ -1737,12 +1737,12 @@ FlagStatus DFSDM_GetShortCircuitFlagStatus(uint32_t DFSDM_FLAG_SCD)
 FlagStatus DFSDM_GetClockAbsenceFlagStatus(uint32_t Instance, uint32_t DFSDM_FLAG_CLKAbsence)
 {
   ITStatus bitstatus = RESET;
-    
+
   /* Check the parameters */
   assert_param(IS_DFSDM_CLK_ABS_FLAG(DFSDM_FLAG_CLKAbsence));
-  
+
   if(Instance == 1)
-  {    
+  {
     if((DFSDM1_0->FLTISR & DFSDM_FLAG_CLKAbsence) != RESET)
     {
       bitstatus = SET;
@@ -1756,7 +1756,7 @@ FlagStatus DFSDM_GetClockAbsenceFlagStatus(uint32_t Instance, uint32_t DFSDM_FLA
   {
     /* Check the parameters */
     assert_param(IS_DFSDM_CLK_ABS_FLAG(DFSDM_FLAG_CLKAbsence));
-    
+
     if((DFSDM2_0->FLTISR & DFSDM_FLAG_CLKAbsence) != RESET)
     {
       bitstatus = SET;
@@ -1764,7 +1764,7 @@ FlagStatus DFSDM_GetClockAbsenceFlagStatus(uint32_t Instance, uint32_t DFSDM_FLA
     else
     {
       bitstatus = RESET;
-    } 
+    }
   }
   return bitstatus;
 }
@@ -1772,7 +1772,7 @@ FlagStatus DFSDM_GetClockAbsenceFlagStatus(uint32_t Instance, uint32_t DFSDM_FLA
 /**
   * @brief  Checks whether the specified Short Circuit Channel Detector flag is set or not.
   * @param  Instance: select the instance of DFSDM
-  *         This parameter can be: 1 or 2. 
+  *         This parameter can be: 1 or 2.
   * @param  DFSDM_FLAG_SCD: specifies the flag to check.
   *         This parameter can be a value of @ref DFSDM_SCD_Flag_Definition
   * @retval None
@@ -1804,7 +1804,7 @@ FlagStatus DFSDM_GetShortCircuitFlagStatus(uint32_t Instance, uint32_t DFSDM_FLA
     else
     {
       bitstatus = RESET;
-    } 
+    }
   }
   return bitstatus;
 }
@@ -1906,7 +1906,7 @@ void DFSDM_ClearShortCircuitFlag(uint32_t DFSDM_CLEARF_SCD)
 /**
   * @brief  Clears the DFSDMx's pending Clock Absence Channel flag.
   * @param  Instance: select the instance of DFSDM
-  *         This parameter can be: 1 or 2. 
+  *         This parameter can be: 1 or 2.
   * @param  DFSDM_CLEARF_CLKAbsence: specifies the pending bit to clear.
   *         This parameter can be any combination of @ref DFSDM_Clear_ClockAbs_Flag_Definition
   * @retval None
@@ -1924,14 +1924,14 @@ void DFSDM_ClearClockAbsenceFlag(uint32_t Instance, uint32_t DFSDM_CLEARF_CLKAbs
   else /* DFSDM2 */
   {
     /* Clear the IT pending Flag Bit */
-    DFSDM2_0->FLTICR |= DFSDM_CLEARF_CLKAbsence; 
+    DFSDM2_0->FLTICR |= DFSDM_CLEARF_CLKAbsence;
   }
 }
 
 /**
   * @brief  Clears the DFSDMx's pending Short circuit Channel flag.
   * @param  Instance: select the instance of DFSDM
-  *         This parameter can be: 1 or 2. 
+  *         This parameter can be: 1 or 2.
   * @param  DFSDM_CLEARF_SCD: specifies the pending bit to clear.
   *         This parameter can be any combination of @ref DFSDM_Clear_Short_Circuit_Flag_Definition
   * @retval None
@@ -1949,7 +1949,7 @@ void DFSDM_ClearShortCircuitFlag(uint32_t Instance, uint32_t DFSDM_CLEARF_SCD)
   else
   {
     /* Clear the pending Flag Bit */
-    DFSDM2_0->FLTICR |= DFSDM_CLEARF_SCD; 
+    DFSDM2_0->FLTICR |= DFSDM_CLEARF_SCD;
   }
 }
 #endif /* STM32F413_423xx */
@@ -2070,16 +2070,16 @@ ITStatus DFSDM_GetShortCircuitITStatus(uint32_t DFSDM_IT_SCR)
 {
   ITStatus bitstatus = RESET;
   uint32_t itstatus = 0x0, itenable = 0x0;
-  
+
   /* Check the parameters */
   assert_param(IS_DFSDM_SCD_IT(DFSDM_IT_SCR));
-  
+
   /* Get the Interrupt Status bit value */
   itstatus = DFSDM0->FLTISR & DFSDM_IT_SCR;
-  
+
   /* Check if the Interrupt is enabled */
   itenable = DFSDM0->FLTCR2 & DFSDM_IT_SCD;
-  
+
   if ((itstatus != RESET) && (itenable != RESET))
   {
     bitstatus = SET;
@@ -2096,7 +2096,7 @@ ITStatus DFSDM_GetShortCircuitITStatus(uint32_t DFSDM_IT_SCR)
 /**
   * @brief  Check whether the specified Clock Absence channel interrupt has occurred or not.
   * @param  Instance: select the instance of DFSDM
-  *         This parameter can be: 1 or 2. 
+  *         This parameter can be: 1 or 2.
   * @param  DFSDM_IT_CLKAbsence: specifies on which channel check the interrupt source.
   *         This parameter can be a value of @ref DFSDM_Clock_Absence_Interrupt_Definition.
   * @retval The new state of DFSDM_IT (SET or RESET).
@@ -2122,9 +2122,9 @@ ITStatus DFSDM_GetClockAbsenceITStatus(uint32_t Instance, uint32_t DFSDM_IT_CLKA
     /* Get the Interrupt Status bit value */
     itstatus = DFSDM2_0->FLTISR & DFSDM_IT_CLKAbsence;
     /* Check if the Interrupt is enabled */
-    itenable = DFSDM1_0->FLTCR2 & DFSDM_IT_CKAB; 
+    itenable = DFSDM1_0->FLTCR2 & DFSDM_IT_CKAB;
   }
-  
+
   if ((itstatus != RESET) && (itenable != RESET))
   {
     bitstatus = SET;
@@ -2139,7 +2139,7 @@ ITStatus DFSDM_GetClockAbsenceITStatus(uint32_t Instance, uint32_t DFSDM_IT_CLKA
 /**
   * @brief  Check whether the specified Short Circuit channel interrupt has occurred or not.
   * @param  Instance: select the instance of DFSDM
-  *         This parameter can be: 1 or 2. 
+  *         This parameter can be: 1 or 2.
   * @param  DFSDM_IT_SCR: specifies on which channel check the interrupt source.
   *         This parameter can be a value of @ref DFSDM_SCD_Interrupt_Definition.
   * @retval The new state of DFSDM_IT (SET or RESET).
@@ -2149,7 +2149,7 @@ ITStatus DFSDM_GetShortCircuitITStatus(uint32_t Instance, uint32_t DFSDM_IT_SCR)
 {
   ITStatus bitstatus = RESET;
   uint32_t itstatus = 0x0, itenable = 0x0;
-  
+
   /* Check the parameters */
   assert_param(IS_DFSDM_SCD_IT(DFSDM_IT_SCR));
 
@@ -2157,7 +2157,7 @@ ITStatus DFSDM_GetShortCircuitITStatus(uint32_t Instance, uint32_t DFSDM_IT_SCR)
   {
     /* Get the Interrupt Status bit value */
     itstatus = DFSDM1_0->FLTISR & DFSDM_IT_SCR;
-    
+
     /* Check if the Interrupt is enabled */
     itenable = DFSDM1_0->FLTCR2 & DFSDM_IT_SCD;
   }
@@ -2165,11 +2165,11 @@ ITStatus DFSDM_GetShortCircuitITStatus(uint32_t Instance, uint32_t DFSDM_IT_SCR)
   {
     /* Get the Interrupt Status bit value */
     itstatus = DFSDM2_0->FLTISR & DFSDM_IT_SCR;
-    
+
     /* Check if the Interrupt is enabled */
-    itenable = DFSDM2_0->FLTCR2 & DFSDM_IT_SCD; 
+    itenable = DFSDM2_0->FLTCR2 & DFSDM_IT_SCD;
   }
-  
+
   if ((itstatus != RESET) && (itenable != RESET))
   {
     bitstatus = SET;

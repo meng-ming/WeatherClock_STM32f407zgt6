@@ -96,7 +96,7 @@
 #endif
 /* *INDENT-ON* */
 
-#include "mpu_wrappers.h"
+#include "mpu_wrAPPers.h"
 
 /*
  * Setup the stack of a new task so it is ready to be placed under the
@@ -161,7 +161,7 @@ typedef struct xHeapStats
  * pxHeapRegions passes in an array of HeapRegion_t structures - each of which
  * defines a region of memory that can be used as the heap.  The array is
  * terminated by a HeapRegions_t structure that has a size of 0.  The region
- * with the lowest start address must appear first in the array.
+ * with the lowest start address must APPear first in the array.
  */
 void vPortDefineHeapRegions( const HeapRegion_t * const pxHeapRegions ) PRIVILEGED_FUNCTION;
 
@@ -195,12 +195,12 @@ size_t xPortGetMinimumEverFreeHeapSize( void ) PRIVILEGED_FUNCTION;
 /**
  * task.h
  * @code{c}
- * void vApplicationMallocFailedHook( void )
+ * void vAPPlicationMallocFailedHook( void )
  * @endcode
  *
  * This hook function is called when allocation failed.
  */
-    void vApplicationMallocFailedHook( void ); /*lint !e526 Symbol not defined as it is an application callback. */
+    void vAPPlicationMallocFailedHook( void ); /*lint !e526 Symbol not defined as it is an APPlication callback. */
 #endif
 
 /*

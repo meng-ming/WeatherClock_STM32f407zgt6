@@ -31,11 +31,11 @@
 #define TIMERS_H
 
 #ifndef INC_FREERTOS_H
-    #error "include FreeRTOS.h must appear in source files before include timers.h"
+    #error "include FreeRTOS.h must APPear in source files before include timers.h"
 #endif
 
-/*lint -save -e537 This headers are only multiply included if the application code
- * happens to also be including task.h. */
+/*lint -save -e537 This headers are only multiply included if the APPlication code
+ * hAPPens to also be including task.h. */
 #include "task.h"
 /*lint -restore */
 
@@ -106,7 +106,7 @@ typedef void (* PendedFunction_t)( void *,
  * is created using xTimerCreate() then the required memory is automatically
  * dynamically allocated inside the xTimerCreate() function.  (see
  * https://www.FreeRTOS.org/a00111.html).  If a software timer is created using
- * xTimerCreateStatic() then the application writer must provide the memory that
+ * xTimerCreateStatic() then the APPlication writer must provide the memory that
  * will get used by the software timer.  xTimerCreateStatic() therefore allows a
  * software timer to be created without using any dynamic memory allocation.
  *
@@ -252,7 +252,7 @@ typedef void (* PendedFunction_t)( void *,
  * is created using xTimerCreate() then the required memory is automatically
  * dynamically allocated inside the xTimerCreate() function.  (see
  * https://www.FreeRTOS.org/a00111.html).  If a software timer is created using
- * xTimerCreateStatic() then the application writer must provide the memory that
+ * xTimerCreateStatic() then the APPlication writer must provide the memory that
  * will get used by the software timer.  xTimerCreateStatic() therefore allows a
  * software timer to be created without using any dynamic memory allocation.
  *
@@ -462,7 +462,7 @@ TaskHandle_t xTimerGetTimerDaemonTaskHandle( void ) PRIVILEGED_FUNCTION;
  * Timer functionality is provided by a timer service/daemon task.  Many of the
  * public FreeRTOS timer API functions send commands to the timer service task
  * through a queue called the timer command queue.  The timer command queue is
- * private to the kernel itself and is not directly accessible to application
+ * private to the kernel itself and is not directly accessible to APPlication
  * code.  The length of the timer command queue is set by the
  * configTIMER_QUEUE_LENGTH configuration constant.
  *
@@ -515,7 +515,7 @@ TaskHandle_t xTimerGetTimerDaemonTaskHandle( void ) PRIVILEGED_FUNCTION;
  * Timer functionality is provided by a timer service/daemon task.  Many of the
  * public FreeRTOS timer API functions send commands to the timer service task
  * through a queue called the timer command queue.  The timer command queue is
- * private to the kernel itself and is not directly accessible to application
+ * private to the kernel itself and is not directly accessible to APPlication
  * code.  The length of the timer command queue is set by the
  * configTIMER_QUEUE_LENGTH configuration constant.
  *
@@ -560,7 +560,7 @@ TaskHandle_t xTimerGetTimerDaemonTaskHandle( void ) PRIVILEGED_FUNCTION;
  * Timer functionality is provided by a timer service/daemon task.  Many of the
  * public FreeRTOS timer API functions send commands to the timer service task
  * through a queue called the timer command queue.  The timer command queue is
- * private to the kernel itself and is not directly accessible to application
+ * private to the kernel itself and is not directly accessible to APPlication
  * code.  The length of the timer command queue is set by the
  * configTIMER_QUEUE_LENGTH configuration constant.
  *
@@ -624,7 +624,7 @@ TaskHandle_t xTimerGetTimerDaemonTaskHandle( void ) PRIVILEGED_FUNCTION;
  *         else
  *         {
  *             // The command could not be sent, even after waiting for 100 ticks
- *             // to pass.  Take appropriate action here.
+ *             // to pass.  Take APPropriate action here.
  *         }
  *     }
  * }
@@ -639,7 +639,7 @@ TaskHandle_t xTimerGetTimerDaemonTaskHandle( void ) PRIVILEGED_FUNCTION;
  * Timer functionality is provided by a timer service/daemon task.  Many of the
  * public FreeRTOS timer API functions send commands to the timer service task
  * through a queue called the timer command queue.  The timer command queue is
- * private to the kernel itself and is not directly accessible to application
+ * private to the kernel itself and is not directly accessible to APPlication
  * code.  The length of the timer command queue is set by the
  * configTIMER_QUEUE_LENGTH configuration constant.
  *
@@ -678,7 +678,7 @@ TaskHandle_t xTimerGetTimerDaemonTaskHandle( void ) PRIVILEGED_FUNCTION;
  * Timer functionality is provided by a timer service/daemon task.  Many of the
  * public FreeRTOS timer API functions send commands to the timer service task
  * through a queue called the timer command queue.  The timer command queue is
- * private to the kernel itself and is not directly accessible to application
+ * private to the kernel itself and is not directly accessible to APPlication
  * code.  The length of the timer command queue is set by the
  * configTIMER_QUEUE_LENGTH configuration constant.
  *
@@ -746,7 +746,7 @@ TaskHandle_t xTimerGetTimerDaemonTaskHandle( void ) PRIVILEGED_FUNCTION;
  *     vSetBacklightState( BACKLIGHT_ON );
  *     if( xTimerReset( xBacklightTimer, 100 ) != pdPASS )
  *     {
- *         // The reset command was not executed successfully.  Take appropriate
+ *         // The reset command was not executed successfully.  Take APPropriate
  *         // action here.
  *     }
  *
@@ -862,7 +862,7 @@ TaskHandle_t xTimerGetTimerDaemonTaskHandle( void ) PRIVILEGED_FUNCTION;
  *     // declared (in this function).
  *     if( xTimerStartFromISR( xBacklightTimer, &xHigherPriorityTaskWoken ) != pdPASS )
  *     {
- *         // The start command was not executed successfully.  Take appropriate
+ *         // The start command was not executed successfully.  Take APPropriate
  *         // action here.
  *     }
  *
@@ -928,7 +928,7 @@ TaskHandle_t xTimerGetTimerDaemonTaskHandle( void ) PRIVILEGED_FUNCTION;
  *     // FreeRTOS API functions that end in "FromISR" can be used.
  *     if( xTimerStopFromISR( xTimer, &xHigherPriorityTaskWoken ) != pdPASS )
  *     {
- *         // The stop command was not executed successfully.  Take appropriate
+ *         // The stop command was not executed successfully.  Take APPropriate
  *         // action here.
  *     }
  *
@@ -1003,7 +1003,7 @@ TaskHandle_t xTimerGetTimerDaemonTaskHandle( void ) PRIVILEGED_FUNCTION;
  *     if( xTimerChangePeriodFromISR( xTimer, &xHigherPriorityTaskWoken ) != pdPASS )
  *     {
  *         // The command to change the timers period was not executed
- *         // successfully.  Take appropriate action here.
+ *         // successfully.  Take APPropriate action here.
  *     }
  *
  *     // If xHigherPriorityTaskWoken equals pdTRUE, then a context switch
@@ -1087,7 +1087,7 @@ TaskHandle_t xTimerGetTimerDaemonTaskHandle( void ) PRIVILEGED_FUNCTION;
  *     // declared (in this function).
  *     if( xTimerResetFromISR( xBacklightTimer, &xHigherPriorityTaskWoken ) != pdPASS )
  *     {
- *         // The reset command was not executed successfully.  Take appropriate
+ *         // The reset command was not executed successfully.  Take APPropriate
  *         // action here.
  *     }
  *
@@ -1117,7 +1117,7 @@ TaskHandle_t xTimerGetTimerDaemonTaskHandle( void ) PRIVILEGED_FUNCTION;
  *                                          BaseType_t *pxHigherPriorityTaskWoken );
  *
  *
- * Used from application interrupt service routines to defer the execution of a
+ * Used from APPlication interrupt service routines to defer the execution of a
  * function to the RTOS daemon task (the timer service task, hence this function
  * is implemented in timers.c and is prefixed with 'Timer').
  *
@@ -1365,7 +1365,7 @@ BaseType_t xTimerGenericCommand( TimerHandle_t xTimer,
 /**
  * task.h
  * @code{c}
- * void vApplicationGetTimerTaskMemory( StaticTask_t ** ppxTimerTaskTCBBuffer, StackType_t ** ppxTimerTaskStackBuffer, uint32_t *pulTimerTaskStackSize )
+ * void vAPPlicationGetTimerTaskMemory( StaticTask_t ** ppxTimerTaskTCBBuffer, StackType_t ** ppxTimerTaskStackBuffer, uint32_t *pulTimerTaskStackSize )
  * @endcode
  *
  * This function is used to provide a statically allocated block of memory to FreeRTOS to hold the Timer Task TCB.  This function is required when
@@ -1375,7 +1375,7 @@ BaseType_t xTimerGenericCommand( TimerHandle_t xTimer,
  * @param ppxTimerTaskStackBuffer A handle to a statically allocated Stack buffer for the idle task
  * @param pulTimerTaskStackSize   A pointer to the number of elements that will fit in the allocated stack buffer
  */
-    void vApplicationGetTimerTaskMemory( StaticTask_t ** ppxTimerTaskTCBBuffer,
+    void vAPPlicationGetTimerTaskMemory( StaticTask_t ** ppxTimerTaskTCBBuffer,
                                          StackType_t ** ppxTimerTaskStackBuffer,
                                          uint32_t * pulTimerTaskStackSize );
 
@@ -1386,12 +1386,12 @@ BaseType_t xTimerGenericCommand( TimerHandle_t xTimer,
 /**
  *  timers.h
  * @code{c}
- * void vApplicationDaemonTaskStartupHook( void );
+ * void vAPPlicationDaemonTaskStartupHook( void );
  * @endcode
  *
  * This hook function is called form the timer task once when the task starts running.
  */
-    void vApplicationDaemonTaskStartupHook( void );
+    void vAPPlicationDaemonTaskStartupHook( void );
 
 #endif
 

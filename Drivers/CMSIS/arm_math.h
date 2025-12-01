@@ -82,10 +82,10 @@
    * - arm_cortexM0b_math.lib (Big endian on Cortex-M0 / CortexM0+)
    *
    * The library functions are declared in the public file <code>arm_math.h</code> which is placed in the <code>Include</code> folder.
-   * Simply include this file and link the appropriate library in the application and begin calling the library functions. The Library supports single
+   * Simply include this file and link the APPropriate library in the APPlication and begin calling the library functions. The Library supports single
    * public header file <code> arm_math.h</code> for Cortex-M7/M4/M3/M0/M0+ with little endian and big endian. Same header file will be used for floating point unit(FPU) variants.
-   * Define the appropriate pre processor MACRO ARM_MATH_CM7 or ARM_MATH_CM4 or  ARM_MATH_CM3 or
-   * ARM_MATH_CM0 or ARM_MATH_CM0PLUS depending on the target processor in the application.
+   * Define the APPropriate pre processor MACRO ARM_MATH_CM7 or ARM_MATH_CM4 or  ARM_MATH_CM3 or
+   * ARM_MATH_CM0 or ARM_MATH_CM0PLUS depending on the target processor in the APPlication.
    *
    * Examples
    * --------
@@ -141,7 +141,7 @@
    * <hr>
    * CMSIS-DSP in ARM::CMSIS Pack
    * -----------------------------
-   * 
+   *
    * The following files relevant to CMSIS-DSP are present in the <b>ARM::CMSIS</b> Pack directories:
    * |File/Folder                   |Content                                                                 |
    * |------------------------------|------------------------------------------------------------------------|
@@ -149,7 +149,7 @@
    * |\b CMSIS\\DSP_Lib             | Software license agreement (license.txt)                               |
    * |\b CMSIS\\DSP_Lib\\Examples   | Example projects demonstrating the usage of the library functions      |
    * |\b CMSIS\\DSP_Lib\\Source     | Source files for rebuilding the library                                |
-   * 
+   *
    * <hr>
    * Revision History of CMSIS-DSP
    * ------------
@@ -168,7 +168,7 @@
 
 /**
  * @defgroup groupFastMath Fast Math Functions
- * This set of functions provides a fast approximation to sine, cosine, and square root.
+ * This set of functions provides a fast APProximation to sine, cosine, and square root.
  * As compared to most of the other functions in the CMSIS math library, the fast math functions
  * operate on individual values and not arrays.
  * There are separate functions for Q15, Q31, and floating-point data.
@@ -327,7 +327,7 @@ extern "C"
 #endif
 
   /**
-   * @brief Macros required for SINE and COSINE Fast math approximations
+   * @brief Macros required for SINE and COSINE Fast math APProximations
    */
 
 #define FAST_MATH_TABLE_SIZE  512
@@ -571,7 +571,7 @@ extern "C"
     /* Convert input sample to 1.31 format */
     in = in << signBits;
 
-    /* calculation of index for initial approximated Val */
+    /* calculation of index for initial APProximated Val */
     index = (uint32_t) (in >> 24u);
     index = (index & INDEX_MASK);
 
@@ -579,7 +579,7 @@ extern "C"
     out = pRecipTable[index];
 
     /* calculation of reciprocal value */
-    /* running approximation for two iterations */
+    /* running APProximation for two iterations */
     for (i = 0u; i < 2u; i++)
     {
       tempVal = (q31_t) (((q63_t) in * out) >> 31u);
@@ -622,7 +622,7 @@ extern "C"
     /* Convert input sample to 1.15 format */
     in = in << signBits;
 
-    /* calculation of index for initial approximated Val */
+    /* calculation of index for initial APProximated Val */
     index = in >> 8;
     index = (index & INDEX_MASK);
 
@@ -630,7 +630,7 @@ extern "C"
     out = pRecipTable[index];
 
     /* calculation of reciprocal value */
-    /* running approximation for two iterations */
+    /* running APProximation for two iterations */
     for (i = 0; i < 2; i++)
     {
       tempVal = (q15_t) (((q31_t) in * out) >> 15);
@@ -1277,7 +1277,7 @@ extern "C"
     int8_t numStages;         /**< number of 2nd order stages in the filter.  Overall order is 2*numStages. */
     q15_t *pState;            /**< Points to the array of state coefficients.  The array is of length 4*numStages. */
     q15_t *pCoeffs;           /**< Points to the array of coefficients.  The array is of length 5*numStages. */
-    int8_t postShift;         /**< Additional shift, in bits, applied to each output sample. */
+    int8_t postShift;         /**< Additional shift, in bits, APPlied to each output sample. */
 
   } arm_biquad_casd_df1_inst_q15;
 
@@ -1290,7 +1290,7 @@ extern "C"
     uint32_t numStages;      /**< number of 2nd order stages in the filter.  Overall order is 2*numStages. */
     q31_t *pState;           /**< Points to the array of state coefficients.  The array is of length 4*numStages. */
     q31_t *pCoeffs;          /**< Points to the array of coefficients.  The array is of length 5*numStages. */
-    uint8_t postShift;       /**< Additional shift, in bits, applied to each output sample. */
+    uint8_t postShift;       /**< Additional shift, in bits, APPlied to each output sample. */
 
   } arm_biquad_casd_df1_inst_q31;
 
@@ -1329,7 +1329,7 @@ extern "C"
    * @param[in]     numStages    number of 2nd order stages in the filter.
    * @param[in]     *pCoeffs     points to the filter coefficients.
    * @param[in]     *pState      points to the state buffer.
-   * @param[in]     postShift    Shift to be applied to the output. Varies according to the coefficients format
+   * @param[in]     postShift    Shift to be APPlied to the output. Varies according to the coefficients format
    * @return        none
    */
 
@@ -1393,7 +1393,7 @@ extern "C"
    * @param[in]     numStages      number of 2nd order stages in the filter.
    * @param[in]     *pCoeffs     points to the filter coefficients.
    * @param[in]     *pState      points to the state buffer.
-   * @param[in]     postShift    Shift to be applied to the output. Varies according to the coefficients format
+   * @param[in]     postShift    Shift to be APPlied to the output. Varies according to the coefficients format
    * @return        none
    */
 
@@ -2225,11 +2225,11 @@ extern "C"
     uint16_t bitRevLength;             /**< bit reversal table length. */
   } arm_cfft_instance_q15;
 
-void arm_cfft_q15( 
-    const arm_cfft_instance_q15 * S, 
+void arm_cfft_q15(
+    const arm_cfft_instance_q15 * S,
     q15_t * p1,
     uint8_t ifftFlag,
-    uint8_t bitReverseFlag);  
+    uint8_t bitReverseFlag);
 
   /**
    * @brief Instance structure for the fixed-point CFFT/CIFFT function.
@@ -2243,12 +2243,12 @@ void arm_cfft_q15(
     uint16_t bitRevLength;             /**< bit reversal table length. */
   } arm_cfft_instance_q31;
 
-void arm_cfft_q31( 
-    const arm_cfft_instance_q31 * S, 
+void arm_cfft_q31(
+    const arm_cfft_instance_q31 * S,
     q31_t * p1,
     uint8_t ifftFlag,
-    uint8_t bitReverseFlag);  
-  
+    uint8_t bitReverseFlag);
+
   /**
    * @brief Instance structure for the floating-point CFFT/CIFFT function.
    */
@@ -2631,7 +2631,7 @@ void arm_rfft_fast_f32(
   /**
    * @brief Multiplies a floating-point vector by a scalar.
    * @param[in]       *pSrc points to the input vector
-   * @param[in]       scale scale factor to be applied
+   * @param[in]       scale scale factor to be APPlied
    * @param[out]      *pDst points to the output vector
    * @param[in]       blockSize number of samples in the vector
    * @return none.
@@ -3774,7 +3774,7 @@ void arm_rfft_fast_f32(
     uint8_t numStages;       /**< number of 2nd order stages in the filter.  Overall order is 2*numStages. */
     q63_t *pState;           /**< points to the array of state coefficients.  The array is of length 4*numStages. */
     q31_t *pCoeffs;          /**< points to the array of coefficients.  The array is of length 5*numStages. */
-    uint8_t postShift;       /**< additional shift, in bits, applied to each output sample. */
+    uint8_t postShift;       /**< additional shift, in bits, APPlied to each output sample. */
 
   } arm_biquad_cas_df1_32x64_ins_q31;
 
@@ -3799,7 +3799,7 @@ void arm_rfft_fast_f32(
    * @param[in]     numStages    number of 2nd order stages in the filter.
    * @param[in]     *pCoeffs     points to the filter coefficients.
    * @param[in]     *pState      points to the state buffer.
-   * @param[in]     postShift    shift to be applied to the output. Varies according to the coefficients format
+   * @param[in]     postShift    shift to be APPlied to the output. Varies according to the coefficients format
    * @return        none
    */
 
@@ -4269,7 +4269,7 @@ void arm_rfft_fast_f32(
     q15_t *pState;       /**< points to the state variable array. The array is of length numTaps+blockSize-1. */
     q15_t *pCoeffs;      /**< points to the coefficient array. The array is of length numTaps. */
     q15_t mu;            /**< step size that controls filter coefficient updates. */
-    uint32_t postShift;  /**< bit shift applied to coefficients. */
+    uint32_t postShift;  /**< bit shift APPlied to coefficients. */
   } arm_lms_instance_q15;
 
 
@@ -4281,7 +4281,7 @@ void arm_rfft_fast_f32(
    * @param[in] *pState points to the state buffer.
    * @param[in] mu step size that controls filter coefficient updates.
    * @param[in] blockSize number of samples to process.
-   * @param[in] postShift bit shift applied to coefficients.
+   * @param[in] postShift bit shift APPlied to coefficients.
    * @return    none.
    */
 
@@ -4324,7 +4324,7 @@ void arm_rfft_fast_f32(
     q31_t *pState;       /**< points to the state variable array. The array is of length numTaps+blockSize-1. */
     q31_t *pCoeffs;      /**< points to the coefficient array. The array is of length numTaps. */
     q31_t mu;            /**< step size that controls filter coefficient updates. */
-    uint32_t postShift;  /**< bit shift applied to coefficients. */
+    uint32_t postShift;  /**< bit shift APPlied to coefficients. */
 
   } arm_lms_instance_q31;
 
@@ -4355,7 +4355,7 @@ void arm_rfft_fast_f32(
    * @param[in] *pState points to state buffer.
    * @param[in] mu step size that controls filter coefficient updates.
    * @param[in] blockSize number of samples to process.
-   * @param[in] postShift bit shift applied to coefficients.
+   * @param[in] postShift bit shift APPlied to coefficients.
    * @return none.
    */
 
@@ -4430,7 +4430,7 @@ void arm_rfft_fast_f32(
     q31_t *pState;        /**< points to the state variable array. The array is of length numTaps+blockSize-1. */
     q31_t *pCoeffs;       /**< points to the coefficient array. The array is of length numTaps. */
     q31_t mu;             /**< step size that controls filter coefficient updates. */
-    uint8_t postShift;    /**< bit shift applied to coefficients. */
+    uint8_t postShift;    /**< bit shift APPlied to coefficients. */
     q31_t *recipTable;    /**< points to the reciprocal initial value table. */
     q31_t energy;         /**< saves previous frame energy. */
     q31_t x0;             /**< saves previous input sample. */
@@ -4463,7 +4463,7 @@ void arm_rfft_fast_f32(
    * @param[in] *pState points to state buffer.
    * @param[in] mu step size that controls filter coefficient updates.
    * @param[in] blockSize number of samples to process.
-   * @param[in] postShift bit shift applied to coefficients.
+   * @param[in] postShift bit shift APPlied to coefficients.
    * @return none.
    */
 
@@ -4486,7 +4486,7 @@ void arm_rfft_fast_f32(
     q15_t *pState;        /**< points to the state variable array. The array is of length numTaps+blockSize-1. */
     q15_t *pCoeffs;       /**< points to the coefficient array. The array is of length numTaps. */
     q15_t mu;            /**< step size that controls filter coefficient updates. */
-    uint8_t postShift;   /**< bit shift applied to coefficients. */
+    uint8_t postShift;   /**< bit shift APPlied to coefficients. */
     q15_t *recipTable;   /**< Points to the reciprocal initial value table. */
     q15_t energy;        /**< saves previous frame energy. */
     q15_t x0;            /**< saves previous input sample. */
@@ -4520,7 +4520,7 @@ void arm_rfft_fast_f32(
    * @param[in] *pState points to state buffer.
    * @param[in] mu step size that controls filter coefficient updates.
    * @param[in] blockSize number of samples to process.
-   * @param[in] postShift bit shift applied to coefficients.
+   * @param[in] postShift bit shift APPlied to coefficients.
    * @return none.
    */
 
@@ -5111,7 +5111,7 @@ void arm_rfft_fast_f32(
     S->state[0] = in;
     S->state[2] = out;
 
-    /* return to application */
+    /* return to APPlication */
     return (out);
 
   }
@@ -5158,7 +5158,7 @@ void arm_rfft_fast_f32(
     S->state[0] = in;
     S->state[2] = out;
 
-    /* return to application */
+    /* return to APPlication */
     return (out);
 
   }
@@ -5174,7 +5174,7 @@ void arm_rfft_fast_f32(
    * The function is implemented using a 64-bit internal accumulator.
    * Both Gains and state variables are represented in 1.15 format and multiplications yield a 2.30 result.
    * The 2.30 intermediate results are accumulated in a 64-bit accumulator in 34.30 format.
-   * There is no risk of internal overflow with this approach and the full precision of intermediate multiplications is preserved.
+   * There is no risk of internal overflow with this APProach and the full precision of intermediate multiplications is preserved.
    * After all additions have been performed, the accumulator is truncated to 34.15 format by discarding low 15 bits.
    * Lastly, the accumulator is saturated to yield a result in 1.15 format.
    */
@@ -5219,7 +5219,7 @@ void arm_rfft_fast_f32(
     S->state[0] = in;
     S->state[2] = out;
 
-    /* return to application */
+    /* return to APPlication */
     return (out);
 
   }
@@ -5730,7 +5730,7 @@ void arm_rfft_fast_f32(
    * @defgroup LinearInterpolate Linear Interpolation
    *
    * Linear interpolation is a method of curve fitting using linear polynomials.
-   * Linear interpolation works by effectively drawing a straight line between two neighboring samples and returning the appropriate point along that line
+   * Linear interpolation works by effectively drawing a straight line between two neighboring samples and returning the APPropriate point along that line
    *
    * \par
    * \image html LinearInterp.gif "Linear interpolation"
@@ -6004,7 +6004,7 @@ void arm_rfft_fast_f32(
    */
 
   /**
-   * @brief  Fast approximation to the trigonometric sine function for floating-point data.
+   * @brief  Fast APProximation to the trigonometric sine function for floating-point data.
    * @param[in] x input value in radians.
    * @return  sin(x).
    */
@@ -6013,7 +6013,7 @@ void arm_rfft_fast_f32(
   float32_t x);
 
   /**
-   * @brief  Fast approximation to the trigonometric sine function for Q31 data.
+   * @brief  Fast APProximation to the trigonometric sine function for Q31 data.
    * @param[in] x Scaled input value in radians.
    * @return  sin(x).
    */
@@ -6022,7 +6022,7 @@ void arm_rfft_fast_f32(
   q31_t x);
 
   /**
-   * @brief  Fast approximation to the trigonometric sine function for Q15 data.
+   * @brief  Fast APProximation to the trigonometric sine function for Q15 data.
    * @param[in] x Scaled input value in radians.
    * @return  sin(x).
    */
@@ -6031,7 +6031,7 @@ void arm_rfft_fast_f32(
   q15_t x);
 
   /**
-   * @brief  Fast approximation to the trigonometric cosine function for floating-point data.
+   * @brief  Fast APProximation to the trigonometric cosine function for floating-point data.
    * @param[in] x input value in radians.
    * @return  cos(x).
    */
@@ -6040,7 +6040,7 @@ void arm_rfft_fast_f32(
   float32_t x);
 
   /**
-   * @brief Fast approximation to the trigonometric cosine function for Q31 data.
+   * @brief Fast APProximation to the trigonometric cosine function for Q31 data.
    * @param[in] x Scaled input value in radians.
    * @return  cos(x).
    */
@@ -6049,7 +6049,7 @@ void arm_rfft_fast_f32(
   q31_t x);
 
   /**
-   * @brief  Fast approximation to the trigonometric cosine function for Q15 data.
+   * @brief  Fast APProximation to the trigonometric cosine function for Q15 data.
    * @param[in] x Scaled input value in radians.
    * @return  cos(x).
    */
@@ -7081,7 +7081,7 @@ void arm_rfft_fast_f32(
   /**
    * @defgroup BilinearInterpolate Bilinear Interpolation
    *
-   * Bilinear interpolation is an extension of linear interpolation applied to a two dimensional grid.
+   * Bilinear interpolation is an extension of linear interpolation APPlied to a two dimensional grid.
    * The underlying function <code>f(x, y)</code> is sampled on a regular grid and the interpolation process
    * determines values between the grid points.
    * Bilinear interpolation is equivalent to two step linear interpolation, first in the x-dimension and then in the y-dimension.
@@ -7199,7 +7199,7 @@ void arm_rfft_fast_f32(
     /* Calculation of bi-linear interpolated output */
     out = b1 + b2 * xdiff + b3 * ydiff + b4 * xdiff * ydiff;
 
-    /* return to application */
+    /* return to APPlication */
     return (out);
 
   }
@@ -7440,7 +7440,7 @@ void arm_rfft_fast_f32(
   /**
    * @} end of BilinearInterpolate group
    */
-   
+
 
 //SMMLAR
 #define multAcc_32x32_keep32_R(a, x, y) \
@@ -7475,7 +7475,7 @@ void arm_rfft_fast_f32(
          _Pragma ("push")         \
          _Pragma ("O1")
     #else
-      #define LOW_OPTIMIZATION_ENTER 
+      #define LOW_OPTIMIZATION_ENTER
     #endif
 
 //Exit low optimization region - place directly after end of function definition
@@ -7483,7 +7483,7 @@ void arm_rfft_fast_f32(
       #define LOW_OPTIMIZATION_EXIT \
          _Pragma ("pop")
     #else
-      #define LOW_OPTIMIZATION_EXIT  
+      #define LOW_OPTIMIZATION_EXIT
     #endif
 
 //Enter low optimization region - place directly above function definition
@@ -7499,7 +7499,7 @@ void arm_rfft_fast_f32(
       #define LOW_OPTIMIZATION_ENTER \
          _Pragma ("optimize=low")
     #else
-      #define LOW_OPTIMIZATION_ENTER   
+      #define LOW_OPTIMIZATION_ENTER
     #endif
 
 //Exit low optimization region - place directly after end of function definition
@@ -7510,7 +7510,7 @@ void arm_rfft_fast_f32(
       #define IAR_ONLY_LOW_OPTIMIZATION_ENTER \
          _Pragma ("optimize=low")
     #else
-      #define IAR_ONLY_LOW_OPTIMIZATION_ENTER   
+      #define IAR_ONLY_LOW_OPTIMIZATION_ENTER
     #endif
 
 //Exit low optimization region - place directly after end of function definition

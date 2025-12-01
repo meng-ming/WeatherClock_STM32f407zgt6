@@ -114,6 +114,17 @@ void LCD_Show_String(uint16_t           x,
             continue;
         }
 
+        // 越界保护
+        if (cursor_y + font->cn_h > TFT_LINE_NUMBER)
+            break;
+
+        // 自动换行检测
+        if (cursor_x + font->cn_w > TFT_COLUMN_NUMBER)
+        {
+            cursor_x = x;
+            cursor_y += font->cn_h;
+        }
+
         // === B. 处理 ASCII 字符 (标准 ASCII < 0x80) ===
         // 注意：这里只要最高位是0，就认为是 ASCII，兼容 UTF-8 和 GBK 的 ASCII 部分
         if (*str >= 0x20 && *str <= 0x7E)
@@ -145,17 +156,6 @@ void LCD_Show_String(uint16_t           x,
         {
             const uint8_t* p_target_data = NULL;
             int            match_len     = 0; // 记录匹配到的字符串长度 (用于跳过)
-
-            // 越界保护
-            if (cursor_y + font->cn_h > TFT_LINE_NUMBER)
-                break;
-
-            // 自动换行检测
-            if (cursor_x + font->cn_w > TFT_COLUMN_NUMBER)
-            {
-                cursor_x = x;
-                cursor_y += font->cn_h;
-            }
 
             // --- 遍历字库比对字符串 ---
             if (font->hzk_table && font->hzk_count > 0)

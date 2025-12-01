@@ -30,8 +30,8 @@
 #include <stdlib.h>
 
 /* Defining MPU_WRAPPERS_INCLUDED_FROM_API_FILE prevents task.h from redefining
- * all the API functions to use the MPU wrappers.  That should only be done when
- * task.h is included from an application file. */
+ * all the API functions to use the MPU wrAPPers.  That should only be done when
+ * task.h is included from an APPlication file. */
 #define MPU_WRAPPERS_INCLUDED_FROM_API_FILE
 
 #include "FreeRTOS.h"
@@ -50,7 +50,7 @@
 #undef MPU_WRAPPERS_INCLUDED_FROM_API_FILE /*lint !e9021 !e961 !e750. */
 
 
-/* This entire source file will be skipped if the application is not configured
+/* This entire source file will be skipped if the APPlication is not configured
  * to include software timer functionality.  This #if is closed at the very bottom
  * of this file.  If you want to include software timer functionality then ensure
  * configUSE_TIMERS is set to 1 in FreeRTOSConfig.h. */
@@ -97,7 +97,7 @@
     typedef struct tmrTimerParameters
     {
         TickType_t xMessageValue; /**< An optional value used by a subset of commands, for example, when changing the period of a timer. */
-        Timer_t * pxTimer;        /**< The timer to which the command will be applied. */
+        Timer_t * pxTimer;        /**< The timer to which the command will be APPlied. */
     } TimerParameter_t;
 
 
@@ -248,7 +248,7 @@
                 StackType_t * pxTimerTaskStackBuffer = NULL;
                 uint32_t ulTimerTaskStackSize;
 
-                vApplicationGetTimerTaskMemory( &pxTimerTaskTCBBuffer, &pxTimerTaskStackBuffer, &ulTimerTaskStackSize );
+                vAPPlicationGetTimerTaskMemory( &pxTimerTaskTCBBuffer, &pxTimerTaskStackBuffer, &ulTimerTaskStackSize );
                 xTimerTaskHandle = xTaskCreateStatic( prvTimerTask,
                                                       configTIMER_SERVICE_TASK_NAME,
                                                       ulTimerTaskStackSize,
@@ -547,7 +547,7 @@
                                 TickType_t xExpiredTime,
                                 const TickType_t xTimeNow )
     {
-        /* Insert the timer into the appropriate list for the next expiry time.
+        /* Insert the timer into the APPropriate list for the next expiry time.
          * If the next expiry time has already passed, advance the expiry time,
          * call the callback function, and try again. */
         while( prvInsertTimerInActiveList( pxTimer, ( xExpiredTime + pxTimer->xTimerPeriodInTicks ), xTimeNow, xExpiredTime ) != pdFALSE )
@@ -599,11 +599,11 @@
 
         #if ( configUSE_DAEMON_TASK_STARTUP_HOOK == 1 )
         {
-            /* Allow the application writer to execute some code in the context of
+            /* Allow the APPlication writer to execute some code in the context of
              * this task at the point the task starts executing.  This is useful if the
-             * application includes initialisation code that would benefit from
+             * APPlication includes initialisation code that would benefit from
              * executing after the scheduler has been started. */
-            vApplicationDaemonTaskStartupHook();
+            vAPPlicationDaemonTaskStartupHook();
         }
         #endif /* configUSE_DAEMON_TASK_STARTUP_HOOK */
 
@@ -1140,7 +1140,7 @@
     #endif /* configUSE_TRACE_FACILITY */
 /*-----------------------------------------------------------*/
 
-/* This entire source file will be skipped if the application is not configured
+/* This entire source file will be skipped if the APPlication is not configured
  * to include software timer functionality.  If you want to include software timer
  * functionality then ensure configUSE_TIMERS is set to 1 in FreeRTOSConfig.h. */
 #endif /* configUSE_TIMERS == 1 */

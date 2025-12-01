@@ -1,10 +1,10 @@
 /**
   ******************************************************************************
   * @file    stm32f4xx_crc.h
-  * @author  MCD Application Team
+  * @author  MCD APPlication Team
   * @version V1.8.1
   * @date    27-January-2022
-  * @brief   This file contains all the functions prototypes for the CRC firmware 
+  * @brief   This file contains all the functions prototypes for the CRC firmware
   *          library.
   ******************************************************************************
   * @attention
@@ -50,7 +50,7 @@
   */
 
 /* Exported macro ------------------------------------------------------------*/
-/* Exported functions --------------------------------------------------------*/  
+/* Exported functions --------------------------------------------------------*/
 
 void CRC_ResetDR(void);
 uint32_t CRC_CalcCRC(uint32_t Data);

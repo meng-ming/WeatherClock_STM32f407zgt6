@@ -1,10 +1,10 @@
 /**
   ******************************************************************************
   * @file    stm32f4xx_iwdg.h
-  * @author  MCD Application Team
+  * @author  MCD APPlication Team
   * @version V1.8.1
   * @date    27-January-2022
-  * @brief   This file contains all the functions prototypes for the IWDG 
+  * @brief   This file contains all the functions prototypes for the IWDG
   *          firmware library.
   ******************************************************************************
   * @attention
@@ -44,7 +44,7 @@
 /** @defgroup IWDG_Exported_Constants
   * @{
   */
-  
+
 /** @defgroup IWDG_WriteAccess
   * @{
   */
@@ -56,7 +56,7 @@
   * @}
   */
 
-/** @defgroup IWDG_prescaler 
+/** @defgroup IWDG_prescaler
   * @{
   */
 #define IWDG_Prescaler_4            ((uint8_t)0x00)
@@ -77,7 +77,7 @@
   * @}
   */
 
-/** @defgroup IWDG_Flag 
+/** @defgroup IWDG_Flag
   * @{
   */
 #define IWDG_FLAG_PVU               ((uint16_t)0x0001)

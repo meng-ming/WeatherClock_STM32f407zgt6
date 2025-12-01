@@ -60,7 +60,7 @@
 #define TICK_TYPE_WIDTH_32_BITS    1
 #define TICK_TYPE_WIDTH_64_BITS    2
 
-/* Application specific configuration options. */
+/* APPlication specific configuration options. */
 #include "FreeRTOSConfig.h"
 
 #if !defined( configUSE_16_BIT_TICKS ) && !defined( configTICK_TYPE_WIDTH_IN_BITS )
@@ -81,7 +81,7 @@
     #endif
 #endif
 
-/* Set configUSE_MPU_WRAPPERS_V1 to 1 to use MPU wrappers v1. */
+/* Set configUSE_MPU_WRAPPERS_V1 to 1 to use MPU wrAPPers v1. */
 #ifndef configUSE_MPU_WRAPPERS_V1
     #define configUSE_MPU_WRAPPERS_V1    0
 #endif
@@ -144,8 +144,8 @@
 #endif /* if ( configUSE_C_RUNTIME_TLS_SUPPORT == 1 ) */
 
 /*
- * Check all the required application specific macros have been defined.
- * These macros are application specific and (as downloaded) are defined
+ * Check all the required APPlication specific macros have been defined.
+ * These macros are APPlication specific and (as downloaded) are defined
  * within FreeRTOSConfig.h.
  */
 
@@ -1056,7 +1056,7 @@
 
 /* configPRINTF() was not defined, so define it away to nothing.  To use
  * configPRINTF() then define it as follows (where MyPrintFunction() is
- * provided by the application writer):
+ * provided by the APPlication writer):
  *
  * void MyPrintFunction(const char *pcFormat, ... );
  #define configPRINTF( X )   MyPrintFunction X
@@ -1069,14 +1069,14 @@
 
 #ifndef configMAX
 
-/* The application writer has not provided their own MAX macro, so define
+/* The APPlication writer has not provided their own MAX macro, so define
  * the following generic implementation. */
     #define configMAX( a, b )    ( ( ( a ) > ( b ) ) ? ( a ) : ( b ) )
 #endif
 
 #ifndef configMIN
 
-/* The application writer has not provided their own MIN macro, so define
+/* The APPlication writer has not provided their own MIN macro, so define
  * the following generic implementation. */
     #define configMIN( a, b )    ( ( ( a ) < ( b ) ) ? ( a ) : ( b ) )
 #endif
@@ -1211,8 +1211,8 @@
 /*
  * In line with software engineering best practice, FreeRTOS implements a strict
  * data hiding policy, so the real structures used by FreeRTOS to maintain the
- * state of tasks, queues, semaphores, etc. are not accessible to the application
- * code.  However, if the application writer wants to statically allocate such
+ * state of tasks, queues, semaphores, etc. are not accessible to the APPlication
+ * code.  However, if the APPlication writer wants to statically allocate such
  * an object then the size of the object needs to be known.  Dummy structures
  * that are guaranteed to have the same size and alignment requirements of the
  * real objects are used for this purpose.  The dummy list and list item
@@ -1264,7 +1264,7 @@ typedef struct xSTATIC_LIST
  * In line with software engineering best practice, especially when supplying a
  * library that is likely to change in future versions, FreeRTOS implements a
  * strict data hiding policy.  This means the Task structure used internally by
- * FreeRTOS is not accessible to application code.  However, if the application
+ * FreeRTOS is not accessible to APPlication code.  However, if the APPlication
  * writer wants to statically allocate the memory required to create a task then
  * the size of the task object needs to be known.  The StaticTask_t structure
  * below is provided for this purpose.  Its sizes and alignment requirements are
@@ -1327,7 +1327,7 @@ typedef struct xSTATIC_TCB
  * In line with software engineering best practice, especially when supplying a
  * library that is likely to change in future versions, FreeRTOS implements a
  * strict data hiding policy.  This means the Queue structure used internally by
- * FreeRTOS is not accessible to application code.  However, if the application
+ * FreeRTOS is not accessible to APPlication code.  However, if the APPlication
  * writer wants to statically allocate the memory required to create a queue
  * then the size of the queue object needs to be known.  The StaticQueue_t
  * structure below is provided for this purpose.  Its sizes and alignment
@@ -1370,8 +1370,8 @@ typedef StaticQueue_t StaticSemaphore_t;
  * In line with software engineering best practice, especially when supplying a
  * library that is likely to change in future versions, FreeRTOS implements a
  * strict data hiding policy.  This means the event group structure used
- * internally by FreeRTOS is not accessible to application code.  However, if
- * the application writer wants to statically allocate the memory required to
+ * internally by FreeRTOS is not accessible to APPlication code.  However, if
+ * the APPlication writer wants to statically allocate the memory required to
  * create an event group then the size of the event group object needs to be
  * know.  The StaticEventGroup_t structure below is provided for this purpose.
  * Its sizes and alignment requirements are guaranteed to match those of the
@@ -1398,8 +1398,8 @@ typedef struct xSTATIC_EVENT_GROUP
  * In line with software engineering best practice, especially when supplying a
  * library that is likely to change in future versions, FreeRTOS implements a
  * strict data hiding policy.  This means the software timer structure used
- * internally by FreeRTOS is not accessible to application code.  However, if
- * the application writer wants to statically allocate the memory required to
+ * internally by FreeRTOS is not accessible to APPlication code.  However, if
+ * the APPlication writer wants to statically allocate the memory required to
  * create a software timer then the size of the queue object needs to be known.
  * The StaticTimer_t structure below is provided for this purpose.  Its sizes
  * and alignment requirements are guaranteed to match those of the genuine
@@ -1425,8 +1425,8 @@ typedef struct xSTATIC_TIMER
  * In line with software engineering best practice, especially when supplying a
  * library that is likely to change in future versions, FreeRTOS implements a
  * strict data hiding policy.  This means the stream buffer structure used
- * internally by FreeRTOS is not accessible to application code.  However, if
- * the application writer wants to statically allocate the memory required to
+ * internally by FreeRTOS is not accessible to APPlication code.  However, if
+ * the APPlication writer wants to statically allocate the memory required to
  * create a stream buffer then the size of the stream buffer object needs to be
  * known.  The StaticStreamBuffer_t structure below is provided for this
  * purpose.  Its size and alignment requirements are guaranteed to match those

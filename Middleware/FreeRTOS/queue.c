@@ -30,8 +30,8 @@
 #include <string.h>
 
 /* Defining MPU_WRAPPERS_INCLUDED_FROM_API_FILE prevents task.h from redefining
- * all the API functions to use the MPU wrappers.  That should only be done when
- * task.h is included from an application file. */
+ * all the API functions to use the MPU wrAPPers.  That should only be done when
+ * task.h is included from an APPlication file. */
 #define MPU_WRAPPERS_INCLUDED_FROM_API_FILE
 
 #include "FreeRTOS.h"
@@ -169,9 +169,9 @@ typedef xQUEUE Queue_t;
  * Unlocks a queue locked by a call to prvLockQueue.  Locking a queue does not
  * prevent an ISR from adding or removing items to the queue, but does prevent
  * an ISR from removing tasks from the queue event lists.  If an ISR finds a
- * queue is locked it will instead increment the appropriate queue lock count
+ * queue is locked it will instead increment the APPropriate queue lock count
  * to indicate that a task may require unblocking.  When the queue in unlocked
- * these lock counts are inspected, and the appropriate action taken.
+ * these lock counts are inspected, and the APPropriate action taken.
  */
 static void prvUnlockQueue( Queue_t * const pxQueue ) PRIVILEGED_FUNCTION;
 
@@ -264,7 +264,7 @@ static void prvInitialiseNewQueue( const UBaseType_t uxQueueLength,
 
 /*
  * Macro to increment cTxLock member of the queue data structure. It is
- * capped at the number of tasks in the system as we cannot unblock more
+ * cAPPed at the number of tasks in the system as we cannot unblock more
  * tasks than the number of tasks in the system.
  */
 #define prvIncrementQueueTxLock( pxQueue, cTxLock )                           \
@@ -279,7 +279,7 @@ static void prvInitialiseNewQueue( const UBaseType_t uxQueueLength,
 
 /*
  * Macro to increment cRxLock member of the queue data structure. It is
- * capped at the number of tasks in the system as we cannot unblock more
+ * cAPPed at the number of tasks in the system as we cannot unblock more
  * tasks than the number of tasks in the system.
  */
 #define prvIncrementQueueRxLock( pxQueue, cRxLock )                           \
@@ -2592,7 +2592,7 @@ BaseType_t xQueueIsQueueFullFromISR( const QueueHandle_t xQueue )
                     if( xCoRoutineRemoveFromEventList( &( pxQueue->xTasksWaitingToReceive ) ) != pdFALSE )
                     {
                         /* The co-routine waiting has a higher priority so record
-                         * that a yield might be appropriate. */
+                         * that a yield might be APPropriate. */
                         xReturn = errQUEUE_YIELD;
                     }
                     else
@@ -2922,7 +2922,7 @@ BaseType_t xQueueIsQueueFullFromISR( const QueueHandle_t xQueue )
                 xQueueRegistry[ ux ].pcQueueName = NULL;
 
                 /* Set the handle to NULL to ensure the same queue handle cannot
-                 * appear in the registry twice if it is added, removed, then
+                 * APPear in the registry twice if it is added, removed, then
                  * added again. */
                 xQueueRegistry[ ux ].xHandle = ( QueueHandle_t ) 0;
                 break;
@@ -2945,7 +2945,7 @@ BaseType_t xQueueIsQueueFullFromISR( const QueueHandle_t xQueue )
     {
         Queue_t * const pxQueue = xQueue;
 
-        /* This function should not be called by application code hence the
+        /* This function should not be called by APPlication code hence the
          * 'Restricted' in its name.  It is not part of the public API.  It is
          * designed for use by kernel code, and has special calling requirements.
          * It can result in vListInsert() being called on a list that can only

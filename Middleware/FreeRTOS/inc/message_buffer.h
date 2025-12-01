@@ -43,16 +43,16 @@
  * writer and reader to be different tasks or interrupts, but, unlike other
  * FreeRTOS objects, it is not safe to have multiple different writers or
  * multiple different readers.  If there are to be multiple different writers
- * then the application writer must place each call to a writing API function
+ * then the APPlication writer must place each call to a writing API function
  * (such as xMessageBufferSend()) inside a critical section and set the send
  * block time to 0.  Likewise, if there are to be multiple different readers
- * then the application writer must place each call to a reading API function
+ * then the APPlication writer must place each call to a reading API function
  * (such as xMessageBufferRead()) inside a critical section and set the receive
  * timeout to 0.
  *
  * Message buffers hold variable length messages.  To enable that, when a
  * message is written to the message buffer an additional sizeof( size_t ) bytes
- * are also written to store the message's length (that happens internally, with
+ * are also written to store the message's length (that hAPPens internally, with
  * the API function).  sizeof( size_t ) is typically 4 bytes on a 32-bit
  * architecture, so writing a 10 byte message to a message buffer on a 32-bit
  * architecture will actually reduce the available space in the message buffer
@@ -64,7 +64,7 @@
 #define FREERTOS_MESSAGE_BUFFER_H
 
 #ifndef INC_FREERTOS_H
-    #error "include FreeRTOS.h must appear in source files before include message_buffer.h"
+    #error "include FreeRTOS.h must APPear in source files before include message_buffer.h"
 #endif
 
 /* Message buffers are built onto of stream buffers. */
@@ -298,10 +298,10 @@ typedef StreamBufferHandle_t MessageBufferHandle_t;
  * writer and reader to be different tasks or interrupts, but, unlike other
  * FreeRTOS objects, it is not safe to have multiple different writers or
  * multiple different readers.  If there are to be multiple different writers
- * then the application writer must place each call to a writing API function
+ * then the APPlication writer must place each call to a writing API function
  * (such as xMessageBufferSend()) inside a critical section and set the send
  * block time to 0.  Likewise, if there are to be multiple different readers
- * then the application writer must place each call to a reading API function
+ * then the APPlication writer must place each call to a reading API function
  * (such as xMessageBufferRead()) inside a critical section and set the receive
  * block time to 0.
  *
@@ -398,10 +398,10 @@ typedef StreamBufferHandle_t MessageBufferHandle_t;
  * writer and reader to be different tasks or interrupts, but, unlike other
  * FreeRTOS objects, it is not safe to have multiple different writers or
  * multiple different readers.  If there are to be multiple different writers
- * then the application writer must place each call to a writing API function
+ * then the APPlication writer must place each call to a writing API function
  * (such as xMessageBufferSend()) inside a critical section and set the send
  * block time to 0.  Likewise, if there are to be multiple different readers
- * then the application writer must place each call to a reading API function
+ * then the APPlication writer must place each call to a reading API function
  * (such as xMessageBufferRead()) inside a critical section and set the receive
  * block time to 0.
  *
@@ -502,10 +502,10 @@ typedef StreamBufferHandle_t MessageBufferHandle_t;
  * writer and reader to be different tasks or interrupts, but, unlike other
  * FreeRTOS objects, it is not safe to have multiple different writers or
  * multiple different readers.  If there are to be multiple different writers
- * then the application writer must place each call to a writing API function
+ * then the APPlication writer must place each call to a writing API function
  * (such as xMessageBufferSend()) inside a critical section and set the send
  * block time to 0.  Likewise, if there are to be multiple different readers
- * then the application writer must place each call to a reading API function
+ * then the APPlication writer must place each call to a reading API function
  * (such as xMessageBufferRead()) inside a critical section and set the receive
  * block time to 0.
  *
@@ -593,10 +593,10 @@ typedef StreamBufferHandle_t MessageBufferHandle_t;
  * writer and reader to be different tasks or interrupts, but, unlike other
  * FreeRTOS objects, it is not safe to have multiple different writers or
  * multiple different readers.  If there are to be multiple different writers
- * then the application writer must place each call to a writing API function
+ * then the APPlication writer must place each call to a writing API function
  * (such as xMessageBufferSend()) inside a critical section and set the send
  * block time to 0.  Likewise, if there are to be multiple different readers
- * then the application writer must place each call to a reading API function
+ * then the APPlication writer must place each call to a reading API function
  * (such as xMessageBufferRead()) inside a critical section and set the receive
  * block time to 0.
  *
@@ -811,7 +811,7 @@ typedef StreamBufferHandle_t MessageBufferHandle_t;
  * was blocked on the message or stream buffer waiting for data to arrive then
  * the sbSEND_COMPLETED() macro sends a notification to the task to remove it
  * from the Blocked state.  xMessageBufferSendCompletedFromISR() does the same
- * thing.  It is provided to enable application writers to implement their own
+ * thing.  It is provided to enable APPlication writers to implement their own
  * version of sbSEND_COMPLETED(), and MUST NOT BE USED AT ANY OTHER TIME.
  *
  * See the example implemented in FreeRTOS/Demo/Minimal/MessageBufferAMP.c for
@@ -851,7 +851,7 @@ typedef StreamBufferHandle_t MessageBufferHandle_t;
  * that was blocked on the message or stream buffer waiting for data to arrive
  * then the sbRECEIVE_COMPLETED() macro sends a notification to the task to
  * remove it from the Blocked state.  xMessageBufferReceiveCompletedFromISR()
- * does the same thing.  It is provided to enable application writers to
+ * does the same thing.  It is provided to enable APPlication writers to
  * implement their own version of sbRECEIVE_COMPLETED(), and MUST NOT BE USED AT
  * ANY OTHER TIME.
  *

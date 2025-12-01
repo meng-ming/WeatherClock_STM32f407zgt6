@@ -31,8 +31,8 @@
 #include <string.h>
 
 /* Defining MPU_WRAPPERS_INCLUDED_FROM_API_FILE prevents task.h from redefining
- * all the API functions to use the MPU wrappers.  That should only be done when
- * task.h is included from an application file. */
+ * all the API functions to use the MPU wrAPPers.  That should only be done when
+ * task.h is included from an APPlication file. */
 #define MPU_WRAPPERS_INCLUDED_FROM_API_FILE
 
 /* FreeRTOS includes. */
@@ -215,7 +215,7 @@
 /*-----------------------------------------------------------*/
 
 /*
- * Place the task represented by pxTCB into the appropriate ready list for
+ * Place the task represented by pxTCB into the APPropriate ready list for
  * the task.  It is inserted at the end of the list.
  */
 #define prvAddTaskToReadyList( pxTCB )                                                                     \
@@ -231,7 +231,7 @@
  * Several functions take a TaskHandle_t parameter that can optionally be NULL,
  * where NULL is used to indicate that the handle of the currently executing
  * task should be used in place of the parameter.  This macro simply checks to
- * see if the parameter is NULL and returns a pointer to the appropriate TCB.
+ * see if the parameter is NULL and returns a pointer to the APPropriate TCB.
  */
 #define prvGetTCBFromHandle( pxHandle )    ( ( ( pxHandle ) == NULL ) ? pxCurrentTCB : ( pxHandle ) )
 
@@ -439,7 +439,7 @@ static portTASK_FUNCTION_PROTO( prvIdleTask, pvParameters ) PRIVILEGED_FUNCTION;
  * including the stack pointed to by the TCB.
  *
  * This does not free memory allocated by the task itself (i.e. memory
- * allocated by calls to pvPortMalloc from within the tasks application code).
+ * allocated by calls to pvPortMalloc from within the tasks APPlication code).
  */
 #if ( INCLUDE_vTaskDelete == 1 )
 
@@ -1400,7 +1400,7 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB )
                         {
                             BaseType_t x;
 
-                            /* The task does not appear on the event list item of
+                            /* The task does not APPear on the event list item of
                              * and of the RTOS objects, but could still be in the
                              * blocked state if it is waiting on its notification
                              * rather than waiting on an object.  If not, is
@@ -1637,7 +1637,7 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB )
                 /* If the task is in the blocked or suspended list we need do
                  * nothing more than change its priority variable. However, if
                  * the task is in a ready list it needs to be removed and placed
-                 * in the list appropriate to its new priority. */
+                 * in the list APPropriate to its new priority. */
                 if( listIS_CONTAINED_WITHIN( &( pxReadyTasksLists[ uxPriorityUsedOnEntry ] ), &( pxTCB->xStateListItem ) ) != pdFALSE )
                 {
                     /* The task is currently in its ready list - remove before
@@ -1978,7 +1978,7 @@ void vTaskStartScheduler( void )
 
         /* The Idle task is created using user provided RAM - obtain the
          * address of the RAM then create the idle task. */
-        vApplicationGetIdleTaskMemory( &pxIdleTaskTCBBuffer, &pxIdleTaskStackBuffer, &ulIdleTaskStackSize );
+        vAPPlicationGetIdleTaskMemory( &pxIdleTaskTCBBuffer, &pxIdleTaskStackBuffer, &ulIdleTaskStackSize );
         xIdleTaskHandle = xTaskCreateStatic( prvIdleTask,
                                              configIDLE_TASK_NAME,
                                              ulIdleTaskStackSize,
@@ -2068,7 +2068,7 @@ void vTaskStartScheduler( void )
         /* In most cases, xPortStartScheduler() will not return. If it
          * returns pdTRUE then there was not enough heap memory available
          * to create either the Idle or the Timer task. If it returned
-         * pdFALSE, then the application called xTaskEndScheduler().
+         * pdFALSE, then the APPlication called xTaskEndScheduler().
          * Most ports don't implement xTaskEndScheduler() as there is
          * nothing to return to. */
     }
@@ -2198,7 +2198,7 @@ BaseType_t xTaskResumeAll( void )
      * list while the scheduler was suspended.  If this was the case then the
      * removed task will have been added to the xPendingReadyList.  Once the
      * scheduler has been resumed it is safe to move all the pending ready
-     * tasks from this list into their appropriate ready list. */
+     * tasks from this list into their APPropriate ready list. */
     taskENTER_CRITICAL();
     {
         --uxSchedulerSuspended;
@@ -2208,7 +2208,7 @@ BaseType_t xTaskResumeAll( void )
             if( uxCurrentNumberOfTasks > ( UBaseType_t ) 0U )
             {
                 /* Move any readied tasks from the pending list into the
-                 * appropriate ready list. */
+                 * APPropriate ready list. */
                 while( listLIST_IS_EMPTY( &xPendingReadyList ) == pdFALSE )
                 {
                     pxTCB = listGET_OWNER_OF_HEAD_ENTRY( ( &xPendingReadyList ) ); /*lint !e9079 void * is used as this macro is used with timers and co-routines too.  Alignment is known to be fine as the type of the pointer stored and retrieved is the same. */
@@ -2742,7 +2742,7 @@ BaseType_t xTaskCatchUpTicks( TickType_t xTicksToCatchUp )
                 }
                 taskEXIT_CRITICAL();
 
-                /* Place the unblocked task into the appropriate ready list. */
+                /* Place the unblocked task into the APPropriate ready list. */
                 prvAddTaskToReadyList( pxTCB );
 
                 /* A task being unblocked cannot cause an immediate context
@@ -2864,7 +2864,7 @@ BaseType_t xTaskIncrementTick( void )
                         mtCOVERAGE_TEST_MARKER();
                     }
 
-                    /* Place the unblocked task into the appropriate ready
+                    /* Place the unblocked task into the APPropriate ready
                      * list. */
                     prvAddTaskToReadyList( pxTCB );
 
@@ -2877,7 +2877,7 @@ BaseType_t xTaskIncrementTick( void )
                          * priority is higher than the currently executing
                          * task.
                          * The case of equal priority tasks sharing
-                         * processing time (which happens when both
+                         * processing time (which hAPPens when both
                          * preemption and time slicing are on) is
                          * handled below.*/
                         if( pxTCB->uxPriority > pxCurrentTCB->uxPriority )
@@ -2895,7 +2895,7 @@ BaseType_t xTaskIncrementTick( void )
         }
 
         /* Tasks of equal priority to the currently running task will share
-         * processing time (time slice) if preemption is on, and the application
+         * processing time (time slice) if preemption is on, and the APPlication
          * writer has not explicitly turned time slicing off. */
         #if ( ( configUSE_PREEMPTION == 1 ) && ( configUSE_TIME_SLICING == 1 ) )
         {
@@ -2916,7 +2916,7 @@ BaseType_t xTaskIncrementTick( void )
              * count is being unwound (when the scheduler is being unlocked). */
             if( xPendedTicks == ( TickType_t ) 0 )
             {
-                vApplicationTickHook();
+                vAPPlicationTickHook();
             }
             else
             {
@@ -2946,7 +2946,7 @@ BaseType_t xTaskIncrementTick( void )
          * scheduler is locked. */
         #if ( configUSE_TICK_HOOK == 1 )
         {
-            vApplicationTickHook();
+            vAPPlicationTickHook();
         }
         #endif
     }
@@ -2957,7 +2957,7 @@ BaseType_t xTaskIncrementTick( void )
 
 #if ( configUSE_APPLICATION_TASK_TAG == 1 )
 
-    void vTaskSetApplicationTaskTag( TaskHandle_t xTask,
+    void vTaskSetAPPlicationTaskTag( TaskHandle_t xTask,
                                      TaskHookFunction_t pxHookFunction )
     {
         TCB_t * xTCB;
@@ -2987,7 +2987,7 @@ BaseType_t xTaskIncrementTick( void )
 
 #if ( configUSE_APPLICATION_TASK_TAG == 1 )
 
-    TaskHookFunction_t xTaskGetApplicationTaskTag( TaskHandle_t xTask )
+    TaskHookFunction_t xTaskGetAPPlicationTaskTag( TaskHandle_t xTask )
     {
         TCB_t * pxTCB;
         TaskHookFunction_t xReturn;
@@ -3011,7 +3011,7 @@ BaseType_t xTaskIncrementTick( void )
 
 #if ( configUSE_APPLICATION_TASK_TAG == 1 )
 
-    TaskHookFunction_t xTaskGetApplicationTaskTagFromISR( TaskHandle_t xTask )
+    TaskHookFunction_t xTaskGetAPPlicationTaskTagFromISR( TaskHandle_t xTask )
     {
         TCB_t * pxTCB;
         TaskHookFunction_t xReturn;
@@ -3036,7 +3036,7 @@ BaseType_t xTaskIncrementTick( void )
 
 #if ( configUSE_APPLICATION_TASK_TAG == 1 )
 
-    BaseType_t xTaskCallApplicationTaskHook( TaskHandle_t xTask,
+    BaseType_t xTaskCallAPPlicationTaskHook( TaskHandle_t xTask,
                                              void * pvParameter )
     {
         TCB_t * xTCB;
@@ -3094,7 +3094,7 @@ void vTaskSwitchContext( void )
              * protection here so count values are only valid until the timer
              * overflows.  The guard against negative values is to protect
              * against suspect run time stat counter implementations - which
-             * are provided by the application, not the kernel. */
+             * are provided by the APPlication, not the kernel. */
             if( ulTotalRunTime > ulTaskSwitchedInTime )
             {
                 pxCurrentTCB->ulRunTimeCounter += ( ulTotalRunTime - ulTaskSwitchedInTime );
@@ -3149,7 +3149,7 @@ void vTaskPlaceOnEventList( List_t * const pxEventList,
     /* THIS FUNCTION MUST BE CALLED WITH EITHER INTERRUPTS DISABLED OR THE
      * SCHEDULER SUSPENDED AND THE QUEUE BEING ACCESSED LOCKED. */
 
-    /* Place the event list item of the TCB in the appropriate event list.
+    /* Place the event list item of the TCB in the APPropriate event list.
      * This is placed in the list in priority order so the highest priority task
      * is the first to be woken by the event.
      *
@@ -3181,7 +3181,7 @@ void vTaskPlaceOnUnorderedEventList( List_t * pxEventList,
      * task that is not in the Blocked state. */
     listSET_LIST_ITEM_VALUE( &( pxCurrentTCB->xEventListItem ), xItemValue | taskEVENT_LIST_ITEM_VALUE_IN_USE );
 
-    /* Place the event list item of the TCB at the end of the appropriate event
+    /* Place the event list item of the TCB at the end of the APPropriate event
      * list.  It is safe to access the event list here because it is part of an
      * event group implementation - and interrupts don't access event groups
      * directly (instead they access them indirectly by pending function calls to
@@ -3200,13 +3200,13 @@ void vTaskPlaceOnUnorderedEventList( List_t * pxEventList,
     {
         configASSERT( pxEventList );
 
-        /* This function should not be called by application code hence the
+        /* This function should not be called by APPlication code hence the
          * 'Restricted' in its name.  It is not part of the public API.  It is
          * designed for use by kernel code, and has special calling requirements -
          * it should be called with the scheduler suspended. */
 
 
-        /* Place the event list item of the TCB in the appropriate event list.
+        /* Place the event list item of the TCB in the APPropriate event list.
          * In this case it is assume that this is the only task that is going to
          * be waiting on this event list, so the faster vListInsertEnd() function
          * can be used in place of vListInsert. */
@@ -3404,7 +3404,7 @@ BaseType_t xTaskCheckForTimeOut( TimeOut_t * const pxTimeOut,
         {
             /* The tick count is greater than the time at which
              * vTaskSetTimeout() was called, but has also overflowed since
-             * vTaskSetTimeOut() was called.  It must have wrapped all the way
+             * vTaskSetTimeOut() was called.  It must have wrAPPed all the way
              * around and gone past again. This passed since vTaskSetTimeout()
              * was called. */
             xReturn = pdTRUE;
@@ -3540,7 +3540,7 @@ static portTASK_FUNCTION( prvIdleTask, pvParameters )
         #if ( configUSE_IDLE_HOOK == 1 )
         {
             /* Call the user defined function from within the idle task. */
-            vApplicationIdleHook();
+            vAPPlicationIdleHook();
         }
         #endif /* configUSE_IDLE_HOOK */
 
@@ -3570,7 +3570,7 @@ static portTASK_FUNCTION( prvIdleTask, pvParameters )
                     xExpectedIdleTime = prvGetExpectedIdleTime();
 
                     /* Define the following macro to set xExpectedIdleTime to 0
-                     * if the application does not want
+                     * if the APPlication does not want
                      * portSUPPRESS_TICKS_AND_SLEEP() to be called. */
                     configPRE_SUPPRESS_TICKS_AND_SLEEP_PROCESSING( xExpectedIdleTime );
 
@@ -3602,8 +3602,8 @@ static portTASK_FUNCTION( prvIdleTask, pvParameters )
     eSleepModeStatus eTaskConfirmSleepModeStatus( void )
     {
         #if ( INCLUDE_vTaskSuspend == 1 )
-            /* The idle task exists in addition to the application tasks. */
-            const UBaseType_t uxNonApplicationTasks = 1;
+            /* The idle task exists in addition to the APPlication tasks. */
+            const UBaseType_t uxNonAPPlicationTasks = 1;
         #endif /* INCLUDE_vTaskSuspend */
 
         eSleepModeStatus eReturn = eStandardSleep;
@@ -3628,7 +3628,7 @@ static portTASK_FUNCTION( prvIdleTask, pvParameters )
         }
 
         #if ( INCLUDE_vTaskSuspend == 1 )
-            else if( listCURRENT_LIST_LENGTH( &xSuspendedTaskList ) == ( uxCurrentNumberOfTasks - uxNonApplicationTasks ) )
+            else if( listCURRENT_LIST_LENGTH( &xSuspendedTaskList ) == ( uxCurrentNumberOfTasks - uxNonAPPlicationTasks ) )
             {
                 /* If all the tasks are in the suspended list (which might mean they
                  * have an infinite block time rather than actually being suspended)
@@ -3947,7 +3947,7 @@ static void prvCheckTasksWaitingTermination( void )
  * same except for their return type.  Using configSTACK_DEPTH_TYPE allows the
  * user to determine the return type.  It gets around the problem of the value
  * overflowing on 8-bit types without breaking backward compatibility for
- * applications that expect an 8-bit return type. */
+ * APPlications that expect an 8-bit return type. */
     configSTACK_DEPTH_TYPE uxTaskGetStackHighWaterMark2( TaskHandle_t xTask )
     {
         TCB_t * pxTCB;
@@ -3958,7 +3958,7 @@ static void prvCheckTasksWaitingTermination( void )
          * the same except for their return type.  Using configSTACK_DEPTH_TYPE
          * allows the user to determine the return type.  It gets around the
          * problem of the value overflowing on 8-bit types without breaking
-         * backward compatibility for applications that expect an 8-bit return
+         * backward compatibility for APPlications that expect an 8-bit return
          * type. */
 
         pxTCB = prvGetTCBFromHandle( xTask );
@@ -4508,7 +4508,7 @@ static void prvResetNextTaskUnblockTime( void )
          * PLEASE NOTE:
          *
          * This function is provided for convenience only, and is used by many
-         * of the demo applications.  Do not consider it to be part of the
+         * of the demo APPlications.  Do not consider it to be part of the
          * scheduler.
          *
          * vTaskList() calls uxTaskGetSystemState(), then formats part of the
@@ -4614,7 +4614,7 @@ static void prvResetNextTaskUnblockTime( void )
          * PLEASE NOTE:
          *
          * This function is provided for convenience only, and is used by many
-         * of the demo applications.  Do not consider it to be part of the
+         * of the demo APPlications.  Do not consider it to be part of the
          * scheduler.
          *
          * vTaskGetRunTimeStats() calls uxTaskGetSystemState(), then formats part
@@ -4780,7 +4780,7 @@ TickType_t uxTaskResetEventItemValue( void )
                     /* All ports are written to allow a yield in a critical
                      * section (some will yield immediately, others wait until the
                      * critical section exits) - but it is not something that
-                     * application code should ever do. */
+                     * APPlication code should ever do. */
                     portYIELD_WITHIN_API();
                 }
                 else
@@ -4859,7 +4859,7 @@ TickType_t uxTaskResetEventItemValue( void )
                     /* All ports are written to allow a yield in a critical
                      * section (some will yield immediately, others wait until the
                      * critical section exits) - but it is not something that
-                     * application code should ever do. */
+                     * APPlication code should ever do. */
                     portYIELD_WITHIN_API();
                 }
                 else

@@ -59,7 +59,7 @@
     #define corINITIAL_STATE    ( 0 )
 
 /*
- * Place the co-routine represented by pxCRCB into the appropriate ready queue
+ * Place the co-routine represented by pxCRCB into the APPropriate ready queue
  * for the priority.  It is inserted at the end of the list.
  *
  * This macro accesses the co-routine ready lists and therefore must not be

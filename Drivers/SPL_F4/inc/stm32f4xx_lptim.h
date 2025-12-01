@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file    stm32f4xx_lptim.h
-  * @author  MCD Application Team
+  * @author  MCD APPlication Team
   * @version V1.8.1
   * @date    27-January-2022
   * @brief   This file contains all the functions prototypes for the LPTIM
@@ -95,7 +95,7 @@ typedef struct
                                              ((PRESCALER) == LPTIM_Prescaler_DIV16) || \
                                              ((PRESCALER) == LPTIM_Prescaler_DIV32) || \
                                              ((PRESCALER) == LPTIM_Prescaler_DIV64) || \
-                                             ((PRESCALER) == LPTIM_Prescaler_DIV128))  
+                                             ((PRESCALER) == LPTIM_Prescaler_DIV128))
 /**
   * @}
   */
@@ -352,7 +352,7 @@ void LPTIM_SelectCounterMode(LPTIM_TypeDef* LPTIMx, FunctionalState NewState);
 void LPTIM_SelectEncoderMode(LPTIM_TypeDef* LPTIMx, FunctionalState NewState);
 void LPTIM_RemapConfig(LPTIM_TypeDef* LPTIMx,uint32_t LPTIM_OPTR);
 uint32_t LPTIM_GetCounterValue(LPTIM_TypeDef* LPTIMx);
-uint32_t LPTIM_GetAutoreloadValue(LPTIM_TypeDef* LPTIMx); 
+uint32_t LPTIM_GetAutoreloadValue(LPTIM_TypeDef* LPTIMx);
 uint32_t LPTIM_GetCompareValue(LPTIM_TypeDef* LPTIMx);
 
 /* Interrupts and flags management functions **********************************/

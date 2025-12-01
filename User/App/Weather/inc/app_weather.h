@@ -16,7 +16,7 @@
  * @note  当 Weather Service 成功解析到新天气数据时，会调用此类型的函数通知上层。
  * @param data: 指向最新天气数据的指针。
  */
-typedef void (*Weather_DataCallback_t)(const App_Weather_Data_t* data);
+typedef void (*Weather_DataCallback_t)(const APP_Weather_Data_t* data);
 
 /**
  * @brief 系统状态更新回调函数类型定义
@@ -33,7 +33,7 @@ typedef void (*Weather_StatusCallback_t)(const char* status, uint16_t color);
  * @param  status_cb: 状态更新时的回调函数指针 (通常传入 App_UI_ShowStatus)。
  * @retval None
  */
-void App_Weather_Init(Weather_DataCallback_t data_cb, Weather_StatusCallback_t status_cb);
+void APP_Weather_Init(Weather_DataCallback_t data_cb, Weather_StatusCallback_t status_cb);
 
 /**
  * @brief  天气服务主任务循环
@@ -42,6 +42,6 @@ void App_Weather_Init(Weather_DataCallback_t data_cb, Weather_StatusCallback_t s
  * 函数内部非阻塞（或仅有微小延时），不会卡死系统。
  * @retval None
  */
-void App_Weather_Task(void);
+void APP_Weather_Task(void);
 
 #endif

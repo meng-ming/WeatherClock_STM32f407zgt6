@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 
-uint8_t Weather_Parser_Execute(const char* json_str, App_Weather_Data_t* out_data)
+uint8_t Weather_Parser_Execute(const char* json_str, APP_Weather_Data_t* out_data)
 {
     if (json_str == NULL || out_data == NULL)
         return 0;
@@ -14,7 +14,7 @@ uint8_t Weather_Parser_Execute(const char* json_str, App_Weather_Data_t* out_dat
         return 0;
 
     uint8_t ret = 0;
-    memset(out_data, 0, sizeof(App_Weather_Data_t));
+    memset(out_data, 0, sizeof(APP_Weather_Data_t));
 
     // 2. 直接提取根节点下的字段
     cJSON* city = cJSON_GetObjectItem(root, "city");
@@ -84,7 +84,7 @@ uint8_t Weather_Parser_Execute(const char* json_str, App_Weather_Data_t* out_dat
         cJSON* press = cJSON_GetObjectItem(root, "pressure");
         if (press && press->valuestring)
         {
-            snprintf(out_data->pressure, sizeof(out_data->pressure), "%s hPa", press->valuestring);
+            snprintf(out_data->pressure, sizeof(out_data->pressure), "%s", press->valuestring);
         }
 
         ret = 1;

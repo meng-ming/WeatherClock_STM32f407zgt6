@@ -14,9 +14,13 @@
 // ==============================
 #define WEATHER_HOST "v1.yiketianqi.com"
 #define WEATHER_PORT 80
-#define WEATHER_APPID "91768283"
-#define WEATHER_APPSECRET "b68BdGrM"
-#define CITY_LOC "南京" // 注意：这里如果是中文，要确保文件编码是 UTF-8，否则发出去乱码
+// #define WEATHER_APPID "91768283"
+// #define WEATHER_APPSECRET "b68BdGrM"
+
+#define WEATHER_APPID "42919643"
+#define WEATHER_APPSECRET "aIg1oiyO"
+
+#define CITY_NAME "南京"
 
 // ==============================
 // 统一的天气数据结构体
@@ -33,7 +37,7 @@ typedef struct
     char air[8];         // 空气质量 (95)
     char humidity[8];    // 湿度 (44%)
     char pressure[8];    // 气压 (1013)
-} App_Weather_Data_t;
+} APP_Weather_Data_t;
 
 // 日期对应的星期
 extern const char* WEEK_STR[];
