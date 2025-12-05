@@ -1,0 +1,73 @@
+# ========================================
+# CMake + Ninja + VS Code 终极忽略规则
+# ========================================
+
+!arm-gcc.cmake          # 工具链文件，必须提交！！！
+!Config.cmake           # 芯片配置，必须提交！！！
+
+# CMake 生成的所有缓存和中间文件
+build/
+.cmake/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+compile_commands.json   # 这个可以保留，也可以忽略（看你心情）
+*.cmake
+
+# Ninja 生成的日志
+.ninja_deps
+.ninja_log
+
+# 编译产物
+*.elf
+*.bin
+*.hex
+*.map
+*.lst
+*.su
+
+# VS Code 缓存全忽略（只保留配置）
+.vscode/
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/extensions.json
+# 明确忽略所有缓存数据库
+.vscode/*.db
+.vscode/*.vcscode-db
+.vscode/BROWSE.VSCODE-DB
+
+# 老 Keil/MDK 垃圾（兼容你之前的项目）
+Objects/
+Listings/
+Debug/
+RTE/
+*.o
+*.d
+*.crf
+*.dep
+*.axf
+*.htm
+*.lnp
+*.sct
+*.lst
+*.map
+*.iex
+*.build_log.htm
+*.bak
+*.uvguix.*
+JLinkLog.txt
+*.uvoptx
+*.log
+
+# 系统垃圾
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+*~
+
+# 忽略 .cache 文件夹
+*/.cache/
+
+# 忽略所有的 .zip 文件
+*.zip
