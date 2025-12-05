@@ -52,7 +52,7 @@ static const unsigned char* Get_Weather_Icon(const char* weather_str)
             return s_weather_map[i].img_ptr;
         }
     }
-    // 兜底：如果啥都没匹配到，默认给个晴天，防止开天窗
+    // 兜底：如果啥都没匹配到，默认给个晴天
     return gImage_weather_qingtian;
 }
 
@@ -136,9 +136,11 @@ void APP_UI_UpdateCalendar(BSP_RTC_Calendar_t cal)
     char time_buf[8];
     char date_buf[32];
 
+    // 显示 时分
     snprintf(time_buf, sizeof(time_buf), "%02d:%02d", cal.hour, cal.min);
     LCD_Show_String(30, 35, time_buf, &font_time_30x60, UI_TEXT_WHITE, UI_TIME_BG);
 
+    // 显示 秒
     snprintf(time_buf, sizeof(time_buf), "%02d", cal.sec);
     LCD_Show_String(182, 68, time_buf, &font_time_20, UI_TEXT_WHITE, UI_TIME_BG);
 

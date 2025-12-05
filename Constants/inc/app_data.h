@@ -14,11 +14,11 @@
 // ==============================
 #define WEATHER_HOST "v1.yiketianqi.com"
 #define WEATHER_PORT 80
-// #define WEATHER_APPID "91768283"
-// #define WEATHER_APPSECRET "b68BdGrM"
+#define WEATHER_APPID "91768283"
+#define WEATHER_APPSECRET "b68BdGrM"
 
-#define WEATHER_APPID "42919643"
-#define WEATHER_APPSECRET "aIg1oiyO"
+// #define WEATHER_APPID "42919643"
+// #define WEATHER_APPSECRET "aIg1oiyO"
 
 #define CITY_NAME "南京"
 

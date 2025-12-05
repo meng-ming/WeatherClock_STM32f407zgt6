@@ -268,7 +268,6 @@ void APP_Weather_Task(void)
         WEATHER_NOTIFY_STATUS(eng, "Sync Time", UI_TEXT_WHITE);
         if (weather_sntp_sync_once())
         {
-            LOG_I("[APP] Sync Time...");
             weather_change_state(eng, WEATHER_STATE_HTTP_REQUEST);
         }
         else
@@ -281,7 +280,6 @@ void APP_Weather_Task(void)
         WEATHER_NOTIFY_STATUS(eng, "Requesting", UI_TEXT_WHITE);
         if (weather_send_http_request(eng))
         {
-            LOG_I("[APP] Requesting...");
             weather_change_state(eng, WEATHER_STATE_HTTP_WAIT);
         }
         else

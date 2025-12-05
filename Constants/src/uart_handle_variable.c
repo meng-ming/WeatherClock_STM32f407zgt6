@@ -18,13 +18,13 @@ UART_Handle_t g_esp_uart_handler = {.USART_X                   = USART2,
 
                                     // TX
                                     .TX_Port        = GPIOA,
-                                    .TX_Pin         = GPIO_Pin_2,
+                                    .TX_Pin         = GPIO_Pin_2, // 对应ESP32 GPIO_6
                                     .TX_PinSource_X = GPIO_PinSource2,
                                     .TX_AF          = GPIO_AF_USART2,
 
                                     // RX
                                     .RX_Port        = GPIOA,
-                                    .RX_Pin         = GPIO_Pin_3,
+                                    .RX_Pin         = GPIO_Pin_3, // 对应ESP32 GPIO_7
                                     .RX_PinSource_X = GPIO_PinSource3,
                                     .RX_AF          = GPIO_AF_USART2,
 
@@ -35,7 +35,7 @@ UART_Handle_t g_esp_uart_handler = {.USART_X                   = USART2,
 
 /**
  * @brief Debug 串口句柄实例
- * @note  PA9(TX), PA10(RX), 115200, APB2
+ * @note  PA9(TX), PA10(RX), 115200, APB2,可直接使用 type-C 接口连接电脑和单片机
  */
 UART_Handle_t g_debug_uart_handler = {.USART_X                   = USART1,
                                       .BaudRate                  = 115200,

@@ -1,5 +1,6 @@
 #include "weather_parser.h"
 #include "cJSON.h"
+#include "sys_log.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -31,7 +32,7 @@ uint8_t Weather_Parser_Execute(const char* json_str, APP_Weather_Data_t* out_dat
             snprintf(out_data->weather, sizeof(out_data->weather), "%s", wea->valuestring);
         if (tem->valuestring)
             snprintf(out_data->temp, sizeof(out_data->temp), "%s℃", tem->valuestring);
-
+        
         // === 更新时间 ===
         // API 返回 "update_time":"20:17"
         cJSON* upd = cJSON_GetObjectItem(root, "update_time");
