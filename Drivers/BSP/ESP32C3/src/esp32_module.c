@@ -16,6 +16,39 @@
 // 内部静态变量：保存 UART 句柄
 static UART_Handle_t* g_module_uart = NULL;
 
+// 自动处理 24小时进位、月底进位、闰年进位
+static void Time_Add_Hours(int* year, int* month, int* day, int* hour, int hours_to_add)
+{
+    *hour += hours_to_add; // 加 8 小时
+    if (*hour >= 24)
+    {
+        *hour -= 24;
+        (*day)++; // 日期进位
+
+        // 计算当月天数表
+        int days_in_month[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+        // 闰年修正：能被4整除且不能被100整除，或能被400整除
+        if ((*year % 4 == 0 && *year % 100 != 0) || (*year % 400 == 0))
+        {
+            days_in_month[2] = 29;
+        }
+
+        // 月份进位
+        if (*day > days_in_month[*month])
+        {
+            *day = 1;
+            (*month)++;
+            // 年份进位
+            if (*month > 12)
+            {
+                *month = 1;
+                (*year)++;
+            }
+        }
+    }
+}
+
 // 月份缩写映射表
 static const char* MONTH_STR[] = {
     "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
@@ -188,7 +221,7 @@ bool ESP_WiFi_Connect(const char* ssid, const char* pwd, uint8_t retry)
 bool ESP_SNTP_Config(void)
 {
     LOG_I("[ESP] Configing SNTP!");
-    return ESP_Send_AT("AT+CIPSNTPCFG=1,8,\"ntp1.aliyun.com\"", "OK", 2000, 2);
+    return ESP_Send_AT("AT+CIPSNTPCFG=1,0,\"ntp1.aliyun.com\"", "OK", 2000, 2);
 }
 
 /**
@@ -251,6 +284,9 @@ int8_t ESP_SNTP_Query_Check(void)
                           hour,
                           min,
                           sec);
+
+                    // 手动加上 8 小时时区偏移
+                    Time_Add_Hours(&year, &month_idx, &day, &hour, 8);
 
                     // 同步到 STM32 RTC
                     BSP_RTC_SetDate(year, month_idx, day);
