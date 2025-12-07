@@ -1,8 +1,11 @@
 /**
  * @file    uart_driver.h
- * @brief   STM32 通用 UART 驱动接口 (带环形缓冲区)
- * @note    支持中断接收 + 环形缓冲读取，适用于 AT 指令模块、调试打印等场景。
- * 集成 RingBuffer 机制，有效防止数据丢包和粘包。
+ * @brief   STM32 通用 UART 驱动接口 (DMA + RingBuffer 高性能版)
+ * @author  meng-ming
+ * @version 1.2
+ * @date    2025-12-07
+ * @note    支持 DMA 循环接收 + 空闲中断 (IDLE) + 软件环形缓冲区。
+ * 具备实时 DMA 进度查询功能，彻底解决不定长数据接收延迟问题。
  */
 
 #ifndef __UART_DRIVER_H
@@ -13,11 +16,12 @@
 #include <stdint.h>
 
 // 接收缓冲区大小 (根据实际内存情况调整，建议 1KB - 4KB)
+// 对于天气数据解析，建议至少 2048 字节以防溢出
 #define RX_BUFFER_SIZE 2048
 
 /**
  * @brief UART 句柄结构体
- * @note  包含硬件配置信息和运行时缓冲区状态
+ * @note  包含硬件配置信息、运行时缓冲区状态以及 DMA 配置
  */
 typedef struct
 {
@@ -39,11 +43,16 @@ typedef struct
     uint16_t      RX_PinSource_X; // 接收引脚复用源
     uint8_t       RX_AF;          // 接收引脚复用功能号
 
-    // === 2. 运行时状态 (用户勿动) ===
-    volatile uint8_t  rx_buffer[RX_BUFFER_SIZE]; // 环形数据存储区
+    // === 2. 运行时状态 (驱动内部维护，用户只读) ===
+    volatile uint8_t  rx_buffer[RX_BUFFER_SIZE]; // 软件环形数据存储区
     volatile uint16_t rx_read_index;             // 读指针 (Tail)，由应用层读取时移动
-    volatile uint16_t rx_write_index;            // 写指针 (Head)，由中断接收时移动
+    volatile uint16_t rx_write_index;            // 写指针 (Head)，由 DMA 或中断更新
     volatile uint32_t rx_overflow_cnt;           // 溢出计数器 (调试用，检测是否丢包)
+
+    // === 3. DMA 配置参数 (若使用中断模式可填 NULL/0) ===
+    uint32_t            RCC_AHB1Periph_DMA_X; // DMA 时钟 (如 RCC_AHB1Periph_DMA1)
+    DMA_Stream_TypeDef* RX_DMA_Stream;        // DMA 数据流 (如 DMA1_Stream5)
+    uint32_t            RX_DMA_Channel;       // DMA 通道 (如 DMA_Channel_4)
 
 } UART_Handle_t;
 
@@ -51,14 +60,15 @@ typedef struct
 
 /**
  * @brief  初始化 UART 外设
- * @note   配置 GPIO、时钟、中断优先级，并开启接收中断。
- * 同时会复位环形缓冲区的读写指针。
+ * @note   自动识别是否配置了 DMA：
+ * - 若配置 DMA：开启 DMA 循环接收 + 空闲中断 (IDLE)，关闭接收中断 (RXNE)。
+ * - 若未配 DMA：开启传统接收中断 (RXNE)。
  * @param  UART_Handle: 指向 UART 句柄的指针
  */
 void UART_Init(UART_Handle_t* UART_Handle);
 
 /**
- * @brief  发送原始数据 (阻塞式)
+ * @brief  发送原始字节流 (阻塞式)
  * @param  UART_Handle: UART 句柄
  * @param  data:        数据指针
  * @param  len:         数据长度
@@ -66,7 +76,8 @@ void UART_Init(UART_Handle_t* UART_Handle);
 void UART_Send_Data(UART_Handle_t* UART_Handle, const char* data, uint32_t len);
 
 /**
- * @brief  发送 AT 指令 (自动添加 \r\n)
+ * @brief  发送 AT 指令
+ * @note   自动在指令后添加 "\r\n"
  * @param  UART_Handle: UART 句柄
  * @param  command:     指令字符串 (不带 \r\n，如 "AT")
  */
@@ -76,6 +87,8 @@ void UART_Send_AT_Command(UART_Handle_t* UART_Handle, const char* command);
 
 /**
  * @brief  获取环形缓冲区当前可用数据量
+ * @note   支持 DMA 实时查询：即使 IDLE 中断尚未触发，也能通过查询 DMA 计数器
+ * 获取最新到达的数据长度，实现“零延迟”读取。
  * @param  handle: UART 句柄
  * @retval 缓冲区中尚未读取的字节数
  */
@@ -105,6 +118,7 @@ UART_RingBuf_ReadLine(UART_Handle_t* handle, char* buf, uint16_t max_len, uint32
 /**
  * @brief  清空环形缓冲区
  * @note   复位读写指针，丢弃当前缓冲区内所有未读数据。
+ * (不会停止 DMA，DMA 会继续在后台覆盖旧数据)
  * @param  handle: UART 句柄
  */
 void UART_RingBuf_Clear(UART_Handle_t* handle);

@@ -104,7 +104,7 @@ bool ESP_Send_AT(const char* cmd, const char* expect_resp, uint32_t timeout_ms, 
             if (UART_RingBuf_ReadLine(g_module_uart, line_buf, sizeof(line_buf), 20) > 0)
             {
                 // 调试打印 (排查问题时打开)
-                // LOG_D("[ESP RX] %s", line_buf);
+                LOG_D("[ESP RX] %s", line_buf);
 
                 // A. 成功匹配
                 if (strstr(line_buf, expect_resp) != NULL)

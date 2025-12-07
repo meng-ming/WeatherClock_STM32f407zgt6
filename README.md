@@ -1,8 +1,3 @@
-你的 README 已经非常专业、清晰、符合大厂规范了！
-只剩几个**极小的细节**需要修正一下，改完就是**完美可直接用于团队基线或对外开源**的版本！
-
-### 修正后的终极 README.md（直接全部替换即可）
-
 ```markdown
 # STM32F407 CMake 工程模板（量产级）
 
@@ -31,16 +26,6 @@
                           clang-format(Xaver Hellauer)          | VS Code Marketplace |
 |clang-format.exe       |将bin/.clang-format.exe放到指定目录下，并在settings.json中 设置 | https://github.com/llvm/llvm-project/releases/
 
-## 快速开始
-
-```bash
-git clone https://github.com/meng-ming/STM32F407_Template.git
-cd STM32F407_Template
-
-cmake -B build -S . -G Ninja -DCMAKE_TOOLCHAIN_FILE=arm-gcc.cmake
-cmake --build build
-```
-
 ## 重要注意事项（务必阅读）
 
 | 序号 | 注意事项 | 解决方案 |
@@ -53,7 +38,9 @@ cmake --build build
 | 6    | 更换外部晶振频率 | 修改 `Config.cmake` 中的 `HSE_VALUE`（8000000 或 25000000） |
 | 7    | 调试时卡死或无法连接 | 关闭所有占用 ST-Link 的程序（CubeProgrammer、Keil 等） |
 
-中文编码全局配置（一次性执行）：
+中文编码全局配置（先尝试1、2）：
+（1）在电脑语言设置中打开 Beta版 UTF-8
+（2）在PowerShell中设置命令行后添加 -NoExit -Command "chcp 65001"
 
 ```bash
 git config --global i18n.commitEncoding utf-8

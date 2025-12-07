@@ -290,34 +290,60 @@ void APP_Weather_Task(void)
 
     case WEATHER_STATE_HTTP_WAIT:
     {
-        uint16_t len = UART_RingBuf_ReadLine(&g_esp_uart_handler, line_buf, sizeof(line_buf), 20);
+        // 1. 读取一行数据
+        uint16_t len = UART_RingBuf_ReadLine(&g_esp_uart_handler, line_buf, sizeof(line_buf), 50);
+
         if (len > 0)
         {
-            // 过滤AT回显
+            // 过滤回显
             if (strstr(line_buf, "AT+") || strstr(line_buf, "SEND OK"))
             {
                 break;
             }
-            // 防溢出
-            if (eng->rx_index + len >= WEATHER_CONFIG_RX_BUF_SIZE - 1)
+
+            // 调试打印：返回当前收到的信息
+            LOG_D("[RX Chunk] Len:%d, Content:%s", len, line_buf);
+
+            if (eng->rx_index + len < WEATHER_CONFIG_RX_BUF_SIZE - 1)
+            {
+                memcpy(&eng->rx_buffer[eng->rx_index], line_buf, len);
+                eng->rx_index += len;
+                eng->rx_buffer[eng->rx_index] = '\0'; // 封口，为了后面cJSON安全
+            }
+            else
             {
                 weather_error_handle(eng, "RX buffer overflow");
                 break;
             }
-            memcpy(&eng->rx_buffer[eng->rx_index], line_buf, len);
-            eng->rx_index += len;
-            eng->rx_buffer[eng->rx_index] = '\0';
 
-            char* json_start = strchr(eng->rx_buffer, '{');
-            char* json_end   = strrchr(eng->rx_buffer, '}');
-            if (json_start && json_end && json_end > json_start)
+            // 使用 memchr 代替 strchr
+            // strchr 会被 0x00 截断，memchr 能穿透所有杂波
+
+            // 在 已接收的所有字节 中暴力搜索 '{'
+            char* json_start = memchr(eng->rx_buffer, '{', eng->rx_index);
+
+            if (json_start != NULL)
             {
-                weather_change_state(eng, WEATHER_STATE_PARSE);
+                // 计算从 '{' 开始还剩多少字节
+                size_t offset        = json_start - eng->rx_buffer;
+                size_t remaining_len = eng->rx_index - offset;
+
+                // 继续往后搜 '}'
+                char* json_end = memchr(json_start, '}', remaining_len);
+
+                if (json_end != NULL)
+                {
+                    LOG_I("[Weather] JSON captured complete! Parsing...");
+                    // 状态跳转，并告诉解析器从 json_start 开始解析
+                    weather_change_state(eng, WEATHER_STATE_PARSE);
+                }
             }
         }
 
+        // 超时检查
         if (BSP_GetTick_ms() - eng->timer > WEATHER_CONFIG_HTTP_TIMEOUT_MS)
         {
+            LOG_E("[Timeout] Buffer len: %d", eng->rx_index); // 打印长度更有用
             weather_error_handle(eng, "HTTP timeout");
         }
         break;
@@ -325,7 +351,7 @@ void APP_Weather_Task(void)
 
     case WEATHER_STATE_PARSE:
     {
-        char* json_start = strchr(eng->rx_buffer, '{');
+        char* json_start = (char*) memchr(eng->rx_buffer, '{', eng->rx_index);
         if (Weather_Parser_Execute(json_start, &eng->cache))
         {
             if (eng->data_cb)

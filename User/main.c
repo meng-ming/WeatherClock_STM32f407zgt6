@@ -7,7 +7,7 @@
 // === 引入应用层模块 ===
 #include "app_ui.h"
 #include "app_weather.h"
-#include "app_calendar.h" 
+#include "app_calendar.h"
 #include "ui_main_page.h"
 
 int main(void)
@@ -41,5 +41,8 @@ int main(void)
 
         // 稍微让出 CPU
         BSP_Delay_ms(5);
+
+        // LOG_D("DMA Left: %d", DMA_GetCurrDataCounter(DMA1_Stream5));
+        BSP_Delay_ms(500);
     }
 }
