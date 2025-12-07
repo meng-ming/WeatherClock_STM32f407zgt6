@@ -11,6 +11,7 @@
 #include "sys_log.h"
 #include "uart_driver.h"
 #include "bsp_rtc.h"
+#include "bsp_iwdg.h"
 
 // 内部静态变量：保存 UART 句柄
 static UART_Handle_t* g_module_uart = NULL;
@@ -100,6 +101,8 @@ bool ESP_Send_AT(const char* cmd, const char* expect_resp, uint32_t timeout_ms, 
 
         while ((BSP_GetTick_ms() - start_tick) < timeout_ms)
         {
+            BSP_IWDG_Feed();
+
             // 尝试读一行 (短超时轮询)
             if (UART_RingBuf_ReadLine(g_module_uart, line_buf, sizeof(line_buf), 20) > 0)
             {
@@ -188,76 +191,82 @@ bool ESP_SNTP_Config(void)
     return ESP_Send_AT("AT+CIPSNTPCFG=1,8,\"ntp1.aliyun.com\"", "OK", 2000, 2);
 }
 
-bool ESP_SNTP_Sync_RTC(void)
+/**
+ * @brief  SNTP 步骤1: 发起查询请求
+ */
+void ESP_SNTP_Query_Start(void)
+{
+    // 清空缓存，防止旧数据干扰
+    UART_RingBuf_Clear(g_module_uart);
+    // 发送查询指令
+    UART_Send_AT_Command(g_module_uart, "AT+CIPSNTPTIME?");
+    LOG_I("[SNTP] Query command sent...");
+}
+
+/**
+ * @brief  SNTP 步骤2: 检查并解析响应 (非阻塞)
+ * @retval 0: 等待中 (Busy/No Data)
+ * @retval 1: 成功 (Success)
+ * @retval -1: 失败/错误 (Error)
+ */
+int8_t ESP_SNTP_Query_Check(void)
 {
     char line_buf[128];
-    bool ret = false;
 
-    UART_RingBuf_Clear(g_module_uart);
-
-    UART_Send_AT_Command(g_module_uart, "AT+CIPSNTPTIME?");
-
-    uint64_t start = BSP_GetTick_ms();
-    // 返回值示例：+CIPSNTPTIME:Mon Oct 18 20:12:27 2021
-    while ((BSP_GetTick_ms() - start) < 2000)
+    if (UART_RingBuf_ReadLine(g_module_uart, line_buf, sizeof(line_buf), 20) > 0)
     {
-        if (UART_RingBuf_ReadLine(g_module_uart, line_buf, sizeof(line_buf), 50) > 0)
+        // 调试打印，看看收到了啥
+        // LOG_D("[SNTP RX] %s", line_buf);
+
+        char* pData = strstr(line_buf, "+CIPSNTPTIME:");
+        if (pData)
         {
-            // 可调试打印
-            // LOG_D("[SNTP] Receive Data:%s", line_buf);
+            pData += 13; // 跳过前缀
 
-            char* pData = strstr(line_buf, "+CIPSNTPTIME:");
-            if (pData)
+            char wday_str[4], mon_str[4];
+            int  day, hour, min, sec, year;
+
+            // 解析时间字符串
+            int count = sscanf(
+                pData, "%3s %3s %d %d:%d:%d %d", wday_str, mon_str, &day, &hour, &min, &sec, &year);
+
+            if (count >= 7)
             {
-                pData += 13; // 跳过 +CIPSNTPTIME: 前缀
-
-                char wday_str[4], mon_str[4];
-                int  day, hour, min, sec, year;
-                // 使用 sscanf 格式化取出数据
-                int count = sscanf(pData,
-                                   "%3s %3s %d %d:%d:%d %d",
-                                   wday_str,
-                                   mon_str,
-                                   &day,
-                                   &hour,
-                                   &min,
-                                   &sec,
-                                   &year);
-                // 如果取出数据正确
-                if (count >= 7)
+                int month_idx = 0;
+                for (int i = 0; i < 12; i++)
                 {
-                    int month_idx = 0;
-                    // 解析月份
-                    for (int i = 0; i < 12; i++)
+                    if (strncmp(mon_str, MONTH_STR[i], 3) == 0)
                     {
-                        if (strncmp(mon_str, MONTH_STR[i], 3) == 0)
-                        {
-                            month_idx = i + 1;
-                            break;
-                        }
+                        month_idx = i + 1;
+                        break;
                     }
-                    if (month_idx > 0)
-                    {
-                        LOG_I("[SNTP] Net Time: %04d-%02d-%02d %02d:%02d:%02d",
-                              year,
-                              month_idx,
-                              day,
-                              hour,
-                              min,
-                              sec);
+                }
 
-                        // === 同步到 RTC ===
-                        BSP_RTC_SetDate(year, month_idx, day);
-                        BSP_RTC_SetTime(hour, min, sec);
+                if (month_idx > 0)
+                {
+                    LOG_I("[SNTP] Time: %04d-%02d-%02d %02d:%02d:%02d",
+                          year,
+                          month_idx,
+                          day,
+                          hour,
+                          min,
+                          sec);
 
-                        ret = true;
-                        break; // 成功，退出循环
-                    }
+                    // 同步到 STM32 RTC
+                    BSP_RTC_SetDate(year, month_idx, day);
+                    BSP_RTC_SetTime(hour, min, sec);
+
+                    return 1; // 成功！
                 }
             }
         }
+        else if (strstr(line_buf, "ERROR"))
+        {
+            return -1; // 模块报错
+        }
     }
-    return ret;
+
+    return 0; // 还没收到有效数据，继续等
 }
 
 bool ESP_HTTP_Get(const char* url, uint32_t timeout_ms)

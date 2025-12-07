@@ -73,6 +73,7 @@ file(GLOB_RECURSE USER_SOURCES CONFIGURE_DEPENDS
     "User/APP/Calendar/src/*.c"
 
     "Drivers/BSP/RTC/src/*.c"
+    "Drivers/BSP/IWDG/src/*.c"
     "Drivers/BSP/USART/src/*.c"
     "Drivers/BSP/ST7789/src/*.c"
     "Drivers/BSP/ESP32C3/src/*.c"
@@ -109,6 +110,7 @@ target_include_directories(${PROJECT_NAME}.elf PRIVATE
     Drivers/CMSIS
     Drivers/SPL_F4/inc
     Drivers/BSP/RTC/inc
+    Drivers/BSP/IWDG/inc
     Drivers/BSP/USART/inc
     Drivers/BSP/ST7789/inc
     Drivers/BSP/ESP32C3/inc

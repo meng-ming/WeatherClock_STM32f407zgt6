@@ -50,12 +50,27 @@ void APP_UI_Update(const APP_Weather_Data_t* data)
 
 void APP_UI_ShowStatus(const char* status, uint16_t color)
 {
-    LOG_I("[APP] %s", status);
-    // 防止长度不一，不能完全覆盖
-    TFT_Fill_Rect(35, BOX_STATUS_Y + 5, s_last_status_len * 8, 16, UI_STATUS_BG);
-    // 在屏幕上方显示
+    LOG_I("[APP] %s", status); // 调试时可打开
+
+    // 1. 直接绘制新状态
     LCD_Show_String(35, BOX_STATUS_Y + 5, status, &font_16, color, UI_STATUS_BG);
 
-    if (strlen(status) != s_last_status_len)
-        s_last_status_len = strlen(status);
+    // 2. 如果新文字比旧文字短，多出来的旧文字需要擦除
+    //    方法：在屁股后面画空格，空格会自动填充背景色
+    size_t new_len = strlen(status);
+
+    if (new_len < s_last_status_len)
+    {
+        uint16_t x_offset = 35 + new_len * 8; // 计算空格开始的 x 坐标
+
+        for (size_t i = new_len; i < s_last_status_len; i++)
+        {
+            // 画一个背景色的空格，就把旧字盖掉了
+            LCD_Show_String(x_offset, BOX_STATUS_Y + 5, " ", &font_16, UI_STATUS_BG, UI_STATUS_BG);
+            x_offset += 8;
+        }
+    }
+
+    // 3. 更新历史长度
+    s_last_status_len = new_len;
 }

@@ -48,10 +48,17 @@ bool ESP_Send_AT(const char* cmd, const char* expect_resp, uint32_t timeout_ms, 
 bool ESP_WiFi_Connect(const char* ssid, const char* pwd, uint8_t retry);
 
 /**
- * @brief  从 ESP32 获取网络时间并同步到 RTC
- * @retval true: 同步成功, false: 失败
+ * @brief  SNTP 步骤1: 发起查询请求
  */
-bool ESP_SNTP_Sync_RTC(void);
+void ESP_SNTP_Query_Start(void);
+
+/**
+ * @brief  SNTP 步骤2: 检查并解析响应 (非阻塞)
+ * @retval 0: 等待中 (Busy/No Data)
+ * @retval 1: 成功 (Success)
+ * @retval -1: 失败/错误 (Error)
+ */
+int8_t ESP_SNTP_Query_Check(void);
 
 /**
  * @brief 开启 ESP32 的 SNTP 功能

@@ -1,5 +1,6 @@
 #include "BSP_Tick_Delay.h"
 #include "bsp_rtc.h"
+#include "bsp_iwdg.h"
 #include "uart_handle_variable.h"
 #include "uart_driver.h"
 #include "sys_log.h"
@@ -30,6 +31,11 @@ int main(void)
     // 初始化天气 (传入UI回调)
     APP_Weather_Init(APP_UI_UpdateWeather, APP_UI_ShowStatus); // 注意这里名字要对上
 
+    // 初始化看门狗
+    // 参数：256分频, 计数值1000 -> 约8000ms (8秒) 复位
+    // 32kHz / 256 = 125Hz -> 1000/125 = 8s
+    BSP_IWDG_Init(IWDG_Prescaler_256, 1000);
+
     // 3. 超级循环
     while (1)
     {
@@ -39,10 +45,13 @@ int main(void)
         // 任务 B: 日历子系统
         APP_Calendar_Task();
 
+        // 喂狗
+        BSP_IWDG_Feed();
+
         // 稍微让出 CPU
         BSP_Delay_ms(5);
 
-        // LOG_D("DMA Left: %d", DMA_GetCurrDataCounter(DMA1_Stream5));
-        BSP_Delay_ms(500);
+        // 低功耗
+        __WFI(); // Wait For Interrupt：没事干就睡觉，等中断（SysTick或串口）叫醒
     }
 }
