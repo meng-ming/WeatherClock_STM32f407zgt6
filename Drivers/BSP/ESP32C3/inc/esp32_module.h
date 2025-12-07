@@ -2,7 +2,10 @@
  * @file    esp32_module.h
  * @brief   ESP32 AT 指令模组通用驱动接口 (带重试机制版)
  * @note    本模块只负责底层的 AT 指令收发和基础网络连接，不包含任何具体的业务逻辑。
- * 依赖 uart_driver 模块进行物理层通信。
+ *          依赖 uart_driver 模块进行物理层通信。
+ * @author  meng-ming
+ * @version 1.0
+ * @date    2025-12-07
  */
 
 #ifndef __ESP32_MODULE_H
@@ -12,10 +15,14 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+/* ==================================================================
+ * 1. ESP32 模块函数接口
+ * ================================================================== */
+
 /**
  * @brief  初始化 ESP32 模块驱动
  * @note   负责初始化对应的 UART 硬件，并清空接收缓冲区。
- * 注意：此函数不会发送 AT 复位指令，仅做物理层准备。
+ *         注意：此函数不会发送 AT 复位指令，仅做物理层准备。
  * @param  uart_handler: 指向 UART 句柄的指针 (如 &g_esp_uart_handler)
  * @retval None
  */
@@ -24,8 +31,8 @@ void ESP_Module_Init(UART_Handle_t* uart_handler);
 /**
  * @brief  发送 AT 指令并等待预期响应 (支持自动重试)
  * @note   发送指令后，会持续轮询接收缓冲区，直到匹配到 expect_resp 或超时。
- * 如果失败，会自动重试指定次数。
- * 会自动处理换行符，调用者无需手动在 cmd 后加 \r\n。
+ *         如果失败，会自动重试指定次数。
+ *         会自动处理换行符，调用者无需手动在 cmd 后加 \r\n。
  * @param  cmd:         要发送的 AT 指令字符串 (如 "AT", "AT+CIPMODE=1")
  * @param  expect_resp: 期待收到的响应字符串 (如 "OK", "CONNECT", "ready")
  * @param  timeout_ms:  单次等待超时时间 (单位: ms)。建议普通指令 1000ms，连接指令 15000ms。
@@ -38,7 +45,7 @@ bool ESP_Send_AT(const char* cmd, const char* expect_resp, uint32_t timeout_ms, 
 /**
  * @brief  连接 WiFi 热点 (Station 模式)
  * @note   内部会自动执行 AT+CWMODE=1 和 AT+CWJAP 指令。
- * 这是一个耗时操作，通常需要 5-10 秒。
+ *         这是一个耗时操作，通常需要 5-10 秒。
  * @param  ssid:  WiFi 名称 (字符串)
  * @param  pwd:   WiFi 密码 (字符串)
  * @param  retry: 连接失败后的重试次数
@@ -49,17 +56,21 @@ bool ESP_WiFi_Connect(const char* ssid, const char* pwd, uint8_t retry);
 
 /**
  * @brief  SNTP 步骤1: 发起查询请求
+ * @note   开始 SNTP 时间同步查询
+ * @retval None
  */
 void ESP_SNTP_Query_Start(void);
 
 /**
  * @brief  SNTP 查询重试 (不清空缓冲区，只发指令)
  * @note   用于超时未回复时的补发，防止清空了刚到达的数据
+ * @retval None
  */
 void ESP_SNTP_Query_Retry(void);
 
 /**
  * @brief  SNTP 步骤2: 检查并解析响应 (非阻塞)
+ * @note   检查 SNTP 查询结果并解析时间
  * @retval 0: 等待中 (Busy/No Data)
  * @retval 1: 成功 (Success)
  * @retval -1: 失败/错误 (Error)
@@ -67,8 +78,8 @@ void ESP_SNTP_Query_Retry(void);
 int8_t ESP_SNTP_Query_Check(void);
 
 /**
- * @brief 开启 ESP32 的 SNTP 功能
- * @note 只需连上 WIFI 之后配置一次
+ * @brief  开启 ESP32 的 SNTP 功能
+ * @note   只需连上 WIFI 之后配置一次
  * @retval true: 设置成功
  * @retval false: 设置失败
  */
@@ -76,8 +87,11 @@ bool ESP_SNTP_Config(void);
 
 /**
  * @brief  使用 AT+HTTPCLIENT 发送 GET 请求
+ * @note   发送 HTTP GET 请求用于数据获取
  * @param  url: 完整的 URL (如 "http://api.xxx.com/...")
+ * @param  timeout_ms: 请求超时时间 (ms)
  * @retval true: 指令发送成功
+ * @retval false: 发送失败
  */
 bool ESP_HTTP_Get(const char* url, uint32_t timeout_ms);
 

@@ -6,7 +6,7 @@
 
 // 记录上一次显示的秒数 (初始化为无效值 60，确保第一次一定刷新)
 static uint8_t  s_last_sec  = 60;
-static uint32_t s_poll_tick = 0; // 改用 uint32_t，跟系统滴答匹配
+static uint32_t s_poll_tick = 0; // 用 uint32_t，跟系统滴答匹配
 
 void APP_Calendar_Task(void)
 {

@@ -104,7 +104,7 @@ static void weather_change_state(Weather_Engine_t* eng, Weather_State_t new_stat
 {
     eng->state = new_state;
     eng->timer = BSP_GetTick_ms(); // 记录进入新状态的时间点
-    LOG_I("[Weather] State -> %d", new_state);
+    LOG_D("[Weather] State -> %d", new_state);
 }
 
 /* ========================== 错误处理 (非阻塞优化核心) ========================== */

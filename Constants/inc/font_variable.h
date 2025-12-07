@@ -1,14 +1,23 @@
+/**
+ * @file    font_variable.h
+ * @brief   点阵字体变量与配置定义
+ * @author  meng-ming
+ * @version 1.0
+ * @date    2025-12-07
+ */
+
 #ifndef __FONT_VARIABLE_H
 #define __FONT_VARIABLE_H
 
 #include <stdint.h>
 
 /* ==================================================================
- * 类型定义
+ * 1. 类型定义
  * ================================================================== */
 
 /**
  * @brief 16点阵汉字结构体
+ * @note  用于存储单个汉字的索引和点阵数据
  */
 typedef struct
 {
@@ -17,7 +26,8 @@ typedef struct
 } HZK_16_t;
 
 /**
- * @brief 16点阵汉字结构体
+ * @brief 20点阵汉字结构体 (周日专用)
+ * @note  用于存储周日汉字的索引和点阵数据
  */
 typedef struct
 {
@@ -50,7 +60,7 @@ typedef struct
 } font_info_t;
 
 /* ==================================================================
- * 外部引用声明 (External Declarations)
+ * 2. 外部引用声明 (External Declarations)
  * ================================================================== */
 
 // 原始字库数组 (定义在 Resources/Font/src/*.c 中)

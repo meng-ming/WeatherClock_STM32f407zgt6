@@ -377,12 +377,12 @@ void USART2_IRQHandler(void)
         }
     }
 
-    // [2] 处理 ORE (Overrun Error)：溢出错误
-    // 如果数据来不及取走，导致溢出，必须清除此标志，否则会卡死在中断里
-    if (isr_flags & USART_FLAG_ORE)
+    // [2] 统一处理所有硬件错误 (ORE/NE/FE/PE)
+    if (isr_flags & (USART_FLAG_ORE | USART_FLAG_NE | USART_FLAG_FE | USART_FLAG_PE))
     {
-        // 清除序列与 IDLE 相同：读 SR -> 读 DR
+        // 清除序列：读 SR -> 读 DR (能清除以上所有错误标志)
         dr_data = USART2->DR;
+        (void) dr_data;
     }
 
     // [3] 处理 RXNE (接收非空)：防御性代码

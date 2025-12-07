@@ -4,8 +4,7 @@
 #include "lcd_image.h"
 #include "st7789.h"
 #include "lcd_font.h"
-#include "font_variable.h" // font_16
-#include "sys_log.h"
+#include "font_variable.h"
 #include <stdio.h>
 #include <string.h>
 

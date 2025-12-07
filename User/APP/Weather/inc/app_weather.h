@@ -1,6 +1,7 @@
 /**
  * @file    app_weather.h
  * @brief   天气业务服务模块对外接口
+ * @author  meng-ming
  * @note    负责管理网络连接、数据获取、协议解析等核心业务逻辑。
  * 通过回调函数机制与 UI 层解耦。
  */

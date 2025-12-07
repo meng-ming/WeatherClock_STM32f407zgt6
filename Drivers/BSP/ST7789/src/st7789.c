@@ -374,5 +374,5 @@ void TFT_full_DMA(uint16_t color)
 
 void TFT_Clear_DMA(uint16_t color)
 {
-    TFT_full_DMA(WHITE);
+    TFT_full_DMA(color);
 }

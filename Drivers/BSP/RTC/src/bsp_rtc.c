@@ -1,6 +1,5 @@
 #include "bsp_rtc.h"
 #include "stm32f4xx.h"
-#include "APP_data.h"
 #include "stm32f4xx_pwr.h"
 #include "stm32f4xx_rcc.h"
 #include <stdint.h>

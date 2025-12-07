@@ -33,6 +33,7 @@ UART_Handle_t g_esp_uart_handler = {
     .rx_read_index   = 0,
     .rx_write_index  = 0,
     .rx_overflow_cnt = 0,
+    
     // DMA 参数配置
     .RCC_AHB1Periph_DMA_X = RCC_AHB1Periph_DMA1, // DMA1 时钟
     .RX_DMA_Stream        = DMA1_Stream5,        // 根据数据手册

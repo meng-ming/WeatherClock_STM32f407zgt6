@@ -1,3 +1,11 @@
+/**
+ * @file    sys_log.h
+ * @brief   系统日志宏定义与打印接口
+ * @author  meng-ming
+ * @version 1.0
+ * @date    2025-12-07
+ */
+
 #ifndef __SYS_LOG_H
 #define __SYS_LOG_H
 #include <stdio.h>
