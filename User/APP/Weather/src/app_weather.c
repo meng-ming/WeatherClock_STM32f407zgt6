@@ -71,6 +71,7 @@ typedef struct
     APP_Weather_Data_t       cache;                                 // 天气数据缓存
     Weather_DataCallback_t   data_cb;                               // UI 数据回调
     Weather_StatusCallback_t status_cb;                             // UI 状态回调
+    uint32_t                 resend_timer;                          // 专用于记录重发动作的时间戳
     bool                     is_running;                            // 引擎运行开关
 } Weather_Engine_t;
 
@@ -93,7 +94,6 @@ static Weather_Engine_t g_weather = {.state              = WEATHER_STATE_INIT,
 /* ========================== 内部函数前向声明 ========================== */
 static void weather_change_state(Weather_Engine_t* eng, Weather_State_t new_state);
 static void weather_error_handle(Weather_Engine_t* eng, const char* msg);
-static bool weather_sntp_sync_once(void);
 static bool weather_send_http_request(Weather_Engine_t* eng);
 
 /* ========================== 状态跳转工具函数 ========================== */
@@ -138,23 +138,6 @@ static void weather_error_handle(Weather_Engine_t* eng, const char* msg)
     }
 }
 
-/* ========================== SNTP 单次同步 ========================== */
-static bool weather_sntp_sync_once(void)
-{
-    if (!ESP_SNTP_Config())
-    {
-        LOG_W("[SNTP] Config failed");
-        return false;
-    }
-    // 这里的 Sync_RTC 内部目前还是有阻塞的，后续可优化，但在 Task 中暂可接受
-    if (ESP_SNTP_Sync_RTC())
-    {
-        LOG_I("[SNTP] Time sync success");
-        return true;
-    }
-    return false;
-}
-
 /* ========================== 发送 HTTP 请求 ========================== */
 static bool weather_send_http_request(Weather_Engine_t* eng)
 {
@@ -167,7 +150,7 @@ static bool weather_send_http_request(Weather_Engine_t* eng)
     }
 
     // 拼接 URL (注意：使用 snprintf 防止缓冲区溢出)
-    char url[512] = {0};
+    char url[128] = {0};
     int  len      = snprintf(url,
                        sizeof(url),
                        "http://%s/free/day?appid=%s&appsecret=%s&unescape=1&cityid=%s",
@@ -351,6 +334,9 @@ void APP_Weather_Task(void)
 
         ESP_SNTP_Query_Start(); // 发送 AT+CIPSNTPTIME?
 
+        // 记录初始时间，作为第一次“重发”的基准
+        eng->resend_timer = BSP_GetTick_ms();
+
         // 马上切换到等待状态，并重置超时计时器
         weather_change_state(eng, WEATHER_STATE_SNTP_WAIT);
         break;
@@ -372,6 +358,16 @@ void APP_Weather_Task(void)
         }
         else // status == 0 (等待中)
         {
+            // 检查距离上次发送(或重发)是否超过了 1500ms
+            if (BSP_GetTick_ms() - eng->resend_timer > 1500)
+            {
+                // 调用封装好的驱动接口
+                ESP_SNTP_Query_Retry();
+
+                // 更新计时器，准备下一次 1.5秒 的倒计时
+                eng->resend_timer = BSP_GetTick_ms();
+            }
+
             // 2. 检查超时 (比如给它 5秒 时间同步)
             // 这里利用主循环计时，看门狗绝对安全
             if (BSP_GetTick_ms() - eng->timer > 5000)
@@ -404,7 +400,6 @@ void APP_Weather_Task(void)
         // 如果没有，直接 return，让出 CPU 给其他任务（如 UI 刷新、按键扫描）
         if (UART_RingBuf_Available(&g_esp_uart_handler) == 0)
         {
-            LOG_D("UART_RingBuf_Available(&g_esp_uart_handler) == 0");
             // 顺便检查一下是否总超时 (防止一直没数据死等)
             if (BSP_GetTick_ms() - eng->timer > WEATHER_CONFIG_HTTP_TIMEOUT_MS)
             {
@@ -426,7 +421,7 @@ void APP_Weather_Task(void)
             }
 
             // 调试打印数据块 (调试阶段可开启)
-            LOG_D("[RX Chunk] Len:%d, Content:%s", len, line_buf);
+            // LOG_D("[RX Chunk] Len:%d, Content:%s", len, line_buf);
 
             // 防溢出保护
             if (eng->rx_index + len < WEATHER_CONFIG_RX_BUF_SIZE - 1)

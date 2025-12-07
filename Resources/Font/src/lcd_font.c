@@ -203,7 +203,7 @@ void LCD_Show_String(uint16_t           x,
             {
                 // 没找到字 (字库缺失或乱码)
                 // 绘制红色方块提示 (调试用)
-                TFT_Fill_Rect(cursor_x, cursor_y, font->cn_w, font->cn_h, 0xF800); // RED
+                TFT_Fill_Rect_DMA(cursor_x, cursor_y, font->cn_w, font->cn_h, 0xF800); // RED
 
                 cursor_x += font->cn_w; // 占位宽度
 

@@ -65,6 +65,14 @@
 #define MAGENTA 0xF81F
 #define CYAN 0x7FFF
 
+// ====================================================================
+// DMA硬件配置：SPI2_TX 对应 DMA1 Stream 4 Channel 0
+// ====================================================================
+#define LCD_DMA_STREAM DMA1_Stream4
+#define LCD_DMA_CHANNEL DMA_Channel_0
+#define LCD_DMA_CLK RCC_AHB1Periph_DMA1
+#define LCD_DMA_FLAG_TC DMA_FLAG_TCIF4
+
 // RGB888 转 RGB565 宏
 #define TFT_RGB(R, G, B)                                                                           \
     ((uint16_t) ((((R) & 0xF8) << 8) | (((G) & 0xFC) << 3) | (((B) & 0xF8) >> 3)))
@@ -118,5 +126,25 @@ void TFT_clear(void);
  * @param  color:   填充颜色 (RGB565)
  */
 void TFT_Fill_Rect(uint16_t x_start, uint16_t y_start, uint16_t w, uint16_t h, uint16_t color);
+
+/**
+ * @brief  使用 DMA 全屏/区域填充颜色 (高性能版)
+ * @note   利用 DMA 源地址不自增特性 + SPI 16位模式，实现极速刷屏
+ * CPU 在传输期间处于忙等待 (FreeRTOS下可优化为挂起)
+ * @param  x,y,w,h: 区域坐标和宽高
+ * @param  color:   RGB565 颜色
+ */
+void TFT_Fill_Rect_DMA(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
+
+/**
+ * @brief  使用 DMA 全屏填充颜色
+ * @param  color: RGB565 颜色值
+ */
+void TFT_full_DMA(uint16_t color);
+
+/**
+ * @brief  DMA 全屏清屏 (封装函数)
+ */
+void TFT_Clear_DMA(uint16_t color);
 
 #endif /* __ST7789_H */

@@ -170,7 +170,7 @@ BSP_RTC_Status_e BSP_RTC_SetTime(uint8_t hour, uint8_t min, uint8_t sec)
     }
     else
     {
-        LOG_D("[RTC] Set Time to %02d:%02d:%02d", hour, min, sec);
+        // LOG_D("[RTC] Set Time to %02d:%02d:%02d", hour, min, sec);
         return BSP_RTC_OK;
     }
 }
@@ -199,7 +199,7 @@ BSP_RTC_Status_e BSP_RTC_SetDate(uint16_t year, uint8_t mon, uint8_t date)
     }
     else
     {
-        LOG_D("[RTC] Set Date to 20%02d-%02d-%02d", year, mon, date);
+        // LOG_D("[RTC] Set Date to 20%02d-%02d-%02d", year, mon, date);
         return BSP_RTC_OK;
     }
 }

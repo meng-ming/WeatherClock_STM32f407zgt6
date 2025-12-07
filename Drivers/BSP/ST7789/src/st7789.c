@@ -268,3 +268,111 @@ void TFT_clear(void)
 {
     TFT_full(WHITE);
 }
+
+// ====================================================================
+// DMA 加速接口
+// ====================================================================
+
+void TFT_Fill_Rect_DMA(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color)
+{
+    if (w == 0 || h == 0)
+        return;
+    if (x >= TFT_COLUMN_NUMBER || y >= TFT_LINE_NUMBER)
+        return;
+
+    uint16_t x_end = x + w - 1;
+    uint16_t y_end = y + h - 1;
+
+    // 1. 设置绘图窗口 (此时 CS 会在函数内部自动拉高拉低，结束后 CS 为高)
+    TFT_SEND_CMD(0x2A);
+    TFT_SEND_DATA(x >> 8);
+    TFT_SEND_DATA(x & 0xFF);
+    TFT_SEND_DATA(x_end >> 8);
+    TFT_SEND_DATA(x_end & 0xFF);
+
+    TFT_SEND_CMD(0x2B);
+    TFT_SEND_DATA(y >> 8);
+    TFT_SEND_DATA(y & 0xFF);
+    TFT_SEND_DATA(y_end >> 8);
+    TFT_SEND_DATA(y_end & 0xFF);
+
+    TFT_SEND_CMD(0x2C); // 准备写 RAM
+
+    // [关键] 先切换 SPI 模式，再拉低 CS！
+    // 这样即使切换时 SCK 有毛刺，因为 CS=1，屏幕也会忽略
+
+    // A. 等待总线空闲
+    while (SPI_I2S_GetFlagStatus(ST7789_SPI_PERIPH, SPI_I2S_FLAG_TXE) == RESET)
+        ;
+    while (SPI_I2S_GetFlagStatus(ST7789_SPI_PERIPH, SPI_I2S_FLAG_BSY) == SET)
+        ;
+
+    // B. 切换到 16位 模式 (此时 CS 是高电平，安全！)
+    SPI_Cmd(ST7789_SPI_PERIPH, DISABLE);
+    ST7789_SPI_PERIPH->CR1 |= SPI_CR1_DFF; // DFF=1
+    SPI_Cmd(ST7789_SPI_PERIPH, ENABLE);
+
+    // 2. 准备开始传输
+    LCD_DC_SET(); // 数据模式
+    LCD_CS_CLR(); // 拉低 CS，开始正式通信
+
+    // 3. 配置 DMA (不换位，直接用 &color)
+    RCC_AHB1PeriphClockCmd(LCD_DMA_CLK, ENABLE);
+    DMA_DeInit(LCD_DMA_STREAM);
+
+    DMA_InitTypeDef DMA_InitStructure;
+    DMA_InitStructure.DMA_Channel            = LCD_DMA_CHANNEL;
+    DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t) &ST7789_SPI_PERIPH->DR;
+    DMA_InitStructure.DMA_Memory0BaseAddr    = (uint32_t) &color; // 原生顺序即可
+    DMA_InitStructure.DMA_DIR                = DMA_DIR_MemoryToPeripheral;
+    DMA_InitStructure.DMA_BufferSize         = (uint32_t) w * h;
+    DMA_InitStructure.DMA_PeripheralInc      = DMA_PeripheralInc_Disable;
+    DMA_InitStructure.DMA_MemoryInc          = DMA_MemoryInc_Disable; // 锁定源地址
+    DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+    DMA_InitStructure.DMA_MemoryDataSize     = DMA_MemoryDataSize_HalfWord;
+    DMA_InitStructure.DMA_Mode               = DMA_Mode_Normal;
+    DMA_InitStructure.DMA_Priority           = DMA_Priority_VeryHigh;
+    DMA_InitStructure.DMA_FIFOMode           = DMA_FIFOMode_Disable;
+    DMA_InitStructure.DMA_FIFOThreshold      = DMA_FIFOThreshold_Full;
+    DMA_InitStructure.DMA_MemoryBurst        = DMA_MemoryBurst_Single;
+    DMA_InitStructure.DMA_PeripheralBurst    = DMA_PeripheralBurst_Single;
+
+    DMA_Init(LCD_DMA_STREAM, &DMA_InitStructure);
+
+    // 4. 启动 DMA
+    SPI_I2S_DMACmd(ST7789_SPI_PERIPH, SPI_I2S_DMAReq_Tx, ENABLE);
+    DMA_Cmd(LCD_DMA_STREAM, ENABLE);
+
+    // 5. 等待完成
+    while (DMA_GetFlagStatus(LCD_DMA_STREAM, LCD_DMA_FLAG_TC) == RESET)
+        ;
+
+    // 6. 清理
+    DMA_ClearFlag(LCD_DMA_STREAM, LCD_DMA_FLAG_TC);
+    DMA_Cmd(LCD_DMA_STREAM, DISABLE);
+    SPI_I2S_DMACmd(ST7789_SPI_PERIPH, SPI_I2S_DMAReq_Tx, DISABLE);
+
+    // 等待 SPI 发送最后一位
+    while (SPI_I2S_GetFlagStatus(ST7789_SPI_PERIPH, SPI_I2S_FLAG_TXE) == RESET)
+        ;
+    while (SPI_I2S_GetFlagStatus(ST7789_SPI_PERIPH, SPI_I2S_FLAG_BSY) == SET)
+        ;
+
+    // 7. 结束通信
+    LCD_CS_SET(); // 先拉高 CS，屏蔽后续干扰
+
+    // [关键] 恢复 8位 模式 (此时 CS 为高)
+    SPI_Cmd(ST7789_SPI_PERIPH, DISABLE);
+    ST7789_SPI_PERIPH->CR1 &= ~SPI_CR1_DFF; // DFF=0
+    SPI_Cmd(ST7789_SPI_PERIPH, ENABLE);
+}
+
+void TFT_full_DMA(uint16_t color)
+{
+    TFT_Fill_Rect_DMA(0, 0, TFT_COLUMN_NUMBER, TFT_LINE_NUMBER, color);
+}
+
+void TFT_Clear_DMA(uint16_t color)
+{
+    TFT_full_DMA(WHITE);
+}

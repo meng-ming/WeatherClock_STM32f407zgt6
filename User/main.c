@@ -48,9 +48,6 @@ int main(void)
         // 喂狗
         BSP_IWDG_Feed();
 
-        // 稍微让出 CPU
-        BSP_Delay_ms(5);
-
         // 低功耗
         __WFI(); // Wait For Interrupt：没事干就睡觉，等中断（SysTick或串口）叫醒
     }

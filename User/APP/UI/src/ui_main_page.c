@@ -63,27 +63,27 @@ void APP_UI_MainPage_Init(void)
 
     // 2. 绘制 5 个色块区域
     // --- 状态栏 ---
-    TFT_Fill_Rect(BOX_STATUS_X, BOX_STATUS_Y, BOX_STATUS_W, BOX_STATUS_H, UI_STATUS_BG);
+    TFT_Fill_Rect_DMA(BOX_STATUS_X, BOX_STATUS_Y, BOX_STATUS_W, BOX_STATUS_H, UI_STATUS_BG);
 
     // --- 时间 ---
-    TFT_Fill_Rect(BOX_TIME_X, BOX_TIME_Y, BOX_TIME_W, BOX_TIME_H, UI_TIME_BG);
+    TFT_Fill_Rect_DMA(BOX_TIME_X, BOX_TIME_Y, BOX_TIME_W, BOX_TIME_H, UI_TIME_BG);
 
     // --- 当前天气 ---
-    TFT_Fill_Rect(BOX_ICON_X, BOX_ICON_Y, BOX_ICON_W, BOX_ICON_H, UI_ICON_BG);
+    TFT_Fill_Rect_DMA(BOX_ICON_X, BOX_ICON_Y, BOX_ICON_W, BOX_ICON_H, UI_ICON_BG);
 
     // --- 室内模块 ---
-    TFT_Fill_Rect(BOX_INDOOR_X, BOX_INDOOR_Y, BOX_INDOOR_W, BOX_INDOOR_H, UI_INDOOR_BG);
+    TFT_Fill_Rect_DMA(BOX_INDOOR_X, BOX_INDOOR_Y, BOX_INDOOR_W, BOX_INDOOR_H, UI_INDOOR_BG);
 
     LCD_Show_Image(30, 230, 15, 15, gImage_weather_shinei);
     LCD_Show_String(50, 229, "室内", &font_16, WHITE, UI_INDOOR_BG);
-    TFT_Fill_Rect(20, 250, 70, 3, WHITE);
+    TFT_Fill_Rect_DMA(20, 250, 70, 3, WHITE);
 
     LCD_Show_Image(20, 260, 20, 20, gImage_weather_shineiwendu);
 
     LCD_Show_Image(20, 290, 20, 20, gImage_weather_shineishidu);
 
     // --- 天气参数模块 ---
-    TFT_Fill_Rect(BOX_LIST_X, BOX_LIST_Y, BOX_LIST_W, BOX_LIST_H, UI_LIST_BG);
+    TFT_Fill_Rect_DMA(BOX_LIST_X, BOX_LIST_Y, BOX_LIST_W, BOX_LIST_H, UI_LIST_BG);
 
     LCD_Show_Image(115, 170, 20, 20, gImage_weather_wencha);
 
@@ -165,14 +165,4 @@ void APP_UI_Update_WiFi(bool is_connected, const char* ssid)
     {
         LCD_Show_Image(BOX_STATUS_X, BOX_STATUS_Y, 25, 25, gImage_WIFI_Disconnected);
     }
-
-    // 2. 更新 WIFI 名称
-    // if (ssid != NULL)
-    // {
-    // 由于 WIFI 名称不定长，事先先把整个 WIFI名称 所在矩形用背景色填充
-    // TFT_Fill_Rect(35, BOX_STATUS_Y, 90, BOX_STATUS_H, UI_STATUS_BG);
-
-    // 显示 SSID 名称
-    // LCD_Show_String(35, BOX_STATUS_Y + 5, ssid, &font_16, UI_TEXT_WHITE, UI_STATUS_BG);
-    // }
 }

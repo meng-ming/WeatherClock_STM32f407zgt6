@@ -53,6 +53,12 @@ bool ESP_WiFi_Connect(const char* ssid, const char* pwd, uint8_t retry);
 void ESP_SNTP_Query_Start(void);
 
 /**
+ * @brief  SNTP 查询重试 (不清空缓冲区，只发指令)
+ * @note   用于超时未回复时的补发，防止清空了刚到达的数据
+ */
+void ESP_SNTP_Query_Retry(void);
+
+/**
  * @brief  SNTP 步骤2: 检查并解析响应 (非阻塞)
  * @retval 0: 等待中 (Busy/No Data)
  * @retval 1: 成功 (Success)

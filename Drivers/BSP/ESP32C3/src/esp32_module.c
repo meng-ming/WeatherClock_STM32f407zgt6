@@ -140,7 +140,7 @@ bool ESP_Send_AT(const char* cmd, const char* expect_resp, uint32_t timeout_ms, 
             if (UART_RingBuf_ReadLine(g_module_uart, line_buf, sizeof(line_buf), 20) > 0)
             {
                 // 调试打印 (排查问题时打开)
-                LOG_D("[ESP RX] %s", line_buf);
+                // LOG_D("[ESP RX] %s", line_buf);
 
                 // A. 成功匹配
                 if (strstr(line_buf, expect_resp) != NULL)
@@ -224,9 +224,6 @@ bool ESP_SNTP_Config(void)
     return ESP_Send_AT("AT+CIPSNTPCFG=1,0,\"ntp1.aliyun.com\"", "OK", 2000, 2);
 }
 
-/**
- * @brief  SNTP 步骤1: 发起查询请求
- */
 void ESP_SNTP_Query_Start(void)
 {
     // 清空缓存，防止旧数据干扰
@@ -236,12 +233,13 @@ void ESP_SNTP_Query_Start(void)
     LOG_I("[SNTP] Query command sent...");
 }
 
-/**
- * @brief  SNTP 步骤2: 检查并解析响应 (非阻塞)
- * @retval 0: 等待中 (Busy/No Data)
- * @retval 1: 成功 (Success)
- * @retval -1: 失败/错误 (Error)
- */
+void ESP_SNTP_Query_Retry(void)
+{
+    // 直接发送指令，不调用 Clear()
+    UART_Send_AT_Command(g_module_uart, "AT+CIPSNTPTIME?");
+    LOG_W("[SNTP] No response, retry query...");
+}
+
 int8_t ESP_SNTP_Query_Check(void)
 {
     char line_buf[128];
