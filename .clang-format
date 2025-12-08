@@ -58,6 +58,7 @@ Cpp11BracedListStyle:  true                 # C++11 列表初始化风格 {1, 2,
 IncludeBlocks:         Preserve             # 保持原有 #include 顺序与分组
 SortIncludes:          Never                # 禁止自动排序 include（避免大量 diff）
 ReflowComments:        true                 # 自动重排注释，使其不超过 ColumnLimit
+AllowShortLoopsOnASingleLine: true
 
 # -------------------------------------------------------
 # 结束

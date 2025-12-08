@@ -1,15 +1,18 @@
 #include "app_ui.h"
 #include "BSP_Tick_Delay.h"
-#include "lcd_image.h"
 #include "st7789.h"
 #include "app_ui_config.h"
 #include "sys_log.h"
-#include "bsp_rtc.h"
-#include "lcd_font.h"
 
 // 引入新做好的页面模块
 #include "ui_main_page.h"
 #include <string.h>
+
+#include "FreeRTOS.h"
+#include "semphr.h"
+
+// 引入全局变量
+extern SemaphoreHandle_t g_mutex_lcd;
 
 static uint8_t s_last_status_len = 0; // 上个状态文字的长度，用于覆盖刷新
 
@@ -24,7 +27,7 @@ static void APP_Start_UP(void)
     ST7789_Init();
 
     // 2. 显示开机界面
-    LCD_Show_Image(0, 0, 240, 320, gImage_Startup_Screen);
+    TFT_ShowImage_DMA(0, 0, 240, 320, gImage_Startup_Screen);
 
     // 3. 延时2s
     BSP_Delay_ms(2000);
@@ -41,11 +44,20 @@ void APP_UI_Init(void)
 
 void APP_UI_Update(const APP_Weather_Data_t* data)
 {
-    // 调用主页面的更新逻辑
-    APP_UI_UpdateWeather(data);
-
-    // 底部状态栏更新
-    APP_UI_ShowStatus("Updated!", BLACK);
+    // 上锁：防止被日历更新任务打断，引起花屏
+    if (g_mutex_lcd != NULL)
+    {
+        // 尝试拿锁，如果长时间拿不到（比如死锁了），打印错误
+        if (xSemaphoreTakeRecursive(g_mutex_lcd, pdMS_TO_TICKS(1000)) == pdTRUE)
+        {
+            APP_UI_UpdateWeather(data);
+            xSemaphoreGiveRecursive(g_mutex_lcd);
+        }
+        else
+        {
+            LOG_E("[UI] Take LCD Mutex Timeout!");
+        }
+    }
 }
 
 void APP_UI_ShowStatus(const char* status, uint16_t color)
@@ -53,7 +65,7 @@ void APP_UI_ShowStatus(const char* status, uint16_t color)
     LOG_I("[APP] %s", status); // 调试时可打开
 
     // 1. 直接绘制新状态
-    LCD_Show_String(35, BOX_STATUS_Y + 5, status, &font_16, color, UI_STATUS_BG);
+    TFT_Show_String(35, BOX_STATUS_Y + 5, status, &font_16, color, UI_STATUS_BG);
 
     // 2. 如果新文字比旧文字短，多出来的旧文字需要擦除
     //    方法：在屁股后面画空格，空格会自动填充背景色
@@ -66,7 +78,7 @@ void APP_UI_ShowStatus(const char* status, uint16_t color)
         for (size_t i = new_len; i < s_last_status_len; i++)
         {
             // 画一个背景色的空格，就把旧字盖掉了
-            LCD_Show_String(x_offset, BOX_STATUS_Y + 5, " ", &font_16, UI_STATUS_BG, UI_STATUS_BG);
+            TFT_Show_String(x_offset, BOX_STATUS_Y + 5, " ", &font_16, UI_STATUS_BG, UI_STATUS_BG);
             x_offset += 8;
         }
     }

@@ -1,9 +1,7 @@
 #include "ui_main_page.h"
 #include "app_data.h"
 #include "app_ui_config.h"
-#include "lcd_image.h"
 #include "st7789.h"
-#include "lcd_font.h"
 #include "font_variable.h"
 #include <stdio.h>
 #include <string.h>
@@ -12,8 +10,8 @@
 #define SHOW_LIST_ITEM(y, title, string)                                                           \
     do                                                                                             \
     {                                                                                              \
-        LCD_Show_String(140, y, title, &font_16, UI_TEXT_BLACK, UI_LIST_BG);                       \
-        LCD_Show_String(177, y, string, &font_16, UI_TEXT_BLACK, UI_LIST_BG);                      \
+        TFT_Show_String(140, y, title, &font_16, UI_TEXT_BLACK, UI_LIST_BG);                       \
+        TFT_Show_String(177, y, string, &font_16, UI_TEXT_BLACK, UI_LIST_BG);                      \
     } while (0)
 
 // 优先级表：顺序很重要！先匹配特殊/长词，后匹配通用/短词
@@ -58,7 +56,7 @@ static const unsigned char* Get_Weather_Icon(const char* weather_str)
 void APP_UI_MainPage_Init(void)
 {
     // 1. 全屏米白色 (形成缝隙)
-    TFT_full(UI_BG_COLOR);
+    TFT_Full_DMA(UI_BG_COLOR);
 
     // 2. 绘制 5 个色块区域
     // --- 状态栏 ---
@@ -73,26 +71,26 @@ void APP_UI_MainPage_Init(void)
     // --- 室内模块 ---
     TFT_Fill_Rect_DMA(BOX_INDOOR_X, BOX_INDOOR_Y, BOX_INDOOR_W, BOX_INDOOR_H, UI_INDOOR_BG);
 
-    LCD_Show_Image(30, 230, 15, 15, gImage_weather_shinei);
-    LCD_Show_String(50, 229, "室内", &font_16, WHITE, UI_INDOOR_BG);
+    TFT_ShowImage_DMA(30, 230, 15, 15, gImage_weather_shinei);
+    TFT_Show_String(50, 229, "室内", &font_16, WHITE, UI_INDOOR_BG);
     TFT_Fill_Rect_DMA(20, 250, 70, 3, WHITE);
 
-    LCD_Show_Image(20, 260, 20, 20, gImage_weather_shineiwendu);
+    TFT_ShowImage_DMA(20, 260, 20, 20, gImage_weather_shineiwendu);
 
-    LCD_Show_Image(20, 290, 20, 20, gImage_weather_shineishidu);
+    TFT_ShowImage_DMA(20, 290, 20, 20, gImage_weather_shineishidu);
 
     // --- 天气参数模块 ---
     TFT_Fill_Rect_DMA(BOX_LIST_X, BOX_LIST_Y, BOX_LIST_W, BOX_LIST_H, UI_LIST_BG);
 
-    LCD_Show_Image(115, 170, 20, 20, gImage_weather_wencha);
+    TFT_ShowImage_DMA(115, 170, 20, 20, gImage_weather_wencha);
 
-    LCD_Show_Image(115, 200, 20, 20, gImage_weather_fengxiang);
+    TFT_ShowImage_DMA(115, 200, 20, 20, gImage_weather_fengxiang);
 
-    LCD_Show_Image(115, 235, 20, 16, gImage_weather_kongqizhiliang);
+    TFT_ShowImage_DMA(115, 235, 20, 16, gImage_weather_kongqizhiliang);
 
-    LCD_Show_Image(115, 260, 20, 20, gImage_weather_shidu);
+    TFT_ShowImage_DMA(115, 260, 20, 20, gImage_weather_shidu);
 
-    LCD_Show_Image(115, 290, 20, 20, gImage_weather_qiya);
+    TFT_ShowImage_DMA(115, 290, 20, 20, gImage_weather_qiya);
 }
 
 void APP_UI_UpdateWeather(const APP_Weather_Data_t* data)
@@ -103,16 +101,16 @@ void APP_UI_UpdateWeather(const APP_Weather_Data_t* data)
 
     // === 1. 更新状态栏  ===
     snprintf(buf, sizeof(buf), "更新时间 %s", data->update_time);
-    LCD_Show_String(120, 9, buf, &font_16, UI_TEXT_WHITE, UI_STATUS_BG);
+    TFT_Show_String(120, 9, buf, &font_16, UI_TEXT_WHITE, UI_STATUS_BG);
 
     // === 2.. 更新当前天气栏  ===
     const unsigned char* p_weather_img = Get_Weather_Icon(data->weather);
-    LCD_Show_Image(25, 135, 60, 60, p_weather_img);
-    LCD_Show_String(25, 200, data->temp, &font_time_20, TFT_RGB(255, 180, 0), UI_ICON_BG);
+    TFT_ShowImage_DMA(25, 135, 60, 60, p_weather_img);
+    TFT_Show_String(25, 200, data->temp, &font_time_20, TFT_RGB(255, 180, 0), UI_ICON_BG);
 
     // === 3. 更新列表栏 ===
     // 显示当前城市
-    LCD_Show_String(152, 135, data->city, &font_time_20, UI_TEXT_BLACK, UI_LIST_BG);
+    TFT_Show_String(152, 135, data->city, &font_time_20, UI_TEXT_BLACK, UI_LIST_BG);
 
     // 显示各种天气参数
     SHOW_LIST_ITEM(172, "温差", data->temp_range);
@@ -126,8 +124,8 @@ void APP_UI_UpdateWeather(const APP_Weather_Data_t* data)
     SHOW_LIST_ITEM(292, "气压", data->pressure);
 
     // === 3. 更新室内模块 ===
-    LCD_Show_String(55, 262, "26.5", &font_16, UI_TEXT_WHITE, UI_INDOOR_BG);
-    LCD_Show_String(55, 292, "45%", &font_16, UI_TEXT_WHITE, UI_INDOOR_BG);
+    TFT_Show_String(55, 262, "26.5", &font_16, UI_TEXT_WHITE, UI_INDOOR_BG);
+    TFT_Show_String(55, 292, "45%", &font_16, UI_TEXT_WHITE, UI_INDOOR_BG);
 }
 
 void APP_UI_UpdateCalendar(BSP_RTC_Calendar_t cal)
@@ -137,11 +135,11 @@ void APP_UI_UpdateCalendar(BSP_RTC_Calendar_t cal)
 
     // 显示 时分
     snprintf(time_buf, sizeof(time_buf), "%02d:%02d", cal.hour, cal.min);
-    LCD_Show_String(30, 35, time_buf, &font_time_30x60, UI_TEXT_WHITE, UI_TIME_BG);
+    TFT_Show_String(30, 35, time_buf, &font_time_30x60, UI_TEXT_WHITE, UI_TIME_BG);
 
     // 显示 秒
     snprintf(time_buf, sizeof(time_buf), "%02d", cal.sec);
-    LCD_Show_String(182, 68, time_buf, &font_time_20, UI_TEXT_WHITE, UI_TIME_BG);
+    TFT_Show_String(182, 68, time_buf, &font_time_20, UI_TEXT_WHITE, UI_TIME_BG);
 
     snprintf(date_buf,
              sizeof(date_buf),
@@ -150,7 +148,7 @@ void APP_UI_UpdateCalendar(BSP_RTC_Calendar_t cal)
              cal.month,
              cal.date,
              WEEK_STR[cal.week]);
-    LCD_Show_String(35, 95, date_buf, &font_time_20, UI_TEXT_WHITE, UI_TIME_BG);
+    TFT_Show_String(35, 95, date_buf, &font_time_20, UI_TEXT_WHITE, UI_TIME_BG);
 }
 
 void APP_UI_Update_WiFi(bool is_connected, const char* ssid)
@@ -158,10 +156,10 @@ void APP_UI_Update_WiFi(bool is_connected, const char* ssid)
     // 1. 更新图标
     if (is_connected)
     {
-        LCD_Show_Image(BOX_STATUS_X, BOX_STATUS_Y, 25, 25, gImage_WIFI);
+        TFT_ShowImage_DMA(BOX_STATUS_X, BOX_STATUS_Y, 25, 25, gImage_WIFI);
     }
     else
     {
-        LCD_Show_Image(BOX_STATUS_X, BOX_STATUS_Y, 25, 25, gImage_WIFI_Disconnected);
+        TFT_ShowImage_DMA(BOX_STATUS_X, BOX_STATUS_Y, 25, 25, gImage_WIFI_Disconnected);
     }
 }

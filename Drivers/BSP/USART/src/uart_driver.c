@@ -21,6 +21,12 @@
 #include <stdio.h>
 #include "BSP_Tick_Delay.h"
 
+#include "FreeRTOS.h"
+#include "task.h"
+
+// 外部变量声明
+extern TaskHandle_t WeatherTask_Handler;
+
 /* ==================================================================
  * 宏定义与私有函数声明
  * ================================================================== */
@@ -104,7 +110,7 @@ static void UART_Config_NVIC(UART_Handle_t* handle)
 
     NVIC_InitStructure.NVIC_IRQChannel                   = handle->USART_IRQ_Channel;
     NVIC_InitStructure.NVIC_IRQChannelCmd                = ENABLE;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; // 抢占优先级
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 5; // 抢占优先级
     NVIC_InitStructure.NVIC_IRQChannelSubPriority        = 0; // 子优先级
     NVIC_Init(&NVIC_InitStructure);
 }
@@ -339,8 +345,7 @@ void UART_RingBuf_Clear(UART_Handle_t* handle)
         return;
     }
 
-    handle->rx_read_index   = 0;
-    handle->rx_write_index  = 0;
+    handle->rx_read_index   = handle->rx_write_index;
     handle->rx_overflow_cnt = 0;
 }
 
@@ -353,45 +358,46 @@ void USART2_IRQHandler(void)
     // 定义 volatile 变量以防止编译器优化读取序列
     volatile uint32_t isr_flags = USART2->SR;
     volatile uint32_t dr_data;
-    (void) dr_data; // 消除 "unused variable" 警告
+    (void) dr_data;
 
     // [1] 处理 IDLE (空闲中断)：检测到一帧数据传输完成
     if (isr_flags & USART_FLAG_IDLE)
     {
-        // 硬件规定清除序列：先读 SR (上面已读)，再读 DR
+        // 1.1 清除标志位 (序列：读SR -> 读DR)
         dr_data = USART2->DR;
 
-        // 不能使用 USART_ClearITPendingBit 清除 IDLE
-        // 标志位，是因为DMA运输过程中，不会读SR状态寄存器，只会读DR数据寄存器，
-        // 但是芯片设计师普通模式下，是需要先读SR然后立马读DR才会帮忙清除标志位，
-        // 导致当进入中断时，需要手动先读SR然后立马读DR清除标志位
-        // USART_ClearITPendingBit(USART2, USART_IT_IDLE);
-
-        // 仅在 DMA 模式下更新写指针
+        // 1.2 更新 DMA 写指针
         if (g_esp_uart_handler.RX_DMA_Stream != NULL)
         {
-            // DMA_GetCurrDataCounter 返回剩余传输量
-            // 当前写入位置 = 总大小 - 剩余量
             uint32_t remaining = DMA_GetCurrDataCounter(g_esp_uart_handler.RX_DMA_Stream);
             g_esp_uart_handler.rx_write_index = RX_BUFFER_SIZE - remaining;
         }
+
+        // 1.3 通知 Weather 任务
+        if (WeatherTask_Handler != NULL)
+        {
+            BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
+            // 发送直达通知 (Give)
+            vTaskNotifyGiveFromISR(WeatherTask_Handler, &xHigherPriorityTaskWoken);
+
+            // 如果被叫醒的任务优先级比当前运行的任务高，
+            // 那么中断退出时直接进行上下文切换，实现"零延迟"响应
+            portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+        }
     }
 
-    // [2] 统一处理所有硬件错误 (ORE/NE/FE/PE)
+    // [2] 错误处理 (ORE/NE/FE/PE)
     if (isr_flags & (USART_FLAG_ORE | USART_FLAG_NE | USART_FLAG_FE | USART_FLAG_PE))
     {
-        // 清除序列：读 SR -> 读 DR (能清除以上所有错误标志)
-        dr_data = USART2->DR;
+        dr_data = USART2->DR; // 读数据寄存器清除错误标志
         (void) dr_data;
     }
 
-    // [3] 处理 RXNE (接收非空)：防御性代码
-    // 正常 DMA 模式下 RXNE 应该被关闭，但为了防止配置错误导致卡死，这里进行兜底
+    // [3] 兜底 RXNE (防止配置失误卡死中断)
     if (isr_flags & USART_FLAG_RXNE)
     {
-        dr_data = USART2->DR; // 读走数据，清除标志位
-
-        // 如果 DMA 未开启，这里可以添加备用的中断接收逻辑（目前省略）
+        dr_data = USART2->DR;
     }
 }
 

@@ -13,6 +13,7 @@
 
 #include "stm32f4xx.h"
 #include <stdint.h>
+#include "font_variable.h"
 
 /* ==================================================================
  * 1. 硬件引脚定义 (Hardware Pin Definitions)
@@ -104,7 +105,7 @@
 #define RED 0xF800     ///< 红色
 #define GREEN 0x07E0   ///< 绿色
 #define YELLOW 0xFFE0  ///< 黄色
-#define GRAY 0X8430    ///< 灰色
+#define GRAY 0x8430    ///< 灰色
 #define MAGENTA 0xF81F ///< 品红色
 #define CYAN 0x7FFF    ///< 青色
 
@@ -114,6 +115,7 @@
 
 /**
  * @brief DMA 配置宏 (SPI2_TX 对应 DMA1 Stream 4 Channel 0)
+ * @note  F407系列SPI2_TX固定映射到DMA1_Stream4 Channel0
  */
 #define LCD_DMA_STREAM DMA1_Stream4
 #define LCD_DMA_CHANNEL DMA_Channel_0
@@ -127,6 +129,9 @@
 /**
  * @brief RGB888 转 RGB565 宏
  * @note  输入 R/G/B (0~255)，输出 16位颜色值
+ * @param R Red (0~255)
+ * @param G Green (0~255)
+ * @param B Blue (0~255)
  */
 #define TFT_RGB(R, G, B)                                                                           \
     ((uint16_t) ((((R) & 0xF8) << 8) | (((G) & 0xFC) << 3) | (((B) & 0xF8) >> 3)))
@@ -138,14 +143,15 @@
 /**
  * @brief  初始化 ST7789 屏幕
  * @note   包含 GPIO、SPI 初始化及屏幕上电序列配置
+ *         必须在任何绘图操作前调用一次
  * @retval None
  */
 void ST7789_Init(void);
 
 /**
  * @brief  SPI 发送一个字节
- * @note   阻塞式发送单个字节
- * @param  byte: 要发送的数据 (8位)
+ * @note   阻塞式发送单个字节，用于命令和参数发送
+ * @param  byte 要发送的数据 (8位)
  * @retval None
  */
 void ST7789_SPI_SendByte(uint8_t byte);
@@ -153,7 +159,7 @@ void ST7789_SPI_SendByte(uint8_t byte);
 /**
  * @brief  发送 LCD 命令
  * @note   设置 DC=0，发送命令字节
- * @param  cmd: 命令字节
+ * @param  cmd 命令字节
  * @retval None
  */
 void TFT_SEND_CMD(uint8_t cmd);
@@ -161,65 +167,69 @@ void TFT_SEND_CMD(uint8_t cmd);
 /**
  * @brief  发送 LCD 数据
  * @note   设置 DC=1，发送数据字节
- * @param  data: 数据字节
+ * @param  data 数据字节
  * @retval None
  */
 void TFT_SEND_DATA(uint8_t data);
 
 /**
- * @brief  全屏填充颜色
- * @note   使用阻塞式填充整个屏幕
- * @param  color: RGB565 颜色值
- * @retval None
- */
-void TFT_full(uint16_t color);
-
-/**
- * @brief  清屏 (填充白色)
- * @note   快速清屏为白色
- * @retval None
- */
-void TFT_clear(void);
-
-/**
- * @brief  在指定区域填充颜色 (使用左上角坐标 + 长宽)
- * @note   阻塞式矩形填充，支持边界裁剪
- * @param  x_start: 起始 X 坐标 (0 ~ TFT_COLUMN_NUMBER-1)
- * @param  y_start: 起始 Y 坐标 (0 ~ TFT_LINE_NUMBER-1)
- * @param  w:       填充宽度 (像素)
- * @param  h:       填充高度 (像素)
- * @param  color:   填充颜色 (RGB565)
- * @retval None
- */
-void TFT_Fill_Rect(uint16_t x_start, uint16_t y_start, uint16_t w, uint16_t h, uint16_t color);
-
-/**
- * @brief  使用 DMA 全屏/区域填充颜色 (高性能版)
- * @note   利用 DMA 源地址不自增特性 + SPI 16位模式，实现极速刷屏
- *         CPU 在传输期间处于忙等待 (FreeRTOS下可优化为挂起)
- * @param  x: 起始 X 坐标
- * @param  y: 起始 Y 坐标
- * @param  w: 宽度 (像素)
- * @param  h: 高度 (像素)
- * @param  color: RGB565 颜色
+ * @brief  使用 DMA 区域填充颜色
+ * @note   高性能填充，支持任意矩形区域
+ *         内部使用DMA + SPI 16位模式，CPU空闲率高
+ *         必须在ST7789_Init()后调用
+ * @param  x 起始 X 坐标 (0 ~ TFT_COLUMN_NUMBER-1)
+ * @param  y 起始 Y 坐标 (0 ~ TFT_LINE_NUMBER-1)
+ * @param  w 填充宽度 (像素)
+ * @param  h 填充高度 (像素)
+ * @param  color RGB565 颜色值
  * @retval None
  */
 void TFT_Fill_Rect_DMA(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
 
 /**
  * @brief  使用 DMA 全屏填充颜色
- * @note   DMA 封装的全屏填充
- * @param  color: RGB565 颜色值
+ * @note   封装的全屏填充接口
+ * @param  color RGB565 颜色值
  * @retval None
  */
-void TFT_full_DMA(uint16_t color);
+void TFT_Full_DMA(uint16_t color);
 
 /**
- * @brief  DMA 全屏清屏 (封装函数)
- * @note   DMA 快速清屏为指定颜色
- * @param  color: RGB565 颜色值
+ * @brief  使用 DMA 全屏清屏
+ * @note   快速清屏为指定颜色（通常为白色或黑色背景）
+ * @param  color RGB565 颜色值
  * @retval None
  */
 void TFT_Clear_DMA(uint16_t color);
+
+/**
+ * @brief  DMA 发送图片数据 (阻塞式等待 DMA 完成，但速度极快)
+ * @param  x,y: 起始坐标
+ * @param  w,h: 宽, 高
+ * @param  pData: 图片数据指针 (RGB565 字节流)
+ */
+void TFT_ShowImage_DMA(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint8_t* pData);
+
+/**
+ * @brief  在指定位置显示字符串 (核心接口)
+ * @note   1. 支持中英混合字符串 (GBK/UTF-8兼容设计，视字库而定)。
+ * 2. 具备自动换行功能：当 X 坐标超出屏幕宽度时，自动折行。
+ * 3. 具备越界保护：当 Y 坐标超出屏幕高度时，停止渲染。
+ * 4. 线程安全：内部集成递归互斥锁 (Recursive Mutex)。
+ * 5. 高性能：使用 DMA 批量传输，非阻塞等待（取决于底层实现）。
+ * @param  x        起始 X 坐标 (0 ~ SCREEN_WIDTH-1)
+ * @param  y        起始 Y 坐标 (0 ~ SCREEN_HEIGHT-1)
+ * @param  str      字符串指针 (必须以 NULL 结尾)
+ * @param  font     字体描述符指针 (包含 ASCII 和 汉字库信息)
+ * @param  color_fg 字体前景色 (RGB565)
+ * @param  color_bg 字体背景色 (RGB565)
+ * @retval None
+ */
+void TFT_Show_String(uint16_t           x,
+                     uint16_t           y,
+                     const char*        str,
+                     const font_info_t* font,
+                     uint16_t           color_fg,
+                     uint16_t           color_bg);
 
 #endif /* __ST7789_H */

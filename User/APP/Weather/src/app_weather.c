@@ -10,6 +10,8 @@
  * - 优化串口读取逻辑，实现 0ms 等待（先问再取）
  * - 内存安全操作，防止缓冲区溢出
  */
+#include "FreeRTOS.h"
+#include "queue.h"
 
 #include "app_weather.h"
 #include "app_data.h"
@@ -39,6 +41,9 @@
 #define WEATHER_CONFIG_RETRY_DELAY_MS 3000
 // 接收缓冲区大小，必须大于最大的 HTTP 响应包 (心知天气通常 < 1KB)
 #define WEATHER_CONFIG_RX_BUF_SIZE 2048
+
+// 引用外部定义的队列
+extern QueueHandle_t g_weather_queue;
 
 /* ========================== 状态机枚举 ========================== */
 typedef enum
@@ -466,11 +471,14 @@ void APP_Weather_Task(void)
         // 调用解析器
         if (Weather_Parser_Execute(json_start, &eng->cache))
         {
-            // 解析成功，通过回调通知 UI 层
-            if (eng->data_cb)
+            // 发送队列 (Overwrite 模式：如果队列满了，直接覆盖旧的)
+            if (g_weather_queue != NULL)
             {
-                eng->data_cb(&eng->cache);
+                // 使用 xQueueOverwrite 即使队列满也不会阻塞，而是覆盖，适合刷屏数据
+                xQueueOverwrite(g_weather_queue, &eng->cache);
+                LOG_I("[Weather] Data pushed to queue");
             }
+
             WEATHER_NOTIFY_STATUS(eng, "Updated!", GREEN);
 
             // 重置重试计数，进入空闲状态
