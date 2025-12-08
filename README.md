@@ -55,7 +55,6 @@ git config --global gui.encoding utf-8
 Core/               - 启动文件 + 链接脚本
 Drivers/CMSIS/      - 官方 CMSIS 核心
 Drivers/SPL_F4/     - 标准外设库（已精简非必要驱动）
-Middleware/FreeRTOS - FreeRTOS 预留目录
 User/
   ├── Inc/          - 头文件
   └── Src/          - 源文件（推荐所有业务代码放这里）

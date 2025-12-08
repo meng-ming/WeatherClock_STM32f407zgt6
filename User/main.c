@@ -34,7 +34,7 @@ int main(void)
     // 初始化看门狗
     // 参数：256分频, 计数值1000 -> 约8000ms (8秒) 复位
     // 32kHz / 256 = 125Hz -> 1000/125 = 8s
-    BSP_IWDG_Init(IWDG_Prescaler_256, 1000);
+    BSP_IWDG_Init(IWDG_Prescaler_256, 1500);
 
     // 3. 超级循环
     while (1)

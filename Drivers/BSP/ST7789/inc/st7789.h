@@ -196,7 +196,7 @@ void TFT_Fill_Rect(uint16_t x_start, uint16_t y_start, uint16_t w, uint16_t h, u
 /**
  * @brief  使用 DMA 全屏/区域填充颜色 (高性能版)
  * @note   利用 DMA 源地址不自增特性 + SPI 16位模式，实现极速刷屏
- *         CPU 在传输期间处于忙等待 (FreeRTOS下可优化为挂起)
+ *         CPU 在传输期间处于忙等待
  * @param  x: 起始 X 坐标
  * @param  y: 起始 Y 坐标
  * @param  w: 宽度 (像素)

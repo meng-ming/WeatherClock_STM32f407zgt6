@@ -339,8 +339,7 @@ void UART_RingBuf_Clear(UART_Handle_t* handle)
         return;
     }
 
-    handle->rx_read_index   = 0;
-    handle->rx_write_index  = 0;
+    handle->rx_read_index   = handle->rx_write_index;
     handle->rx_overflow_cnt = 0;
 }
 

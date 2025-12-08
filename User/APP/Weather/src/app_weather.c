@@ -122,7 +122,7 @@ static void weather_error_handle(Weather_Engine_t* eng, const char* msg)
     {
         LOG_E("[Weather] Max retry reached, enter IDLE");
         WEATHER_NOTIFY_STATUS(eng, "Update Failed", RED);
-        weather_change_state(eng, WEATHER_STATE_IDLE);
+        weather_change_state(eng, WEATHER_STATE_INIT);
         eng->retry_cnt = 0;
     }
     // 还在重试范围内，进入短延时状态
@@ -344,6 +344,8 @@ void APP_Weather_Task(void)
     // 等待结果
     case WEATHER_STATE_SNTP_WAIT:
     {
+        BSP_Delay_ms(500);
+
         // 1. 调用非阻塞检查函数
         int8_t status = ESP_SNTP_Query_Check();
 
@@ -359,7 +361,7 @@ void APP_Weather_Task(void)
         else // status == 0 (等待中)
         {
             // 检查距离上次发送(或重发)是否超过了 1500ms
-            if (BSP_GetTick_ms() - eng->resend_timer > 1500)
+            if (BSP_GetTick_ms() - eng->resend_timer > 3000)
             {
                 // 调用封装好的驱动接口
                 ESP_SNTP_Query_Retry();
