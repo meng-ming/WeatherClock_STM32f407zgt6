@@ -27,10 +27,6 @@
 #define WEATHER_APPID "91768283"         ///< 易客云应用 ID
 #define WEATHER_APPSECRET "b68BdGrM"     ///< 易客云应用密钥
 
-// 备用账号 (开发调试用)
-// #define WEATHER_APPID     "42919643"
-// #define WEATHER_APPSECRET "aIg1oiyO"
-
 /* ==================================================================
  * 地区配置 (Location Configuration)
  * ================================================================== */

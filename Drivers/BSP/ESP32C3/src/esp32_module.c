@@ -207,9 +207,9 @@ bool ESP_WiFi_Connect(const char* ssid, const char* pwd, uint8_t retry)
         return false;
     }
 
-    // 3. 发送连接 (长超时 15s)
+    // 3. 发送连接 (长超时 3s)
     // 成功通常返回 OK，有时返回 WIFI GOT IP，视固件而定，这里以 OK 为准
-    if (ESP_Send_AT(cmd_buf, "OK", 15000, retry))
+    if (ESP_Send_AT(cmd_buf, "OK", 3000, retry))
     {
         return true;
     }
