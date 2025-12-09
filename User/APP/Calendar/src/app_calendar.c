@@ -19,7 +19,7 @@ void APP_Calendar_Task(void)
         BSP_RTC_Calendar_t now;
         BSP_RTC_GetCalendar(&now);
 
-        // 【核心】只有当秒数发生变化时，才刷屏幕
+        // 只有当秒数发生变化时，才刷屏幕
         if (now.sec != s_last_sec)
         {
             s_last_sec = now.sec;

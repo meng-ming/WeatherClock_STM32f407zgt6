@@ -16,7 +16,7 @@
 /* ==================================================================
  * 头文件包含 (Includes)
  * ================================================================== */
-#include "FreeRTOS.h"
+#include "FreeRTOS.h" // IWYU pragma: keep
 #include "task.h"
 #include "queue.h"
 #include "semphr.h"

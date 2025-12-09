@@ -10,7 +10,7 @@
  * - 优化串口读取逻辑，实现 0ms 等待（先问再取）
  * - 内存安全操作，防止缓冲区溢出
  */
-#include "FreeRTOS.h"
+#include "FreeRTOS.h" // IWYU pragma: keep
 #include "queue.h"
 
 #include "app_weather.h"
@@ -232,6 +232,28 @@ bool APP_Weather_Set_City(const char* city_name)
     return true;
 }
 
+/**
+ * @brief  强制触发一次完整的更新流程 (含时间同步)
+ * @note   通常用于：
+ * 1. 按键手动刷新
+ * 2. RTC 掉电检测到时间失效，请求立即校准
+ */
+void APP_Weather_Force_Update(void)
+{
+    // 如果正在初始化或还没连网，别乱跳，防止状态机错乱
+    if (g_weather.state < WEATHER_STATE_IDLE && g_weather.state != WEATHER_STATE_ERROR_DELAY)
+    {
+        LOG_W("[Weather] Busy now, ignore force update.");
+        return;
+    }
+
+    LOG_I("[Weather] Force Update Triggered (Sync Time + Weather)");
+
+    // 关键点：直接跳转到 SNTP 查询状态
+    // 不仅能刷新天气，还能顺便校准 RTC 时间
+    weather_change_state(&g_weather, WEATHER_STATE_SNTP_QUERY);
+}
+
 /* ========================== 主任务循环 (核心逻辑) ========================== */
 
 void APP_Weather_Task(void)
@@ -245,8 +267,8 @@ void APP_Weather_Task(void)
     switch (eng->state)
     {
     case WEATHER_STATE_INIT:
-        ESP_Module_Init(&g_esp_uart_handler); // 初始化串口和 DMA
         WEATHER_NOTIFY_STATUS(eng, "Init ESP32", UI_TEXT_WHITE);
+        ESP_Module_Init(&g_esp_uart_handler); // 初始化串口和 DMA
         weather_change_state(eng, WEATHER_STATE_RESET_ESP);
         break;
 

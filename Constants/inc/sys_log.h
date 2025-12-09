@@ -8,12 +8,13 @@
 
 #ifndef __SYS_LOG_H
 #define __SYS_LOG_H
-#include <stdio.h>
+
+// 添加 export 标记，告知 Clangd 当前包含是有意的，且不仅给本身使用
+#include <stdio.h> // IWYU pragma: export
 
 // 定义日志开关 (1: 开启, 0: 关闭)
-// 量产时改为 0，全世界都清净了
 #define SYS_LOG_ENABLE 1
-#define SYS_LOG_D_ENABLE 1
+#define SYS_LOG_D_ENABLE 0
 
 // 定义日志级别颜色 (ANSI 转义码，串口助手支持的话很酷)
 #define LOG_CLR_RED "\033[31m"

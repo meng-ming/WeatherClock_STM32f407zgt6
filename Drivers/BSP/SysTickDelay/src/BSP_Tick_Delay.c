@@ -6,7 +6,7 @@
  * @date    2025-12-07
  */
 /* === FreeRTOS 头文件 === */
-#include "FreeRTOS.h"
+#include "FreeRTOS.h" // IWYU pragma: keep
 #include "task.h"
 
 #include "BSP_Tick_Delay.h"

@@ -5,6 +5,9 @@
 #include <stdint.h>
 #include "stm32f4xx_rtc.h"
 #include "sys_log.h"
+#include <inttypes.h> // 引入头文件，提供 PRIu32 宏
+
+#define FIRST_BKP_REGISTER 0xA0A5
 
 /**
  * @brief  根据年月日计算星期几 (基姆拉尔森公式)
@@ -32,117 +35,297 @@ static uint8_t BSP_RTC_Cal_Week(uint16_t year, uint8_t month, uint8_t day)
     return (uint8_t) (w + 1);
 }
 
+/**
+ * @brief  测量 LSI 的实际频率
+ * @note   利用 TIM5 CH4 的输入捕获功能测量 LSI 周期
+ * 前提：系统主时钟已经配置好 (SystemCoreClock)
+ * @retval LSI 实际频率 (Hz)，如果测量失败返回默认 32000
+ */
+static uint32_t BSP_RTC_Get_LSI_Freq(void)
+{
+    uint32_t lsi_freq      = 32000;
+    uint32_t capture_val_1 = 0, capture_val_2 = 0;
+    uint32_t pclk1_freq = 0;
+    uint32_t timeout    = 0;
+
+    // 1. 开启 TIM5 时钟
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);
+
+    // 2. 开启 LSI (如果还没开)
+    RCC_LSICmd(ENABLE);
+    while (RCC_GetFlagStatus(RCC_FLAG_LSIRDY) == RESET)
+    {
+        if (++timeout > 0x3FFFF)
+            return 32000; // 超时返回默认值
+    }
+
+    // 3. 关键配置：将 LSI 连接到 TIM5_CH4 输入
+    // STM32F407 参考手册：TIM5_OR 寄存器的 TI4_RMP [7:6] 位
+    // 01: LSI internal clock is connected to TIM5_CH4 input
+    TIM5->OR |= (0x01 << 6);
+
+    // 4. 配置 TIM5 基础单元
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+    TIM_TimeBaseStructure.TIM_Period        = 0xFFFFFFFF;
+    TIM_TimeBaseStructure.TIM_Prescaler     = 0; // 不分频，精度最高
+    TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+    TIM_TimeBaseStructure.TIM_CounterMode   = TIM_CounterMode_Up;
+    TIM_TimeBaseInit(TIM5, &TIM_TimeBaseStructure);
+
+    // 5. 配置输入捕获 (IC4)
+    TIM_ICInitTypeDef TIM_ICInitStructure;
+    TIM_ICInitStructure.TIM_Channel     = TIM_Channel_4;
+    TIM_ICInitStructure.TIM_ICPolarity  = TIM_ICPolarity_Rising; // 上升沿捕获
+    TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI;
+    TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV8; // 8分频，减少抖动误差
+    TIM_ICInitStructure.TIM_ICFilter    = 0;
+    TIM_ICInit(TIM5, &TIM_ICInitStructure);
+
+    // 6. 启动定时器
+    TIM_Cmd(TIM5, ENABLE);
+
+    // 7. 开始测量
+    // 等待第一次捕获
+    TIM_ClearFlag(TIM5, TIM_FLAG_CC4);
+    timeout = 0;
+    while (TIM_GetFlagStatus(TIM5, TIM_FLAG_CC4) == RESET)
+    {
+        if (++timeout > 0xFFFFF)
+            goto end;
+    }
+    capture_val_1 = TIM_GetCapture4(TIM5);
+
+    // 等待第二次捕获
+    TIM_ClearFlag(TIM5, TIM_FLAG_CC4);
+    timeout = 0;
+    while (TIM_GetFlagStatus(TIM5, TIM_FLAG_CC4) == RESET)
+    {
+        if (++timeout > 0xFFFFF)
+            goto end;
+    }
+    capture_val_2 = TIM_GetCapture4(TIM5);
+
+    // 8. 计算频率
+    // 计数差值 * IC分频(8) = LSI 经过的时钟周期数
+    // 计数器时钟 = PCLK1 * 2 (如果 APB1 分频!=1)
+
+    // 获取 PCLK1 频率
+    RCC_ClocksTypeDef RCC_Clocks;
+    RCC_GetClocksFreq(&RCC_Clocks);
+    pclk1_freq = RCC_Clocks.PCLK1_Frequency;
+
+    // F407 如果 APB1 分频不为 1，定时器时钟是 PCLK1 的 2 倍
+    uint32_t tim_clk = (RCC_Clocks.HCLK_Frequency != pclk1_freq) ? (pclk1_freq * 2) : pclk1_freq;
+
+    // 防止溢出回绕计算
+    uint32_t diff = 0;
+    if (capture_val_2 >= capture_val_1)
+        diff = capture_val_2 - capture_val_1;
+    else
+        diff = (0xFFFFFFFF - capture_val_1) + capture_val_2 + 1;
+
+    // 频率公式：LSI_Freq = TIM_Clk / (Diff / IC_Prescaler)
+    // 即：LSI_Freq = (TIM_Clk * 8) / Diff
+    if (diff != 0)
+    {
+        lsi_freq = (tim_clk * 8) / diff;
+    }
+
+    LOG_I("[RTC] Measured LSI Freq: %" PRIu32 "Hz", lsi_freq);
+
+end:
+    // 9. 关闭 TIM5 省电
+    TIM_Cmd(TIM5, DISABLE);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, DISABLE);
+
+    return lsi_freq;
+}
+
+/**
+ * @brief  LSI 自动校准并配置 RTC 分频
+ * @note   无论是初次初始化还是重启，只要用 LSI，都调这个来确保精度
+ */
+static void BSP_RTC_Config_LSI_AutoCalib(void)
+{
+    LOG_W("[RTC] Performing LSI Auto-Calibration...");
+
+    // 1. 确保 LSI 开启并稳定
+    RCC_LSICmd(ENABLE);
+    uint32_t wait_tick = 0;
+    while (RCC_GetFlagStatus(RCC_FLAG_LSIRDY) == RESET)
+    {
+        if (++wait_tick > 0x3FFFF)
+        {
+            LOG_E("[RTC] LSI Start Failed!");
+            return;
+        }
+    }
+
+    // 2. 实时测量当前 LSI 频率
+    uint32_t real_lsi_freq = BSP_RTC_Get_LSI_Freq();
+
+    // 3. 计算分频系数
+    // Freq = RTCCLK / ((Asynch + 1) * (Synch + 1))
+    // 目标 1Hz。固定 Asynch = 127
+    // Synch = (Freq / 128) - 1
+    uint32_t asynch_div = 127;
+    uint32_t synch_div  = (real_lsi_freq / (asynch_div + 1)) - 1;
+
+    // 4. 配置 RTC 分频寄存器 (PRER)
+    // 注意：修改 PRER 需要进入 Init 模式，这会暂停日历一瞬间，但不会重置时间
+    RTC_InitTypeDef RTC_InitStructure;
+    RTC_InitStructure.RTC_HourFormat   = RTC_HourFormat_24;
+    RTC_InitStructure.RTC_AsynchPrediv = asynch_div;
+    RTC_InitStructure.RTC_SynchPrediv  = synch_div;
+
+    // 确保选源 (虽然可能已经选了，再选一次保险)
+    RCC_RTCCLKConfig(RCC_RTCCLKSource_LSI);
+    RCC_RTCCLKCmd(ENABLE);
+
+    RTC_WaitForSynchro(); // 等待同步
+
+    // 调用库函数更新分频系数
+    if (RTC_Init(&RTC_InitStructure) == ERROR)
+    {
+        LOG_E("[RTC] LSI Calibration Update Failed!");
+    }
+    else
+    {
+        LOG_I("[RTC] LSI Calibrated! Freq=%" PRIu32 "Hz, SynchDiv=%" PRIu32 "",
+              real_lsi_freq,
+              synch_div);
+    }
+}
+
+uint8_t BSP_RTC_Is_Time_Invalid(void)
+{
+    BSP_RTC_Calendar_t now;
+    BSP_RTC_GetCalendar(&now);
+
+    // 如果年份是 2000年，说明时间还没校准过
+    if (now.year == 2000)
+        return 1;
+    else
+        return 0;
+}
+
 BSP_RTC_Status_e BSP_RTC_Init(void)
 {
-    // 1. 使能 PWR 时钟
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
-
-    // 2. 解锁备份域
     PWR_BackupAccessCmd(ENABLE);
 
-    // 3. 配置时钟(首选LSE 32.768khz,次选 LSI)
-    // 判断是否是第一次配置RTC
-    if (RTC_ReadBackupRegister(RTC_BKP_DR0) != 0xA0A2)
+    // ==========================================
+    // 场景 A: 第一次初始化 (BKP 为空)
+    // ==========================================
+    if (RTC_ReadBackupRegister(RTC_BKP_DR0) != FIRST_BKP_REGISTER)
     {
-        // 退出 RTC 死锁
-        RCC_BackupResetCmd(ENABLE);  // 按下复位键
-        RCC_BackupResetCmd(DISABLE); // 松开复位键
+        RCC_BackupResetCmd(ENABLE);
+        RCC_BackupResetCmd(DISABLE);
 
-        // 3.1 尝试启动 LSE
         RCC_LSEConfig(RCC_LSE_ON);
-        LOG_I("[RTC] First Init!");
+        LOG_I("[RTC] First Init! Trying LSE...");
 
-        // 3.2 等待保护机制，防止 LSE 一直不启动
+        // 等待 LSE
         uint32_t wait_lse_tick = 0;
         while (RCC_GetFlagStatus(RCC_FLAG_LSERDY) == RESET)
         {
             wait_lse_tick++;
-            if (wait_lse_tick > 0xFFFF)
-            {
-                LOG_W("[RTC] LSE Failed, switching to LSI.");
-                break;
-            }
+            if (wait_lse_tick > 0xFFFFF)
+                break; // 超时
         }
 
-        // 3.3 再次判断 LSE 是否成功启动
         if (RCC_GetFlagStatus(RCC_FLAG_LSERDY) == SET)
         {
+            // LSE 成功
             RCC_RTCCLKConfig(RCC_RTCCLKSource_LSE);
-            LOG_I("[RTC] LSE Source Selected!");
+            RCC_RTCCLKCmd(ENABLE);
+            RTC_WaitForSynchro();
+
+            RTC_InitTypeDef RTC_InitStructure;
+            RTC_InitStructure.RTC_AsynchPrediv = 0x7F;
+            RTC_InitStructure.RTC_SynchPrediv  = 0xFF;
+            RTC_InitStructure.RTC_HourFormat   = RTC_HourFormat_24;
+            RTC_Init(&RTC_InitStructure);
+
+            LOG_I("[RTC] LSE Init Success!");
         }
         else
         {
-            // 启动 LSI
-            RCC_LSICmd(ENABLE);
-
-            wait_lse_tick = 0;
-            while (RCC_GetFlagStatus(RCC_FLAG_LSIRDY) == RESET)
-            {
-                wait_lse_tick++;
-                if (wait_lse_tick > 0xFFFF)
-                {
-                    LOG_W("[RTC] LSE And LSI All Failed !!!");
-                    return BSP_RTC_TIMEOUT; // 两个时钟都不起作用
-                }
-            }
-
-            RCC_RTCCLKConfig(RCC_RTCCLKSource_LSI);
-            LOG_W("[RTC] LSE Timeout!LSI Source Selected! (Low Precision)");
+            // LSE 失败 -> 转 LSI 自动校准
+            BSP_RTC_Config_LSI_AutoCalib();
         }
 
-        // 4. 开启外设时钟
-        RCC_RTCCLKCmd(ENABLE);
+        // 设置默认时间
+        BSP_RTC_SetTime(12, 0, 0);
+        BSP_RTC_SetDate(0, 1, 1);
 
-        // 5. 等待 RTC 内部影子寄存器和 APB 总线同步
-        RTC_WaitForSynchro();
-
-        // 6. 配置分频，保证周期为1s
-        // ck_freq(1Hz) = RTCCLK / ((AsynchPrediv + 1) * (SynchPrediv + 1))
-        // 只要使用 LSE 外部时钟，直接就填入这两个参数
-        RTC_InitTypeDef RTC_InitStructure;
-        RTC_InitStructure.RTC_AsynchPrediv = 0x7F; // 127
-        RTC_InitStructure.RTC_SynchPrediv  = 0xFF; // 255
-        RTC_InitStructure.RTC_HourFormat   = RTC_HourFormat_24;
-        if (RTC_Init(&RTC_InitStructure) == ERROR)
-        {
-            LOG_E("[RTC] Prescaler Init Failed!");
-            return BSP_RTC_ERROR;
-        }
-
-        // 8. 设置默认时间
-        if (BSP_RTC_SetTime(12, 0, 0) == BSP_RTC_ERROR)
-            return BSP_RTC_ERROR;
-        if (BSP_RTC_SetDate(25, 11, 2) == BSP_RTC_ERROR)
-            return BSP_RTC_ERROR;
-
-        RTC_WriteBackupRegister(RTC_BKP_DR0, 0xA0A2);
-        LOG_I("[RTC] Init Success!");
+        RTC_WriteBackupRegister(RTC_BKP_DR0, FIRST_BKP_REGISTER);
         return BSP_RTC_OK;
     }
+    // ==========================================
+    // 场景 B: 已初始化 (断电重启/复位)
+    // ==========================================
     else
     {
-        // 当在 if 条件中外部晶振失效并且启动LSI之后，如果复位或者重启，由于 BKP
-        // 掉电不丢失，导致不会再次进入 if 条件判断中，从而导致不会重启 LSI
+        // 检查当前 RTC 时钟源
+        // BDCR 寄存器 [9:8] 位: 01=LSE, 10=LSI
+        uint32_t clock_source = (RCC->BDCR >> 8) & 0x03;
 
-        // 1. 检查当前 RTC 的时钟源是不是 LSI
-        // (RCC_BDCR 寄存器里的 RTCSEL 位)
-        if (((RCC->BDCR >> 8) & 0x03) == 0x02) // 0x02 代表 LSI
+        if (clock_source == 0x02) // 0x02 代表 LSI
         {
-            LOG_I("[RTC] RTC is using LSI. Re-enabling LSI...");
+            LOG_I("[RTC] RTC is using LSI. Recalibrating...");
 
-            // 2. 因为复位会关掉 LSI，所以必须手动重新开启
-            RCC_LSICmd(ENABLE);
-
-            // 3. 等待 LSI 就绪
-            uint16_t retry = 0;
-            while (RCC_GetFlagStatus(RCC_FLAG_LSIRDY) == RESET)
+            // 即使是重启，只要发现用的是 LSI，就强制重新校准一次！
+            // 这样能消除温漂和电压波动带来的频率误差
+            BSP_RTC_Config_LSI_AutoCalib();
+        }
+        else if (clock_source == 0x01) // 0x01 代表 LSE
+        {
+            // 检查 LSE 是否还在工作
+            // 这里给一点延时尝试，防止刚上电 LSE 还没稳
+            uint32_t check_lse = 0;
+            while (RCC_GetFlagStatus(RCC_FLAG_LSERDY) == RESET)
             {
-                retry++;
-                if (retry > 0x1FFF)
-                {
-                    LOG_W("[RTC] LSE Failed And LSI Restart Failed !!!");
-                    return BSP_RTC_TIMEOUT; // 两个时钟都不起作用
-                }
+                check_lse++;
+                if (check_lse > 0x5FFF)
+                    break; // 稍微给点时间检测
+            }
+
+            if (RCC_GetFlagStatus(RCC_FLAG_LSERDY) == RESET)
+            {
+                // ========================================================
+                // 严重故障：系统配置了 LSE，但 LSE 彻底挂了
+                // 策略：断臂求生。强制复位备份域，切换到 LSI。
+                // ========================================================
+                LOG_E("[RTC] LSE Dead! Performing Backup Domain Reset...");
+
+                // 1. 复位备份域 (注意：这会清除当前时间！)
+                RCC_BackupResetCmd(ENABLE);
+                RCC_BackupResetCmd(DISABLE);
+
+                // 2. 重新启用 PWR 和 BKP 访问 (复位后可能需要重新开，保险起见)
+                PWR_BackupAccessCmd(ENABLE);
+
+                // 3. 此时系统回到了“一穷二白”的状态，像第一次上电一样
+                // 直接调用封装好的 LSI 自动校准函数
+                BSP_RTC_Config_LSI_AutoCalib();
+
+                // 4. 因为时间丢了，必须重置一个默认安全时间
+                // 将年份设为 0 (即 2000年)，作为“时间失效”的特殊标记
+                BSP_RTC_SetTime(12, 0, 0);
+                BSP_RTC_SetDate(0, 1, 1); // 2000-01-01
+
+                // 5. 标记初始化完成
+                RTC_WriteBackupRegister(RTC_BKP_DR0, FIRST_BKP_REGISTER);
+
+                LOG_W("[RTC] Recovered using LSI. Time Reset to 2000-01-01 (Invalid)!");
+            }
+            else
+            {
+                LOG_I("[RTC] LSE is Running Normal.");
+                // LSE 正常，只需要等待同步
+                RTC_WaitForSynchro();
+                RTC_ClearFlag(RTC_FLAG_RSF);
             }
         }
 

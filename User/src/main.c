@@ -48,7 +48,7 @@ void vApplicationTickHook(void)
  */
 void vApplicationMallocFailedHook(void)
 {
-    LOG_E("FATAL: Malloc Failed! Heap exhausted!");
+    LOG_E("[Main] FATAL: Malloc Failed! Heap exhausted!");
     for (;;);
 }
 
@@ -60,7 +60,7 @@ void vApplicationMallocFailedHook(void)
  */
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName)
 {
-    LOG_E("FATAL: Stack Overflow! Task: %s", pcTaskName ? pcTaskName : "NULL");
+    LOG_E("[Main] FATAL: Stack Overflow! Task: %s", pcTaskName ? pcTaskName : "NULL");
     for (;;);
 }
 
@@ -86,11 +86,11 @@ int main(void)
 
     if (g_mutex_lcd == NULL || g_mutex_log == NULL)
     {
-        LOG_E("Critical Error: Mutex Create Failed!");
+        LOG_E("[Main] Critical Error: Mutex Create Failed!");
         while (1);
     }
 
-    LOG_I("System Booting... (Build: %s %s)", __DATE__, __TIME__);
+    LOG_I("[Main] System Booting... (Build: %s %s)", __DATE__, __TIME__);
 
     /* 3. 创建启动任务 (Root Task) */
     BaseType_t xReturn = xTaskCreate(
@@ -98,18 +98,18 @@ int main(void)
 
     if (xReturn == pdPASS)
     {
-        LOG_I("Starting Scheduler...");
+        LOG_I("[Main] Starting Scheduler...");
         /* 4. 移交控制权给调度器 (永不返回) */
         vTaskStartScheduler();
     }
     else
     {
-        LOG_E("Failed to create Start Task!");
+        LOG_E("[Main] Failed to create Start Task!");
     }
 
     /* 5. 异常处理 (理论上不会运行到这里) */
     while (1)
     {
-        LOG_E("Scheduler Failed or Heap too small!");
+        LOG_E("[Main] Scheduler Failed or Heap too small!");
     }
 }

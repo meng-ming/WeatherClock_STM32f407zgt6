@@ -3,12 +3,13 @@
 #include "st7789.h"
 #include "app_ui_config.h"
 #include "sys_log.h"
+#include "font.h"
 
 // 引入新做好的页面模块
 #include "ui_main_page.h"
 #include <string.h>
 
-#include "FreeRTOS.h"
+#include "FreeRTOS.h" // IWYU pragma: keep
 #include "semphr.h"
 
 // 引入全局变量

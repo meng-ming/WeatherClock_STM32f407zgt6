@@ -5,6 +5,7 @@
 #include "font_variable.h"
 #include <stdio.h>
 #include <string.h>
+#include "font.h"
 
 // 辅助宏：局部刷新一行文字 (防止重叠)
 #define SHOW_LIST_ITEM(y, title, string)                                                           \

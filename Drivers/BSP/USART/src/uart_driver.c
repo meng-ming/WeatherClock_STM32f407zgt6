@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include "BSP_Tick_Delay.h"
 
-#include "FreeRTOS.h"
+#include "FreeRTOS.h" // IWYU pragma: keep
 #include "task.h"
 
 // 外部变量声明

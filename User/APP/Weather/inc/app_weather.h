@@ -45,4 +45,10 @@ void APP_Weather_Init(Weather_DataCallback_t data_cb, Weather_StatusCallback_t s
  */
 void APP_Weather_Task(void);
 
+/**
+ * @brief  强制启动更新 (同步时间 + 获取天气)
+ * @note   当检测到 RTC 时间丢失 (2000年) 时调用此函数救急
+ */
+void APP_Weather_Force_Update(void);
+
 #endif

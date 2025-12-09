@@ -95,7 +95,7 @@ void ESP_Module_Init(UART_Handle_t* uart_handler)
     // 清理环境
     UART_RingBuf_Clear(g_module_uart);
 
-    LOG_I("[ESP Info] Module Init OK");
+    LOG_I("[ESP] Module Init OK");
 }
 
 /**
@@ -173,7 +173,7 @@ bool ESP_Send_AT(const char* cmd, const char* expect_resp, uint32_t timeout_ms, 
         // 本次尝试失败，准备重试
         if (i < retry)
         {
-            LOG_D("[ESP Info] Retry %d/%d: %s", i + 1, retry, cmd);
+            LOG_D("[ESP] Retry %d/%d: %s", i + 1, retry, cmd);
             BSP_Delay_ms(500); // 避让时间，给模块恢复
         }
     }

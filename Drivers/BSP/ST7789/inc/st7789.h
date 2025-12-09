@@ -1,11 +1,15 @@
 /**
  * @file    st7789.h
- * @brief   ST7789 LCD 屏幕底层驱动接口
- * @note    负责 SPI 初始化、屏幕配置、基础绘图（画点、填充）。
- *          字符显示等高级功能建议上层实现，保持驱动层纯净。
+ * @brief   ST7789 LCD 屏幕底层驱动接口 (DMA 高性能版)
+ * @note    本模块遵循“机制与策略分离”原则，仅负责底层的像素传输和硬件控制。
+ * 高级绘图功能（如字符、画圆、UI控件）请在 Middleware 或 APP 层实现。
+ * 核心特性：
+ * 1. DMA 零拷贝传输：极大降低 CPU 占用。
+ * 2. 自动分包机制：支持超过 65535 像素的大块数据传输。
+ * 3. 线程安全设计：核心接口集成递归锁 (需 OS 支持)。
  * @author  meng-ming
- * @version 1.0
- * @date    2025-12-07
+ * @version 2.0
+ * @date    2025-12-09
  */
 
 #ifndef __ST7789_H
@@ -13,7 +17,6 @@
 
 #include "stm32f4xx.h"
 #include <stdint.h>
-#include "font_variable.h"
 
 /* ==================================================================
  * 1. 硬件引脚定义 (Hardware Pin Definitions)
@@ -209,27 +212,5 @@ void TFT_Clear_DMA(uint16_t color);
  * @param  pData: 图片数据指针 (RGB565 字节流)
  */
 void TFT_ShowImage_DMA(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint8_t* pData);
-
-/**
- * @brief  在指定位置显示字符串 (核心接口)
- * @note   1. 支持中英混合字符串 (GBK/UTF-8兼容设计，视字库而定)。
- * 2. 具备自动换行功能：当 X 坐标超出屏幕宽度时，自动折行。
- * 3. 具备越界保护：当 Y 坐标超出屏幕高度时，停止渲染。
- * 4. 线程安全：内部集成递归互斥锁 (Recursive Mutex)。
- * 5. 高性能：使用 DMA 批量传输，非阻塞等待（取决于底层实现）。
- * @param  x        起始 X 坐标 (0 ~ SCREEN_WIDTH-1)
- * @param  y        起始 Y 坐标 (0 ~ SCREEN_HEIGHT-1)
- * @param  str      字符串指针 (必须以 NULL 结尾)
- * @param  font     字体描述符指针 (包含 ASCII 和 汉字库信息)
- * @param  color_fg 字体前景色 (RGB565)
- * @param  color_bg 字体背景色 (RGB565)
- * @retval None
- */
-void TFT_Show_String(uint16_t           x,
-                     uint16_t           y,
-                     const char*        str,
-                     const font_info_t* font,
-                     uint16_t           color_fg,
-                     uint16_t           color_bg);
 
 #endif /* __ST7789_H */

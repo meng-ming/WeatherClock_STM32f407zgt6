@@ -80,7 +80,7 @@ file(GLOB_RECURSE USER_SOURCES CONFIGURE_DEPENDS
     "Drivers/BSP/SysTickDelay/src/*.c"
 
 
-    "Resources/Font/*.c"
+    "Resources/Font/src/*.c"
     "Resources/Image/src/*.c"
     "Resources/City/src/*.c"
 
@@ -119,6 +119,7 @@ target_include_directories(${PROJECT_NAME}.elf PRIVATE
     Drivers/BSP/SysTickDelay/inc
 
     Resources/City/inc
+    Resources/Font/inc
 
     Middleware/cJSON/inc
     Middleware/FreeRTOS/inc
