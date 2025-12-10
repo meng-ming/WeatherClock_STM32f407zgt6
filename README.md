@@ -7,11 +7,11 @@
 
 ---
 
-## 项目架构概述
+## 1. 项目架构概述
 
 本项目摒弃了传统的 IDE 开发模式，采用**“驱动层 - 中间层 - 应用层”**严格解耦的分层架构，实现了从底层硬件到上层业务的完全隔离。
 
-### 核心技术栈 (Tech Stack)
+### 1.1 核心技术栈 (Tech Stack)
 
 * **构建系统**: CMake + Ninja (秒级增量编译，支持跨平台)。
 * **操作系统**: FreeRTOS V10.6.2 (抢占式内核，任务/队列/互斥锁/事件组)。
@@ -24,7 +24,7 @@
   * 递归互斥锁保护日志与 UI 资源。
 
 ---
-## 硬件配置 (Hardware Configuration)
+## 2. 硬件配置 (Hardware Configuration)
 
 本项目基于以下核心硬件平台开发与验证：
 
@@ -36,7 +36,7 @@
 | **显示屏** | **2.4寸 TFT LCD** | **ST7789** 驱动芯片, **240x320** 点阵分辨率, SPI 接口 |
 ---
 
-## 开发环境要求 (Prerequisites)
+## 3. 开发环境要求 (Prerequisites)
 
 请务必安装以下工具链，以确保构建系统正常工作。
 
@@ -51,7 +51,7 @@
 
 ---
 
-## 重要注意事项 (Configuration)
+## 4. 重要注意事项 (Configuration)
 
 | 序号 | 注意事项               | 解决方案                                                                 |
 |------|------------------------|--------------------------------------------------------------------------|
@@ -62,9 +62,9 @@
 
 ---
 
-## 快速开始 (Quick Start)
+## 5. 快速开始 (Quick Start)
 
-### 1. 编译工程
+### 5.1 编译工程
 推荐使用 VS Code 的 **CMake Tools** 插件底部状态栏按钮进行构建，或者使用终端命令：
 
 ```bash
@@ -80,12 +80,12 @@ ninja
 
 注意: 如果遇到浮点数打印为空 (如 temp=)，请确认 CmakeLists.txt 中已包含 -u _printf_float 链接选项。
 
-### 2. 下载与调试
+### 5.2 下载与调试
 * 一键下载: 运行 Task 中的 Flash Device 或命令行 make flash (需自定义 Target)。
 * 在线调试: 按下 F5 启动 Cortex-Debug，自动连接 OpenOCD 并停在 main() 入口。
 ---
 
-## 目录结构说明 (Detailed Structure)
+## 6. 目录结构说明 (Detailed Structure)
 
 ```
 WeatherClock_STM32f407zgt6/
@@ -122,13 +122,15 @@ WeatherClock_STM32f407zgt6/
 ```
 ---
 
-### 各个模块配套资料下载地址
+## 7. 各个模块配套资料下载地址
 
 **网盘链接**：https://pan.baidu.com/s/1Xt1_zTLxCBrZN7gFr50a6Q?pwd=raai
 **提取码**：raai
 **分享有效期**：永久有效（百度网盘超级会员V1账号持续维护）
 
 ---
+## 8. 整体界面展示
+<img src="./Docs/images/整体界面展示.jpg" width="300" style="border-radius:8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
 
 ## 许可证
 本项目基于 MIT License 开源。

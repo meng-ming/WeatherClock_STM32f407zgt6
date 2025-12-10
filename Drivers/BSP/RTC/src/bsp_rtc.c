@@ -17,7 +17,7 @@
 #include "sys_log.h"
 #include <inttypes.h> // 引入头文件，提供 PRIu32 宏
 
-#define FIRST_BKP_REGISTER 0xA0A5
+#define FIRST_BKP_REGISTER 0xA0A1
 
 /**
  * @brief  根据年月日计算星期几 (基姆拉尔森公式)
