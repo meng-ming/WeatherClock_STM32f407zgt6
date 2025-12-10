@@ -1,3 +1,13 @@
+/**
+ * @file    weather_parser.c
+ * @brief
+ * 天气数据解析模块。使用cJSON解析API返回JSON，提取城市、天气、温度等字段填充结构体，支持扩展信息如温差、风向。
+ * @author  meng-ming
+ *
+ * Copyright (c) 2025 meng-ming
+ * SPDX-License-Identifier: MIT
+ */
+
 #include "weather_parser.h"
 #include "cJSON.h"
 #include <string.h>

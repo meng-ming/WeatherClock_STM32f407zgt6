@@ -6,6 +6,9 @@
  * @date    2025-12-07
  * @note    支持 DMA 循环接收不定长数据，集成空闲中断 (IDLE) 处理机制。
  * 符合 MISRA-C 规范思想，增强了内存安全性和代码健壮性。
+ *
+ * Copyright (c) 2025 meng-ming
+ * SPDX-License-Identifier: MIT
  */
 
 #include "uart_driver.h"

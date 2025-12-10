@@ -1,3 +1,13 @@
+/**
+ * @file  bsp_rtc.c
+ * @brief
+ * RTC板级支持包。处理LSI/LSE自动切换与校准、时间日期设置/获取、周计算。确保断电重启时钟源稳定，优先LSE
+ * @author  meng-ming
+ *
+ * Copyright (c) 2025 meng-ming
+ * SPDX-License-Identifier: MIT
+ */
+
 #include "bsp_rtc.h"
 #include "stm32f4xx.h"
 #include "stm32f4xx_pwr.h"

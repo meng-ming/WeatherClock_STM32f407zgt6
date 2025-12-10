@@ -1,6 +1,9 @@
 /**
  * @file    esp32_module.c
  * @brief   ESP32 AT 模组驱动实现 (高健壮性版)
+ *
+ * Copyright (c) 2025 meng-ming
+ * SPDX-License-Identifier: MIT
  */
 
 #include "esp32_module.h"

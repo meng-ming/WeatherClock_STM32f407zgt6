@@ -5,6 +5,9 @@
  * @author  meng-ming
  * @version 1.1
  * @date    2025-12-10
+ *
+ * Copyright (c) 2025 meng-ming
+ * SPDX-License-Identifier: MIT
  */
 
 #ifndef __AHT20_H

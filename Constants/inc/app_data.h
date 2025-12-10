@@ -5,6 +5,9 @@
  * @version 1.0
  * @date    2025-12-07
  * @note    此文件包含 WiFi 凭证、天气 API 密钥及核心数据结构定义。
+ *
+ * Copyright (c) 2025 meng-ming
+ * SPDX-License-Identifier: MIT
  */
 
 #ifndef __APP_DATA_H

@@ -1,3 +1,12 @@
+/**
+ * @file    app_calendar.c
+ * @brief   日历应用模块。轮询RTC获取时间，优化秒级UI刷新，避免高频无效更新。
+ * @author  meng-ming
+ *
+ * Copyright (c) 2025 meng-ming
+ * SPDX-License-Identifier: MIT
+ */
+
 #include "app_calendar.h"
 #include "BSP_Tick_Delay.h"
 #include "bsp_rtc.h"

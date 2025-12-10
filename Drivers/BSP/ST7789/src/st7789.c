@@ -1,6 +1,9 @@
 /**
  * @file    st7789.c
  * @brief   ST7789 LCD µ×²ãÇý¶¯ÊµÏÖ
+ *
+ * Copyright (c) 2025 meng-ming
+ * SPDX-License-Identifier: MIT
  */
 
 #include "st7789.h"

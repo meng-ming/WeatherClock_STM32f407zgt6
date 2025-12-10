@@ -1,3 +1,12 @@
+/**
+ * @file    app_ui.c
+ * @brief   UI应用模块。管理开机界面、LCD硬件初始化、互斥更新天气数据、状态文字显示与擦除。
+ * @author  meng-ming
+ *
+ * Copyright (c) 2025 meng-ming
+ * SPDX-License-Identifier: MIT
+ */
+
 #include "app_ui.h"
 #include "BSP_Tick_Delay.h"
 #include "st7789.h"

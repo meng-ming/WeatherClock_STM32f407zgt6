@@ -1,6 +1,9 @@
 /**
  * @file    bsp_iwdg.c
  * @brief   独立看门狗驱动实现
+ *
+ * Copyright (c) 2025 meng-ming
+ * SPDX-License-Identifier: MIT
  */
 
 #include "bsp_iwdg.h"

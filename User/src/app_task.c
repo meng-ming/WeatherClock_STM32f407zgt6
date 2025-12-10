@@ -1,5 +1,4 @@
 /**
- ******************************************************************************
  * @file    app_tasks.c
  * @author  meng-ming
  * @version V1.0
@@ -10,7 +9,9 @@
  * - UI: 界面刷新
  * - Calendar: 实时时钟
  * - Daemon: 系统健康监控
- ******************************************************************************
+ *
+ * Copyright (c) 2025 meng-ming
+ * SPDX-License-Identifier: MIT
  */
 
 #include "main.h"

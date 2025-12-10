@@ -3,6 +3,9 @@
  * @brief   AHT20 驱动实现 (软件 I2C)
  * @note    所有底层 I2C 操作均为 private (static)，仅对外暴露 Init 和 Read 接口。
  * @author  meng-ming
+ *
+ * Copyright (c) 2025 meng-ming
+ * SPDX-License-Identifier: MIT
  */
 
 #include "AHT20.h"

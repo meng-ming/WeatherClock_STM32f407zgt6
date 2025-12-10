@@ -9,7 +9,11 @@
  * - 引入 retry_target_state 实现动态错误跳转机制
  * - 优化串口读取逻辑，实现 0ms 等待（先问再取）
  * - 内存安全操作，防止缓冲区溢出
+ *
+ * Copyright (c) 2025 meng-ming
+ * SPDX-License-Identifier: MIT
  */
+
 #include "FreeRTOS.h" // IWYU pragma: keep
 #include "queue.h"
 

@@ -1,12 +1,14 @@
 /**
- ******************************************************************************
  * @file    main.c
  * @author  meng-ming
  * @version V1.0
  * @date    2025-12-08
- * @brief   ϵͳ������ļ�
- * @note    ���� main() ������FreeRTOS Hook �����Լ����ڴ涨�塣
- ******************************************************************************
+ * @brief   ϵͳ������ļ�?
+ * @note    ���� main() ������FreeRTOS Hook
+ * �����Լ����ڴ涨�塣
+ *
+ * Copyright (c) 2025 meng-ming
+ * SPDX-License-Identifier: MIT
  */
 
 #include "main.h"
@@ -15,11 +17,11 @@
 #include "sys_log.h"
 
 /* ==================================================================
- * �ڴ�ֲ����� (Memory Allocation)
+ * �ڴ�ֲ�����? (Memory Allocation)
  * ================================================================== */
 /* * [�����Ż�] FreeRTOS �Ѷ���
  * ǿ�Ʒ����� CCM RAM (64KB) �����ͷ� SRAM �� DMA ʹ��
- * ����� Linker Script �е� .ccmram (NOLOAD) �ζ���
+ * �����? Linker Script �е� .ccmram (NOLOAD) �ζ���
  */
 uint8_t ucHeap[configTOTAL_HEAP_SIZE] __attribute__((section(".ccmram")));
 
@@ -35,7 +37,7 @@ SemaphoreHandle_t g_mutex_log = NULL;
 
 /**
  * @brief  ϵͳ�δ���
- * @note   �� SysTick �ж��е��ã�����ά�������ʱ������ʱ��
+ * @note   �� SysTick �ж��е��ã�����ά�������ʱ������ʱ��?
  */
 void vApplicationTickHook(void)
 {
@@ -54,9 +56,9 @@ void vApplicationMallocFailedHook(void)
 }
 
 /**
- * @brief  ջ�������
- * @param  xTask: ���������
- * @param  pcTaskName: �����������
+ * @brief  ջ�������?
+ * @param  xTask: ���������?
+ * @param  pcTaskName: �����������?
  * @note   ���� FreeRTOSConfig.h �п��� configCHECK_FOR_STACK_OVERFLOW
  */
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName)
@@ -71,11 +73,11 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName)
 
 int main(void)
 {
-    /* 1. ����Ӳ�����ʼ�� */
+    /* 1. ����Ӳ�����ʼ��? */
     /* �����ж����ȼ����� (FreeRTOS ǿ���� NVIC_PriorityGroup_4) */
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-    /* ��ʼ��ϵͳ�δ�ʱ�� (���/OS����) */
+    /* ��ʼ��ϵͳ�δ�ʱ�� (���?/OS����) */
     BSP_SysTick_Init();
 
     /* ��ʼ�����Դ��� (printf �ض���) */

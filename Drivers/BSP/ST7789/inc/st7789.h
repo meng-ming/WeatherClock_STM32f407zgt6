@@ -10,6 +10,9 @@
  * @author  meng-ming
  * @version 2.0
  * @date    2025-12-09
+ *
+ * Copyright (c) 2025 meng-ming
+ * SPDX-License-Identifier: MIT
  */
 
 #ifndef __ST7789_H

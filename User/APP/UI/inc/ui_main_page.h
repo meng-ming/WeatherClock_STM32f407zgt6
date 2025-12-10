@@ -5,6 +5,9 @@
  * @version 1.0
  * @date    2025-12-07
  * @note    此接口将底层 UI 驱动和高层应用逻辑解耦，只负责主界面元素的初始化和数据刷新。
+ *
+ * Copyright (c) 2025 meng-ming
+ * SPDX-License-Identifier: MIT
  */
 
 #ifndef __UI_MAIN_PAGE_H

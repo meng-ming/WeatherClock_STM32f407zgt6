@@ -6,6 +6,9 @@
  * @author  meng-ming
  * @version 1.2
  * @date    2025-12-07
+ *
+ * Copyright (c) 2025 meng-ming
+ * SPDX-License-Identifier: MIT
  */
 
 #ifndef __UART_DRIVER_H

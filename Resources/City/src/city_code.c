@@ -1,7 +1,11 @@
 /**
  * @file city_code.c
  * @brief 城市数据库源文件
+ *
+ * Copyright (c) 2025 meng-ming
+ * SPDX-License-Identifier: MIT
  */
+
 #include "city_code.h"
 #include <string.h>
 

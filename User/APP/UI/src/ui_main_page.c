@@ -1,3 +1,12 @@
+/**
+ * @file    ui_main_page.c
+ * @brief   UI主页面模块。初始化布局、更新天气/日历/传感器/WiFi状态，使用互斥锁保护LCD刷新。
+ * @author  meng-ming
+ *
+ * Copyright (c) 2025 meng-ming
+ * SPDX-License-Identifier: MIT
+ */
+
 #include "ui_main_page.h"
 #include "app_data.h"
 #include "app_ui_config.h"
@@ -8,7 +17,7 @@
 #include "font.h"
 #include "sys_log.h"
 
-#include "FreeRTOS.h"
+#include "FreeRTOS.h" // IWYU pragma: keep
 #include "semphr.h"
 
 // 引用外部互斥锁

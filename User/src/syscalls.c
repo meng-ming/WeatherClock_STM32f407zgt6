@@ -1,6 +1,9 @@
 /**
  * @file    syscalls.c
  * @brief   STM32 Newlib 桩函数实现 (用于消除链接器警告)
+ *
+ * Copyright (c) 2025 meng-ming
+ * SPDX-License-Identifier: MIT
  */
 
 #include <sys/stat.h>

@@ -4,6 +4,9 @@
  * @author  meng-ming
  * @note    负责管理网络连接、数据获取、协议解析等核心业务逻辑。
  * 通过回调函数机制与 UI 层解耦。
+ *
+ * Copyright (c) 2025 meng-ming
+ * SPDX-License-Identifier: MIT
  */
 
 #ifndef __APP_WEATHER_H

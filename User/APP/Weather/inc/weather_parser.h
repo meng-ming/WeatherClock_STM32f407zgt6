@@ -2,6 +2,9 @@
  * @file    weather_parser.h
  * @author  meng-ming
  * @brief   天气数据解析模块接口
+ *
+ * Copyright (c) 2025 meng-ming
+ * SPDX-License-Identifier: MIT
  */
 
 #ifndef __WEATHER_PARSER_H

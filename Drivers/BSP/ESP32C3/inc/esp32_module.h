@@ -6,6 +6,9 @@
  * @author  meng-ming
  * @version 1.0
  * @date    2025-12-07
+ *
+ * Copyright (c) 2025 meng-ming
+ * SPDX-License-Identifier: MIT
  */
 
 #ifndef __ESP32_MODULE_H
