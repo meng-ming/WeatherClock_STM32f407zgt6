@@ -83,6 +83,7 @@ ninja
 ### 2. 下载与调试
 * 一键下载: 运行 Task 中的 Flash Device 或命令行 make flash (需自定义 Target)。
 * 在线调试: 按下 F5 启动 Cortex-Debug，自动连接 OpenOCD 并停在 main() 入口。
+---
 
 ## 目录结构说明 (Detailed Structure)
 
@@ -119,13 +120,15 @@ WeatherClock_STM32f407zgt6/
         ├── UI/                 # UI 逻辑 (界面布局, 局部刷新, 互斥锁保护)
         └── Calendar/           # 日历业务 (时间同步, 传感器定时读取)
 ```
+---
+
 ### 各个模块配套资料下载地址
 
 **网盘链接**：https://pan.baidu.com/s/1Xt1_zTLxCBrZN7gFr50a6Q?pwd=raai
 **提取码**：raai
 **分享有效期**：永久有效（百度网盘超级会员V1账号持续维护）
 
-### 资源包内容（总大小约1.8GB，全部可直接用于商业项目）
+---
 
 ## 许可证
 本项目基于 MIT License 开源。
