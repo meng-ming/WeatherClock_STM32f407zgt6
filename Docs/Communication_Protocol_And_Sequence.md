@@ -33,6 +33,18 @@
 | 数据位宽| 8-bit                     | st7789.c: SPI_DataSize_8b (DMA传输时可能拆分) |
 | 像素格式| RGB565                    | 16-bit per pixel                 |
 
+#### 2.3 温湿度传感器接口 (STM32 <-> AHT20)
+采用 GPIO 模拟 I2C (软件 I2C) 进行双向通信，确保时序稳定性和移植性。
+
+| 参数 | 规格 | 代码来源 / 说明 |
+| :--- | :--- | :--- |
+| 端口 | 软件模拟 (Soft I2C) | AHT20.c: GPIOB |
+| STM32引脚 | PB6 (SCL)<br>PB7 (SDA) | AHT20.c:<br>GPIO_Pin_6, GPIO_Pin_7 |
+| 时钟频率 | ~50 kHz | AHT20.c: I2C_Delay (10us 半周期) |
+| I2C 地址 | 0x38 (7-bit) | AHT20.c: AHT20_ADDRESS (0x70 Write) |
+| 传输模式 | Polling (阻塞式轮询) | AHT20_Read_Data (含 80ms 转换等待) |
+| 数据格式| 6 Bytes Raw Data | Status(8) + Humidity(20) + Temp(20) |
+
 ### 3. 应用层通信协议 (AT Commands)
 STM32 作为主机 (Master)，ESP32 作为从机 (Slave)。所有指令以 \r\n 结尾。
 

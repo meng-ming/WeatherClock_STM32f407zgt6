@@ -41,7 +41,7 @@
 
 /* 日历任务: 负责本地时间维护 (轻量级) */
 #define CALENDAR_TASK_PRIO 5
-#define CALENDAR_TASK_STACK_SIZE 192 /* 优化后: 256->192 */
+#define CALENDAR_TASK_STACK_SIZE 256
 
 /* 守护任务: 负责全域监控与看门狗喂狗 (最高优先级，防止被饿死) */
 #define DAEMON_TASK_PRIO 10

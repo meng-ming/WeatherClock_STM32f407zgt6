@@ -6,6 +6,16 @@
 #include <stdio.h>
 #include <string.h>
 #include "font.h"
+#include "sys_log.h"
+
+#include "FreeRTOS.h"
+#include "semphr.h"
+
+// 引用外部互斥锁
+extern SemaphoreHandle_t g_mutex_lcd;
+
+// 表示传感器故障
+#define SENSOR_ERROR_VAL -999.0f
 
 // 辅助宏：局部刷新一行文字 (防止重叠)
 #define SHOW_LIST_ITEM(y, title, string)                                                           \
@@ -100,33 +110,37 @@ void APP_UI_UpdateWeather(const APP_Weather_Data_t* data)
         return;
     char buf[64];
 
-    // === 1. 更新状态栏  ===
-    snprintf(buf, sizeof(buf), "更新时间 %s", data->update_time);
-    TFT_Show_String(120, 9, buf, &font_16, UI_TEXT_WHITE, UI_STATUS_BG);
+    if (xSemaphoreTakeRecursive(g_mutex_lcd, pdMS_TO_TICKS(100)) == pdTRUE)
+    {
+        // === 1. 更新状态栏  ===
+        snprintf(buf, sizeof(buf), "更新时间 %s", data->update_time);
+        TFT_Show_String(120, 9, buf, &font_16, UI_TEXT_WHITE, UI_STATUS_BG);
 
-    // === 2.. 更新当前天气栏  ===
-    const unsigned char* p_weather_img = Get_Weather_Icon(data->weather);
-    TFT_ShowImage_DMA(25, 135, 60, 60, p_weather_img);
-    TFT_Show_String(25, 200, data->temp, &font_time_20, TFT_RGB(255, 180, 0), UI_ICON_BG);
+        // === 2.. 更新当前天气栏  ===
+        const unsigned char* p_weather_img = Get_Weather_Icon(data->weather);
+        TFT_ShowImage_DMA(25, 135, 60, 60, p_weather_img);
+        TFT_Show_String(25, 200, data->temp, &font_time_20, TFT_RGB(255, 180, 0), UI_ICON_BG);
 
-    // === 3. 更新列表栏 ===
-    // 显示当前城市
-    TFT_Show_String(152, 135, data->city, &font_time_20, UI_TEXT_BLACK, UI_LIST_BG);
+        // === 3. 更新列表栏 ===
+        // 显示当前城市
+        TFT_Show_String(152, 135, data->city, &font_time_20, UI_TEXT_BLACK, UI_LIST_BG);
 
-    // 显示各种天气参数
-    SHOW_LIST_ITEM(172, "温差", data->temp_range);
+        // 显示各种天气参数
+        SHOW_LIST_ITEM(172, "温差", data->temp_range);
 
-    SHOW_LIST_ITEM(202, "风向", data->wind);
+        SHOW_LIST_ITEM(202, "风向", data->wind);
 
-    SHOW_LIST_ITEM(234, "空气", data->air);
+        SHOW_LIST_ITEM(234, "空气", data->air);
 
-    SHOW_LIST_ITEM(262, "湿度", data->humidity);
+        SHOW_LIST_ITEM(262, "湿度", data->humidity);
 
-    SHOW_LIST_ITEM(292, "气压", data->pressure);
-
-    // === 3. 更新室内模块 ===
-    TFT_Show_String(55, 262, "26.5", &font_16, UI_TEXT_WHITE, UI_INDOOR_BG);
-    TFT_Show_String(55, 292, "45%", &font_16, UI_TEXT_WHITE, UI_INDOOR_BG);
+        SHOW_LIST_ITEM(292, "气压", data->pressure);
+        xSemaphoreGiveRecursive(g_mutex_lcd);
+    }
+    else
+    {
+        LOG_W("[UI] Weather Update Locked!");
+    }
 }
 
 void APP_UI_UpdateCalendar(BSP_RTC_Calendar_t cal)
@@ -134,33 +148,72 @@ void APP_UI_UpdateCalendar(BSP_RTC_Calendar_t cal)
     char time_buf[8];
     char date_buf[32];
 
-    // 显示 时分
-    snprintf(time_buf, sizeof(time_buf), "%02d:%02d", cal.hour, cal.min);
-    TFT_Show_String(30, 35, time_buf, &font_time_30x60, UI_TEXT_WHITE, UI_TIME_BG);
+    if (xSemaphoreTakeRecursive(g_mutex_lcd, pdMS_TO_TICKS(50)) == pdTRUE)
+    {
+        // 显示 时分
+        snprintf(time_buf, sizeof(time_buf), "%02d:%02d", cal.hour, cal.min);
+        TFT_Show_String(30, 35, time_buf, &font_time_30x60, UI_TEXT_WHITE, UI_TIME_BG);
 
-    // 显示 秒
-    snprintf(time_buf, sizeof(time_buf), "%02d", cal.sec);
-    TFT_Show_String(182, 68, time_buf, &font_time_20, UI_TEXT_WHITE, UI_TIME_BG);
+        // 显示 秒
+        snprintf(time_buf, sizeof(time_buf), "%02d", cal.sec);
+        TFT_Show_String(182, 68, time_buf, &font_time_20, UI_TEXT_WHITE, UI_TIME_BG);
 
-    snprintf(date_buf,
-             sizeof(date_buf),
-             "%04d-%02d-%02d %s",
-             cal.year,
-             cal.month,
-             cal.date,
-             WEEK_STR[cal.week]);
-    TFT_Show_String(35, 95, date_buf, &font_time_20, UI_TEXT_WHITE, UI_TIME_BG);
+        snprintf(date_buf,
+                 sizeof(date_buf),
+                 "%04d-%02d-%02d %s",
+                 cal.year,
+                 cal.month,
+                 cal.date,
+                 WEEK_STR[cal.week]);
+        TFT_Show_String(35, 95, date_buf, &font_time_20, UI_TEXT_WHITE, UI_TIME_BG);
+
+        xSemaphoreGiveRecursive(g_mutex_lcd);
+    }
 }
 
 void APP_UI_Update_WiFi(bool is_connected, const char* ssid)
 {
-    // 1. 更新图标
-    if (is_connected)
+    if (xSemaphoreTakeRecursive(g_mutex_lcd, pdMS_TO_TICKS(50)) == pdTRUE)
     {
-        TFT_ShowImage_DMA(BOX_STATUS_X, BOX_STATUS_Y, 25, 25, gImage_WIFI);
+        // 1. 更新图标
+        if (is_connected)
+        {
+            TFT_ShowImage_DMA(BOX_STATUS_X, BOX_STATUS_Y, 25, 25, gImage_WIFI);
+        }
+        else
+        {
+            TFT_ShowImage_DMA(BOX_STATUS_X, BOX_STATUS_Y, 25, 25, gImage_WIFI_Disconnected);
+        }
+        xSemaphoreGiveRecursive(g_mutex_lcd);
     }
-    else
+}
+
+void APP_UI_UpdateSensor(float temp, float humi)
+{
+    // 1. 定义缓冲区
+    static char buf[32];
+
+    // 2. 申请屏幕锁
+    if (xSemaphoreTake(g_mutex_lcd, pdMS_TO_TICKS(50)) == pdTRUE)
     {
-        TFT_ShowImage_DMA(BOX_STATUS_X, BOX_STATUS_Y, 25, 25, gImage_WIFI_Disconnected);
+        // === 检查是否为错误状态 ===
+        if (temp <= -900.0f) // 只要小于 -900 都算错误
+        {
+            // 显示 "--" 提示用户设备故障
+            TFT_Show_String(47, 262, "--.- C", &font_16, RED, UI_INDOOR_BG); // 用红色醒目提示
+            TFT_Show_String(57, 292, "-- %", &font_16, RED, UI_INDOOR_BG);
+        }
+        else
+        {
+            // === 显示温度 ===
+            snprintf(buf, sizeof(buf), "%.1f℃", temp);
+            TFT_Show_String(47, 262, buf, &font_16, UI_TEXT_WHITE, UI_INDOOR_BG);
+
+            // === 显示湿度 ===
+            snprintf(buf, sizeof(buf), "%.0f%%", humi);
+            TFT_Show_String(57, 292, buf, &font_16, UI_TEXT_WHITE, UI_INDOOR_BG);
+        }
+        // 3. 释放锁
+        xSemaphoreGive(g_mutex_lcd);
     }
 }

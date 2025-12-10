@@ -42,8 +42,8 @@
 // 接收缓冲区大小，必须大于最大的 HTTP 响应包 (心知天气通常 < 1KB)
 #define WEATHER_CONFIG_RX_BUF_SIZE 2048
 
-// 引用外部定义的队列
-extern QueueHandle_t g_weather_queue;
+// 私有天气信息队列句柄
+static QueueHandle_t s_weather_queue = NULL;
 
 /* ========================== 状态机枚举 ========================== */
 typedef enum
@@ -202,8 +202,27 @@ void APP_Weather_Init(Weather_DataCallback_t data_cb, Weather_StatusCallback_t s
     strncpy(g_weather.current_city, CITY_NAME, sizeof(g_weather.current_city) - 1);
     g_weather.current_city[sizeof(g_weather.current_city) - 1] = '\0';
 
+    /* 队列深度设为1，采用 overwrite 模式，保证 UI 总是显示最新天气 */
+    if (s_weather_queue == NULL)
+    {
+        s_weather_queue = xQueueCreate(1, sizeof(APP_Weather_Data_t));
+    }
+
     LOG_I("[Weather] Engine initialized, city: %s", g_weather.current_city);
     WEATHER_NOTIFY_STATUS(&g_weather, "Weather Init", UI_TEXT_WHITE);
+}
+
+bool APP_Weather_GetData(APP_Weather_Data_t* out_data, uint32_t wait_ms)
+{
+    if (s_weather_queue == NULL || out_data == NULL)
+        return false;
+
+    // 封装 FreeRTOS API，对外隐藏实现
+    if (xQueueReceive(s_weather_queue, out_data, pdMS_TO_TICKS(wait_ms)) == pdTRUE)
+    {
+        return true;
+    }
+    return false;
 }
 
 void APP_Weather_Deinit(void)
@@ -494,10 +513,10 @@ void APP_Weather_Task(void)
         if (Weather_Parser_Execute(json_start, &eng->cache))
         {
             // 发送队列 (Overwrite 模式：如果队列满了，直接覆盖旧的)
-            if (g_weather_queue != NULL)
+            if (s_weather_queue != NULL)
             {
                 // 使用 xQueueOverwrite 即使队列满也不会阻塞，而是覆盖，适合刷屏数据
-                xQueueOverwrite(g_weather_queue, &eng->cache);
+                xQueueOverwrite(s_weather_queue, &eng->cache);
                 LOG_I("[Weather] Data pushed to queue");
             }
 

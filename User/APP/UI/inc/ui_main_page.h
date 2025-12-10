@@ -40,4 +40,16 @@ void APP_UI_UpdateCalendar(BSP_RTC_Calendar_t current_calendar);
  */
 void APP_UI_Update_WiFi(bool is_connected, const char* ssid);
 
+/**
+ * @brief  更新室内温湿度 UI 显示
+ * @note   此函数为线程安全 (Thread-Safe)，内部集成了递归互斥锁。
+ * 支持特殊错误码显示：
+ * - 若 temp <= -900.0，屏幕将显示红色 "--.-" 报警，提示传感器故障。
+ * - 正常范围内，显示白色数值 (温度保留1位小数，湿度取整)。
+ * @param  temp: 温度值 (单位: ℃)
+ * @param  humi: 湿度值 (单位: %)
+ * @retval None
+ */
+void APP_UI_UpdateSensor(float temp, float humi);
+
 #endif /* __UI_MAIN_PAGE_H */

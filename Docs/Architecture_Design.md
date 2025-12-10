@@ -46,7 +46,7 @@
 | Language | C99               | -        | 嵌入式开发标准，兼顾性能与可移植性，GCC 编译器兼容性优秀。               |
 | Build    | CMake + Ninja     | 3.20+    | 现代化构建系统，支持增量编译，与 VS Code 集成高效，便于 CI/CD 流程。    |
 | Protocol | AT Commands       | ESP-AT   | 将 TCP/IP 协议栈卸载至 ESP32，减轻 MCU 负载，提升系统稳定性。           |
-| UI       | Custom DMA Engine | v2.0     | 自研 DMA 传输引擎，比 LVGL 更轻量，针对 ST7789 优化，实现零 CPU 占用刷屏。 |
+| UI       | Custom DMA Engine | v2.0     | DMA 传输引擎，比 LVGL 更轻量，针对 ST7789 优化，实现零 CPU 占用刷屏。 |
 | Parser   | cJSON             | 1.7.15   | 超轻量级 JSON 解析器，内存占用可控，API 简洁高效。                      |
 
 ## 6. 核心模块划分与职责

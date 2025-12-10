@@ -45,6 +45,7 @@ add_link_options(
     -Wl,--gc-sections           # 清除未使用的段，减小体积
     -specs=nano.specs           # 使用 newlib-nano 库，体积更小
     -specs=nosys.specs          # 裸机环境必备
+    -u _printf_float            # 强制开启 printf 的浮点支持
 )
 
 # =======================================================
@@ -75,6 +76,7 @@ file(GLOB_RECURSE USER_SOURCES CONFIGURE_DEPENDS
     "Drivers/BSP/RTC/src/*.c"
     "Drivers/BSP/IWDG/src/*.c"
     "Drivers/BSP/USART/src/*.c"
+    "Drivers/BSP/AHT20/src/*.c"
     "Drivers/BSP/ST7789/src/*.c"
     "Drivers/BSP/ESP32C3/src/*.c"
     "Drivers/BSP/SysTickDelay/src/*.c"
@@ -114,6 +116,7 @@ target_include_directories(${PROJECT_NAME}.elf PRIVATE
     Drivers/BSP/RTC/inc
     Drivers/BSP/IWDG/inc
     Drivers/BSP/USART/inc
+    Drivers/BSP/AHT20/inc
     Drivers/BSP/ST7789/inc
     Drivers/BSP/ESP32C3/inc
     Drivers/BSP/SysTickDelay/inc

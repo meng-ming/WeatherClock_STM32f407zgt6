@@ -4,8 +4,8 @@
  * @author  meng-ming
  * @version V1.0
  * @date    2025-12-08
- * @brief   ÏµÍ³Ö÷Èë¿ÚÎÄ¼ş
- * @note    °üº¬ main() º¯Êı¡¢FreeRTOS Hook º¯ÊıÒÔ¼°¶ÑÄÚ´æ¶¨Òå¡£
+ * @brief   ÏµÍ³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½
+ * @note    ï¿½ï¿½ï¿½ï¿½ main() ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½FreeRTOS Hook ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½Ú´æ¶¨ï¿½å¡£
  ******************************************************************************
  */
 
@@ -15,27 +15,27 @@
 #include "sys_log.h"
 
 /* ==================================================================
- * ÄÚ´æ·Ö²¼¶¨Òå (Memory Allocation)
+ * ï¿½Ú´ï¿½Ö²ï¿½ï¿½ï¿½ï¿½ï¿½ (Memory Allocation)
  * ================================================================== */
-/* * [ºËĞÄÓÅ»¯] FreeRTOS ¶Ñ¶¨Òå
- * Ç¿ÖÆ·ÅÖÃÓÚ CCM RAM (64KB) ÇøÓò£¬ÊÍ·Å SRAM ¹© DMA Ê¹ÓÃ
- * ĞèÅäºÏ Linker Script ÖĞµÄ .ccmram (NOLOAD) ¶Î¶¨Òå
+/* * [ï¿½ï¿½ï¿½ï¿½ï¿½Å»ï¿½] FreeRTOS ï¿½Ñ¶ï¿½ï¿½ï¿½
+ * Ç¿ï¿½Æ·ï¿½ï¿½ï¿½ï¿½ï¿½ CCM RAM (64KB) ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½ SRAM ï¿½ï¿½ DMA Ê¹ï¿½ï¿½
+ * ï¿½ï¿½ï¿½ï¿½ï¿½ Linker Script ï¿½Ğµï¿½ .ccmram (NOLOAD) ï¿½Î¶ï¿½ï¿½ï¿½
  */
 uint8_t ucHeap[configTOTAL_HEAP_SIZE] __attribute__((section(".ccmram")));
 
 /* ==================================================================
- * È«¾Ö±äÁ¿¶¨Òå (Global Definitions)
+ * È«ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (Global Definitions)
  * ================================================================== */
 SemaphoreHandle_t g_mutex_lcd = NULL;
 SemaphoreHandle_t g_mutex_log = NULL;
 
 /* ==================================================================
- * OS ¹³×Óº¯Êı (Hooks)
+ * OS ï¿½ï¿½ï¿½Óºï¿½ï¿½ï¿½ (Hooks)
  * ================================================================== */
 
 /**
- * @brief  ÏµÍ³µÎ´ğ¹³×Ó
- * @note   ÔÚ SysTick ÖĞ¶ÏÖĞµ÷ÓÃ£¬ÓÃÓÚÎ¬³ÖÂã»úÑÓÊ±º¯ÊıµÄÊ±»ù
+ * @brief  ÏµÍ³ï¿½Î´ï¿½ï¿½ï¿½
+ * @note   ï¿½ï¿½ SysTick ï¿½Ğ¶ï¿½ï¿½Ğµï¿½ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½Î¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
  */
 void vApplicationTickHook(void)
 {
@@ -43,20 +43,21 @@ void vApplicationTickHook(void)
 }
 
 /**
- * @brief  ÄÚ´æÉêÇëÊ§°Ü¹³×Ó
- * @note   µ±¶ÑÄÚ´æ²»×ãÊ±µ÷ÓÃ¡£ÉÌÒµ¼¶´úÂëÓ¦ÔÚ´Ë¼ÇÂ¼ÈÕÖ¾²¢¸´Î»¡£
+ * @brief  ï¿½Ú´ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ü¹ï¿½ï¿½ï¿½
+ * @note   ï¿½ï¿½ï¿½ï¿½ï¿½Ú´æ²»ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Ã¡ï¿½ï¿½ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ú´Ë¼ï¿½Â¼ï¿½ï¿½Ö¾ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
  */
 void vApplicationMallocFailedHook(void)
 {
-    LOG_E("[Main] FATAL: Malloc Failed! Heap exhausted!");
-    for (;;);
+    LOG_E("[Main] Malloc Failed! System Resetting...");
+    BSP_Delay_ms(100);
+    NVIC_SystemReset(); // è¿™ç§é”™è¯¯æ²¡æ³•æ•‘ï¼Œç›´æ¥å¤ä½æ˜¯æœ€å¥½çš„è§£è„±
 }
 
 /**
- * @brief  Õ»Òç³ö¹³×Ó
- * @param  xTask: Òç³öÈÎÎñ¾ä±ú
- * @param  pcTaskName: Òç³öÈÎÎñÃû³Æ
- * @note   ĞèÔÚ FreeRTOSConfig.h ÖĞ¿ªÆô configCHECK_FOR_STACK_OVERFLOW
+ * @brief  Õ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ * @param  xTask: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ * @param  pcTaskName: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ * @note   ï¿½ï¿½ï¿½ï¿½ FreeRTOSConfig.h ï¿½Ğ¿ï¿½ï¿½ï¿½ configCHECK_FOR_STACK_OVERFLOW
  */
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName)
 {
@@ -65,22 +66,22 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName)
 }
 
 /* ==================================================================
- * Ö÷º¯Êı (Entry Point)
+ * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (Entry Point)
  * ================================================================== */
 
 int main(void)
 {
-    /* 1. »ù´¡Ó²¼ş²ã³õÊ¼»¯ */
-    /* ÉèÖÃÖĞ¶ÏÓÅÏÈ¼¶·Ö×é (FreeRTOS Ç¿ÒÀÀµ NVIC_PriorityGroup_4) */
+    /* 1. ï¿½ï¿½ï¿½ï¿½Ó²ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ */
+    /* ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¶ï¿½ï¿½ï¿½ï¿½È¼ï¿½ï¿½ï¿½ï¿½ï¿½ (FreeRTOS Ç¿ï¿½ï¿½ï¿½ï¿½ NVIC_PriorityGroup_4) */
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-    /* ³õÊ¼»¯ÏµÍ³µÎ´ğ¶¨Ê±Æ÷ (Âã»ú/OS¹²ÓÃ) */
+    /* ï¿½ï¿½Ê¼ï¿½ï¿½ÏµÍ³ï¿½Î´ï¿½Ê±ï¿½ï¿½ (ï¿½ï¿½ï¿½/OSï¿½ï¿½ï¿½ï¿½) */
     BSP_SysTick_Init();
 
-    /* ³õÊ¼»¯µ÷ÊÔ´®¿Ú (printf ÖØ¶¨Ïò) */
+    /* ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ (printf ï¿½Ø¶ï¿½ï¿½ï¿½) */
     UART_Init(&g_debug_uart_handler);
 
-    /* 2. ´´½¨ÏµÍ³¼¶»¥³âËø (µİ¹éËø) */
+    /* 2. ï¿½ï¿½ï¿½ï¿½ÏµÍ³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½İ¹ï¿½ï¿½ï¿½) */
     g_mutex_lcd = xSemaphoreCreateRecursiveMutex();
     g_mutex_log = xSemaphoreCreateRecursiveMutex();
 
@@ -92,14 +93,14 @@ int main(void)
 
     LOG_I("[Main] System Booting... (Build: %s %s)", __DATE__, __TIME__);
 
-    /* 3. ´´½¨Æô¶¯ÈÎÎñ (Root Task) */
+    /* 3. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (Root Task) */
     BaseType_t xReturn = xTaskCreate(
         start_task, "Start_Task", START_TASK_STACK_SIZE, NULL, START_TASK_PRIO, &StartTask_Handler);
 
     if (xReturn == pdPASS)
     {
         LOG_I("[Main] Starting Scheduler...");
-        /* 4. ÒÆ½»¿ØÖÆÈ¨¸øµ÷¶ÈÆ÷ (ÓÀ²»·µ»Ø) */
+        /* 4. ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½È¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½) */
         vTaskStartScheduler();
     }
     else
@@ -107,7 +108,7 @@ int main(void)
         LOG_E("[Main] Failed to create Start Task!");
     }
 
-    /* 5. Òì³£´¦Àí (ÀíÂÛÉÏ²»»áÔËĞĞµ½ÕâÀï) */
+    /* 5. ï¿½ì³£ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½Ï²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğµï¿½ï¿½ï¿½ï¿½ï¿½) */
     while (1)
     {
         LOG_E("[Main] Scheduler Failed or Heap too small!");

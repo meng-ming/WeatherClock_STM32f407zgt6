@@ -24,12 +24,13 @@
 #include "app_ui.h"
 #include "app_calendar.h"
 #include "ui_main_page.h"
+#include "AHT20.h"
+#include <stdint.h>
 
 /* ==================================================================
  * 全局变量定义 (Global Definitions)
  * ================================================================== */
-QueueHandle_t      g_weather_queue = NULL;
-EventGroupHandle_t g_event_alive   = NULL;
+EventGroupHandle_t g_event_alive = NULL;
 
 TaskHandle_t StartTask_Handler;
 TaskHandle_t WeatherTask_Handler;
@@ -66,17 +67,26 @@ void start_task(void* pvParameters)
     }
 
     LOG_I("[Start Task] Initializing UI...");
+
     APP_UI_Init();
 
     /* 注册 UI 回调函数给天气模块 (用于解耦，尽管Phase 3已用队列，但保留回调接口灵活性) */
     APP_Weather_Init(APP_UI_UpdateWeather, APP_UI_ShowStatus);
 
-    /* 2. 创建 OS 通信对象 */
-    /* 队列深度设为1，采用 overwrite 模式，保证 UI 总是显示最新天气 */
-    g_weather_queue = xQueueCreate(1, sizeof(APP_Weather_Data_t));
-    g_event_alive   = xEventGroupCreate();
+    // 初始化 AHT20 模块
+    if (AHT20_Init() != 0)
+    {
+        LOG_E("[AHT20] Init Failed! Check Wiring (SCL:PB6, SDA:PB7)");
+    }
+    else
+    {
+        LOG_I("[AHT20] Init Success");
+    }
 
-    if (g_weather_queue == NULL || g_event_alive == NULL)
+    /* 2. 创建 OS 通信对象 */
+    g_event_alive = xEventGroupCreate();
+
+    if (g_event_alive == NULL)
     {
         LOG_E("[Start Task] OS Object Create Failed! System Halt.");
         /* 严重故障：资源不足，死循环触发看门狗复位 */
@@ -160,24 +170,60 @@ static void weather_task(void* pvParameters)
 
 /**
  * @brief  日历任务
- * @note   周期性任务 (20ms)，负责 RTC 时间读取与同步。
+ * @note   周期性任务 (20ms)，负责 RTC 时间读取与同步以及更新 AHT20 传感器数据
  */
 static void calendar_task(void* pvParameters)
 {
     TickType_t       xLastWakeTime = xTaskGetTickCount();
-    const TickType_t xFrequency    = 20; // 50Hz 刷新率
+    const TickType_t xFrequency    = 20;
+
+    static uint8_t s_sensor_timer = 0;
+
+    static uint8_t tryCnt = 0;
+    float          temp   = 0.0f;
+    float          humi   = 0.0f;
 
     while (1)
     {
         APP_Calendar_Task();
 
-        /* 喂“软狗” */
+        // 1秒执行一次
+        if (++s_sensor_timer >= 50)
+        {
+            s_sensor_timer = 0;
+
+            if (AHT20_Read_Data(&temp, &humi) == 0)
+            {
+                LOG_D("[AHT20] temp=%.1f,humi=%.0f", temp, humi);
+                // --- 成功 ---
+                tryCnt = 0;
+                APP_UI_UpdateSensor(temp, humi);
+            }
+            else
+            {
+                // --- 失败 ---
+                // 封顶保护：防止 tryCnt 无限增加溢出回 0
+                if (tryCnt < 10)
+                {
+                    tryCnt++;
+                }
+
+                LOG_W("[AHT20] Read Error, Cnt: %d", tryCnt);
+
+                // 连续失败 3 次才报错，防止偶尔的 I2C 抖动导致屏幕乱闪
+                if (tryCnt == 3)
+                {
+                    // 传入 -999.0 让 UI 显示红色横线
+                    APP_UI_UpdateSensor(-999.0f, 0.0f);
+                }
+            }
+        }
+
         if (g_event_alive)
         {
             xEventGroupSetBits(g_event_alive, TASK_BIT_CALENDAR);
         }
 
-        /* 绝对延时，保证时间精度 */
         vTaskDelayUntil(&xLastWakeTime, xFrequency);
     }
 }
@@ -196,7 +242,7 @@ static void ui_task(void* pvParameters)
         /* * 等待队列消息
          * 超时设为 1000ms：确保即使没收到天气数据，也能每秒醒来喂软狗
          */
-        if (xQueueReceive(g_weather_queue, &weather_cache, pdMS_TO_TICKS(1000)) == pdTRUE)
+        if (APP_Weather_GetData(&weather_cache, 1000))
         {
             LOG_I("[UI] Received msg, updating screen...");
             APP_UI_Update(&weather_cache);
