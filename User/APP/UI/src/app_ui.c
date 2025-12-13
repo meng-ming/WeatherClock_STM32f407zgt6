@@ -9,6 +9,7 @@
 
 #include "app_ui.h"
 #include "BSP_Tick_Delay.h"
+#include "font_variable.h"
 #include "st7789.h"
 #include "app_ui_config.h"
 #include "sys_log.h"
@@ -16,6 +17,7 @@
 
 // 引入新做好的页面模块
 #include "ui_main_page.h"
+#include <stdint.h>
 #include <string.h>
 
 #include "FreeRTOS.h" // IWYU pragma: keep
@@ -24,7 +26,9 @@
 // 引入全局变量
 extern SemaphoreHandle_t g_mutex_lcd;
 
-static uint8_t s_last_status_len = 0; // 上个状态文字的长度，用于覆盖刷新
+// 全局静态变量
+static UI_Label_t s_status = {
+    35, BOX_STATUS_Y + 5, BOX_STATUS_X + BOX_STATUS_W - 35, &font_16, 0, UI_STATUS_BG, {0, 0}};
 
 /**
  * @brief  系统开机界面
@@ -73,26 +77,81 @@ void APP_UI_Update(const APP_Weather_Data_t* data)
 void APP_UI_ShowStatus(const char* status, uint16_t color)
 {
     LOG_I("[APP] %s", status); // 调试时可打开
+    s_status.fg_color = color;
+    UI_Print_Label(&s_status, status);
+}
 
-    // 1. 直接绘制新状态
-    TFT_Show_String(35, BOX_STATUS_Y + 5, status, &font_16, color, UI_STATUS_BG);
-
-    // 2. 如果新文字比旧文字短，多出来的旧文字需要擦除
-    //    方法：在屁股后面画空格，空格会自动填充背景色
-    size_t new_len = strlen(status);
-
-    if (new_len < s_last_status_len)
+Cursor_Pos_t UI_Print_Label(UI_Label_t* label, const char* str)
+{
+    // 1. 获取递归锁 (保障 "绘制+擦除" 操作的原子性，防止中间被打断导致闪烁)
+    if (g_mutex_lcd != NULL)
     {
-        uint16_t x_offset = 35 + new_len * 8; // 计算空格开始的 x 坐标
-
-        for (size_t i = new_len; i < s_last_status_len; i++)
-        {
-            // 画一个背景色的空格，就把旧字盖掉了
-            TFT_Show_String(x_offset, BOX_STATUS_Y + 5, " ", &font_16, UI_STATUS_BG, UI_STATUS_BG);
-            x_offset += 8;
-        }
+        xSemaphoreTakeRecursive(g_mutex_lcd, portMAX_DELAY);
     }
 
-    // 3. 更新历史长度
-    s_last_status_len = new_len;
+    // 2. 调用底层绘图，获取当前的结束坐标
+    //    注意：传入 label->limit_width 以启用底层的自动换行计算
+    Cursor_Pos_t curr_pos = TFT_Show_String(
+        label->x, label->y, label->limit_width, str, label->font, label->fg_color, label->bg_color);
+
+    // 3. 计算行高 (优先使用汉字高度，覆盖范围更全)
+    uint16_t line_h = (label->font->cn_h > 0) ? label->font->cn_h : label->font->ascii_h;
+
+    // 4. 计算当前控件的物理右边界 (用于行末擦除)
+    uint16_t right_bound =
+        (label->limit_width == 0) ? TFT_COLUMN_NUMBER : (label->x + label->limit_width);
+    if (right_bound > TFT_COLUMN_NUMBER)
+        right_bound = TFT_COLUMN_NUMBER;
+
+    // ============================================================
+    // 智能擦除逻辑 (Diff Algorithm)
+    // 对比 curr_pos (新) 与 label->last_pos (旧)
+    // ============================================================
+
+    // 场景 A: 行数减少了 (例如从 3 行变成了 1 行)
+    // 此时不仅要擦除当前行剩余部分，还要把下方多出来的旧行全部填平
+    if (curr_pos.end_y < label->last_pos.end_y)
+    {
+        // 1. 擦除当前行剩余部分 (从 end_x 到 右边界)
+        uint16_t clear_w_row = right_bound - curr_pos.end_x;
+        if (clear_w_row > 0)
+        {
+            TFT_Fill_Rect_DMA(curr_pos.end_x, curr_pos.end_y, clear_w_row, line_h, label->bg_color);
+        }
+
+        // 2. 擦除下方所有旧行 (从 下一行顶 到 旧结束行底)
+        // 垂直高度 = 旧结束Y - 新结束Y
+        uint16_t clear_h_block = label->last_pos.end_y - curr_pos.end_y;
+
+        // 填充整块矩形区域 (从下一行起始处开始)
+        // 注意：这里简单处理为擦除整行宽度，确保残留彻底清除
+        uint16_t block_w =
+            (label->limit_width == 0) ? (TFT_COLUMN_NUMBER - label->x) : label->limit_width;
+
+        TFT_Fill_Rect_DMA(
+            label->x, curr_pos.end_y + line_h, block_w, clear_h_block, label->bg_color);
+    }
+    // 场景 B: 行数没变，但最后一行变短了
+    else if (curr_pos.end_y == label->last_pos.end_y)
+    {
+        if (curr_pos.end_x < label->last_pos.end_x)
+        {
+            // 只需擦除尾巴
+            uint16_t clear_w = label->last_pos.end_x - curr_pos.end_x;
+            TFT_Fill_Rect_DMA(curr_pos.end_x, curr_pos.end_y, clear_w, line_h, label->bg_color);
+        }
+    }
+    // 场景 C: 变长或行数增加
+    // 不需要任何擦除操作，新内容会自动覆盖旧内容 (背景色填充由 TFT_Show_String 完成)
+
+    // 5. 更新状态 (记账)
+    label->last_pos = curr_pos;
+
+    // 6. 释放锁
+    if (g_mutex_lcd != NULL)
+    {
+        xSemaphoreGiveRecursive(g_mutex_lcd);
+    }
+
+    return curr_pos;
 }

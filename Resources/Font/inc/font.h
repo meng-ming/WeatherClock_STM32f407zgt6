@@ -33,25 +33,32 @@
  * ================================================================== */
 
 /**
- * @brief  在指定位置显示字符串 (核心接口)
+ * @brief  在指定区域显示字符串（支持自动换行与宽度限制）
  * @note   1. 支持中英混合字符串 (GBK/UTF-8兼容设计，视字库而定)。
- * 2. 具备自动换行功能：当 X 坐标超出屏幕宽度时，自动折行。
+ * 2. 具备自动换行功能：当 X 坐标超出限制宽度时，自动折行。
  * 3. 具备越界保护：当 Y 坐标超出屏幕高度时，停止渲染。
  * 4. 线程安全：内部集成递归互斥锁 (Recursive Mutex)，防止多任务冲突。
  * 5. 高性能：使用 DMA 批量传输，非阻塞等待（取决于底层实现）。
- * @param  x        起始 X 坐标 (0 ~ SCREEN_WIDTH-1)
- * @param  y        起始 Y 坐标 (0 ~ SCREEN_HEIGHT-1)
- * @param  str      字符串指针 (必须以 NULL 结尾)
- * @param  font     字体描述符指针 (包含 ASCII 和 汉字库信息)
- * @param  color_fg 字体前景色 (RGB565)
- * @param  color_bg 字体背景色 (RGB565)
- * @retval None
+ * @param  x            起始 X 坐标
+ * @param  y            起始 Y 坐标
+ * @param  limit_width  最大允许显示宽度（像素）。
+ * - 若为 0，则默认延伸至屏幕物理右边界。
+ * - 若非 0，当字符串宽度超过 (x + limit_width) 时自动换行。
+ * @param  str          待显示的字符串指针（支持 UTF-8/GBK，需与字库编码一致）
+ * @param  font         字体描述结构体指针
+ * @param  color_fg     前景色（文字颜色）
+ * @param  color_bg     背景色（填充颜色）
+ *
+ * @return Cursor_Pos_t 绘制结束后的光标坐标 (end_x, end_y)，用于后续控件的相对布局。
  */
-void TFT_Show_String(uint16_t           x,
-                     uint16_t           y,
-                     const char*        str,
-                     const font_info_t* font,
-                     uint16_t           color_fg,
-                     uint16_t           color_bg);
+Cursor_Pos_t TFT_Show_String(uint16_t           x,
+                             uint16_t           y,
+                             uint16_t           limit_width,
+                             const char*        str,
+                             const font_info_t* font,
+                             uint16_t           color_fg,
+                             uint16_t           color_bg);
+
+
 
 #endif /* __FONT_H */

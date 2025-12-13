@@ -1,5 +1,6 @@
 #include "sys_log.h"
 #include "st7789.h"
+#include <stdint.h>
 #include <string.h>
 
 #include "FreeRTOS.h" // IWYU pragma: keep
@@ -86,69 +87,121 @@ static void TFT_Draw_Glyph_Base(
     TFT_ShowImage_DMA(x, y, w, h, s_font_render_buf);
 }
 
-void TFT_Show_String(uint16_t           x,
-                     uint16_t           y,
-                     const char*        str,
-                     const font_info_t* font,
-                     uint16_t           color_fg,
-                     uint16_t           color_bg)
+Cursor_Pos_t TFT_Show_String(uint16_t           x,
+                             uint16_t           y,
+                             uint16_t           limit_width,
+                             const char*        str,
+                             const font_info_t* font,
+                             uint16_t           color_fg,
+                             uint16_t           color_bg)
 {
-    // === 获取互斥锁 ===
-    // 保护屏幕资源，防止多任务重入导致花屏
+    // 定义返回结构体
+    Cursor_Pos_t cursor_end_pos;
+
+    // === 1. 资源互斥保护 ===
+    // 获取递归互斥锁，保障多任务环境下屏幕资源访问的原子性
     if (g_mutex_lcd != NULL)
     {
         xSemaphoreTakeRecursive(g_mutex_lcd, portMAX_DELAY);
     }
 
-    // 参数指针判空，防止空指针解引用导致 HardFault
+    // === 2. 参数安全性检查 ===
+    // 防止空指针解引用导致 HardFault 异常
     if (str == NULL || font == NULL)
     {
+        // 发生错误时，返回起始坐标作为默认结束位置
+        cursor_end_pos.end_x = x;
+        cursor_end_pos.end_y = y;
         goto exit;
     }
 
+    // 初始化内部光标
     uint16_t cursor_x = x;
     uint16_t cursor_y = y;
 
-    // 遍历字符串直到遇到结束符 '\0'
+    // === 3. 计算物理渲染边界 ===
+    // 确定当前绘制区域的右侧极限坐标
+    uint16_t right_boundary;
+    if (limit_width == 0 || (x + limit_width > TFT_COLUMN_NUMBER))
+    {
+        // 若未指定限制或限制超出屏幕，则以屏幕物理边界为准
+        right_boundary = TFT_COLUMN_NUMBER;
+    }
+    else
+    {
+        // 使用用户指定的局部区域边界
+        right_boundary = x + limit_width;
+    }
+
+    // 预计算行高 (优先使用汉字高度以确保行间距一致性)
+    uint16_t line_height = (font->cn_h > 0) ? font->cn_h : font->ascii_h;
+
+    // === 4. 字符串遍历与渲染循环 ===
     while (*str)
     {
-        // --- 特殊字符 '\n' ---
+        // ----------------------------------------------------
+        // 特殊控制字符处理：换行符 '\n'
+        // ----------------------------------------------------
         if (*str == '\n')
         {
-            cursor_x = x;              // 回车：X 回到起始点
-            cursor_y += font->ascii_h; // 换行：Y 增加行高
-            str++;
-            continue;
+            cursor_x = x;            // X 轴回归至区域起始点
+            cursor_y += line_height; // Y 轴下移一个 line_height 行高
+            str++;                   // 移动指针至下一字符
+            continue;                // 跳过后续绘制逻辑
         }
 
-        // --- 越界检测 ---
-        // 如果当前行已经超出屏幕底部，终止绘制
-        if (cursor_y + font->cn_h > TFT_LINE_NUMBER)
+        // ----------------------------------------------------
+        // 垂直越界检测
+        // ----------------------------------------------------
+        // 若当前行已超出屏幕物理底部，强制终止绘制，防止显存溢出
+        if (cursor_y + line_height > TFT_LINE_NUMBER)
         {
             break;
         }
 
-        // 自动换行：如果当前字超出屏幕右侧
-        if (cursor_x + font->cn_w > TFT_COLUMN_NUMBER)
+        // ----------------------------------------------------
+        // 预判字符宽度与自动换行逻辑
+        // ----------------------------------------------------
+        uint16_t current_char_w;
+
+        // 判断当前字符类型以获取对应宽度
+        if (*str >= 0x20 && *str <= 0x7E)
         {
-            cursor_x = x;
-            cursor_y += font->cn_h; // 按照汉字高度换行，因为通常汉字比 ASCII 高
+            current_char_w = font->ascii_w;
+        }
+        else
+        {
+            current_char_w = font->cn_w;
         }
 
-        // --- 字符分类处理 (ASCII vs 汉字) ---
+        // 检查：当前光标 + 字符宽度 是否超出右侧边界
+        if (cursor_x + current_char_w > right_boundary)
+        {
+            cursor_x = x;            // 换行：回归起始 X
+            cursor_y += line_height; // 换行：Y 轴增加行高
 
-        // 场景 1: 标准 ASCII 字符 (0x20 ~ 0x7E)
-        // 只要最高位是 0，即可兼容 GBK 中的 ASCII 部分
+            // 换行后再次进行垂直越界检查
+            if (cursor_y + line_height > TFT_LINE_NUMBER)
+            {
+                break;
+            }
+        }
+
+        // ----------------------------------------------------
+        // 字模绘制逻辑
+        // ----------------------------------------------------
+
+        // 场景 A: 标准 ASCII 字符 (0x20 ~ 0x7E)
         if (*str >= 0x20 && *str <= 0x7E)
         {
             uint32_t char_idx = *str - 0x20;
 
-            // 计算该字符在字库数组中的字节偏移量
-            // 对齐计算：((Width + 7) / 8) * Height
+            // 计算字模在数组中的字节偏移
+            // 公式：((Width + 7) / 8) * Height
             uint32_t bytes_per_row = (font->ascii_w + 7) / 8;
             uint32_t char_size     = bytes_per_row * font->ascii_h;
 
-            // 调用 DMA 绘图
+            // 调用 DMA 底层绘图函数
             TFT_Draw_Glyph_Base(cursor_x,
                                 cursor_y,
                                 font->ascii_w,
@@ -157,68 +210,70 @@ void TFT_Show_String(uint16_t           x,
                                 color_fg,
                                 color_bg);
 
-            // 光标右移
-            cursor_x += font->ascii_w;
-            str++; // 移动 1 字节
+            cursor_x += font->ascii_w; // 光标前进
+            str++;                     // 指针前进 1 字节
         }
-        // 场景 2: 汉字或扩展字符 (GBK/Multibyte)
+        // 场景 B: 汉字或多字节字符
         else
         {
             const uint8_t* p_target_data = NULL;
             int            match_len     = 0;
 
-            // 检查汉字库是否有效
+            // 检索汉字字库
             if (font->hzk_table && font->hzk_count > 0)
             {
                 const uint8_t* p_base = (const uint8_t*) font->hzk_table;
 
-                // 遍历汉字映射表查找匹配项
+                // 遍历映射表
                 for (uint16_t i = 0; i < font->hzk_count; i++)
                 {
-                    // 获取当前字库条目的指针
+                    // 获取条目指针与 Key
                     const uint8_t* p_entry = p_base + (i * font->hzk_struct_size);
-
-                    // 获取对应的字符串索引 (假设结构体第一个成员是指向字符串的指针)
-                    const char* key     = *(const char**) p_entry;
-                    size_t      key_len = strlen(key);
+                    const char*    key     = *(const char**) p_entry;
+                    size_t         key_len = strlen(key);
 
                     // 字符串前缀匹配
                     if (strncmp(str, key, key_len) == 0)
                     {
-                        // 找到匹配，计算字模数据地址
+                        // 匹配成功，计算数据偏移
                         p_target_data = p_entry + font->hzk_data_offset;
                         match_len     = key_len;
-                        break; // 退出查找循环
+                        break;
                     }
                 }
             }
 
             if (p_target_data)
             {
-                // 绘制汉字
+                // 绘制汉字字模
                 TFT_Draw_Glyph_Base(
                     cursor_x, cursor_y, font->cn_w, font->cn_h, p_target_data, color_fg, color_bg);
 
                 cursor_x += font->cn_w;
-                str += match_len; // 跳过已匹配的字节数 (如 GBK 为 2，UTF-8 为 3)
+                str += match_len; // 跳过匹配的字节数 (UTF-8通常为3)
             }
             else
             {
-                // 异常处理：未找到字模 (绘制纯色块占位，用于调试)
+                // 异常处理：字库未命中
+                // 绘制红色色块占位，便于调试发现缺失字符
                 TFT_Fill_Rect_DMA(cursor_x, cursor_y, font->cn_w, font->cn_h, RED);
 
                 cursor_x += font->cn_w;
-
-                // 强制跳过 1 字节，尝试重新对齐编码
-                str++;
+                str++; // 强制跳过 1 字节以尝试重新对齐
             }
         }
     }
 
+    // 记录最终结束位置
+    cursor_end_pos.end_x = cursor_x;
+    cursor_end_pos.end_y = cursor_y;
+
 exit:
-    // === 释放互斥锁 ===
+    // === 5. 释放资源 ===
     if (g_mutex_lcd != NULL)
     {
         xSemaphoreGiveRecursive(g_mutex_lcd);
     }
+
+    return cursor_end_pos;
 }
